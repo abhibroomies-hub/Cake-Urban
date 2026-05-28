@@ -7,4 +7,4 @@ Disallow: /profile
 Disallow: /checkout
 Disallow: /cart
 
-Sitemap: https://cakeurban.com/sitemap.xml
+Sitemap: https://www.cakeurban.com/sitemap.xml

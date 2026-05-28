@@ -60,6 +60,16 @@ export default function SEO({ title, description, keywords, ogImage, schema }: S
     }
     ogImgMeta.setAttribute('content', ogImage || 'https://picsum.photos/seed/bakery/1200/630');
 
+    // Update Canonical Link Tag to declare www.cakeurban.com as the authoritative URL
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalLink);
+    }
+    const cleanPath = window.location.pathname === '/' ? '' : window.location.pathname;
+    canonicalLink.setAttribute('href', `https://www.cakeurban.com${cleanPath}`);
+
     // Dynamic JSON-LD injection
     const existingSchemaScript = document.getElementById('seo-schema-script');
     if (existingSchemaScript) {
