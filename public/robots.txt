@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Exclude Admin and Private sections
+Disallow: /admin
+Disallow: /profile
+Disallow: /checkout
+Disallow: /cart
+
+Sitemap: https://cakeurban.com/sitemap.xml

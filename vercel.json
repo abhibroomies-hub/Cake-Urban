@@ -6,7 +6,7 @@
       "destination": "/api"
     },
     {
-      "source": "/((?!api|assets|favicon.ico).*|.*\\.(?:html|js|css|png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf|eot)$)",
+      "source": "/((?!api|assets|favicon.ico|sitemap\\.xml|robots\\.txt).*|.*\\.(?:html|js|css|png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf|eot|xml|txt)$)",
       "destination": "/index.html"
     }
   ]
