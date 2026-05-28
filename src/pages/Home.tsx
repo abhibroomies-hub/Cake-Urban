@@ -384,6 +384,163 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* DELIVERABLE NCR ZONES & SEARCH OPTIMIZATION MAP - CRITICAL SEO ACCELERATOR */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-[#FAF7F5] border-t border-[#E8DDD7]/40 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-[#cc7a74]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="max-w-7xl mx-auto space-y-12 relative z-10">
+          <div className="text-center space-y-4">
+            <span className="text-[10px] uppercase font-black tracking-[0.35em] text-[#DE9088] block">Google SEO & Delivery Map</span>
+            <h3 className="text-3xl md:text-5xl font-display font-black text-[#2D150F] tracking-tight">我们的 Delivery Zones & Region Hubs</h3>
+            <p className="text-[#3B1F17]/50 max-w-lg mx-auto text-xs sm:text-base font-medium italic">
+              Experience air-suspended, temperature-regulated same-day confections. Explore regional bakeries and custom studios near you across Delhi NCR.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[
+              {
+                title: "Bakery in Faridabad",
+                desc: "Same-Day Hand-Delivery & Custom Studio in Sectors 14, 15, 21 & Greenfield Enclave.",
+                link: "/cake-delivery-in-faridabad"
+              },
+              {
+                title: "Premium Bakery in Delhi",
+                desc: "Plush chocolate truffles and anniversary cakes delivered with elite precision across South Delhi.",
+                link: "/bakery-in-delhi"
+              },
+              {
+                title: "Designer Cakes in Noida",
+                desc: "Multi-layered customized character monuments and baby shower cakes handcrafted live.",
+                link: "/designer-cakes-in-noida"
+              },
+              {
+                title: "Custom Cakes in Gurgaon",
+                desc: "Luxury fondant structures and customized brand hampers for cyber-enclaves & DLF residences.",
+                link: "/custom-cakes-in-gurgaon"
+              }
+            ].map((node, idx) => (
+              <motion.div
+                key={idx}
+                whileHover={{ y: -6 }}
+                className="bg-white rounded-[32px] p-6 sm:p-8 border border-[#E8DDD7]/40 shadow-sm flex flex-col justify-between hover:shadow-xl transition-all duration-300 text-left"
+              >
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[#DE9088]/10 text-[#DE9088] flex items-center justify-center">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-base font-black text-[#2D150F]">{node.title}</h4>
+                  <p className="text-xs text-[#2D150F]/60 font-semibold italic leading-relaxed">{node.desc}</p>
+                </div>
+                <Link to={node.link} className="mt-6 flex items-center gap-1 text-[10px] uppercase font-black tracking-widest text-[#DE9088] hover:text-[#2D150F] transition-colors">
+                  <span>Explore Hub</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Master SEO Keywords cloud list */}
+          <div className="bg-white rounded-[40px] p-6 sm:p-10 border border-[#E8DDD7]/40 max-w-4xl mx-auto space-y-4 shadow-sm">
+            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#DE9088]">Our Confectionery Breadcrumbs</span>
+            <p className="text-[10px] text-[#2D150F]/50 leading-relaxed italic text-center font-medium">
+              We specialize in: <strong>Custom cakes in Faridabad</strong> · <strong>Bestseller Red Velvet Pastry</strong> · Edible Photo Cakes Noida · Same Day Birthday Cakes Gurgaon · Pure Eggless Bakery Delhi NCR · French Macarons delivery · Belgian Chocolate Truffles · Pinata Smash Cakes · Double-Decker Wedding Tier cakes.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ROCKET CONVERSION & LIVE TRUST TESTIMONIALS */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-gradient-to-b from-[#FAF7F5] to-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#DE9088]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <div className="lg:col-span-5 space-y-6 text-left">
+            <div className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+              <span>Verified 4.9★ Gastronomical Rank</span>
+            </div>
+            
+            <h3 className="text-3xl sm:text-5xl font-display font-black text-[#2D150F] tracking-tight leading-none">
+              Loved by NCR's<br />
+              <span className="italic font-serif font-light text-[#DE9088]">Elite Connoisseurs</span>
+            </h3>
+
+            <p className="text-xs sm:text-base text-[#3B1F17]/60 leading-relaxed font-semibold italic">
+              From surprise corporate gatherings in Cyber City to sweet first birthday moments in Faridabad, over 14,200+ cakes have been shaped with pure organic dairy products and premium gourmet cocoa.
+            </p>
+
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#FAF7F5] flex items-center justify-center text-[#DE9088]">
+                  <Star className="w-5 h-5 fill-[#DE9088]" />
+                </div>
+                <div>
+                  <p className="text-xs font-black text-[#2D150F] uppercase tracking-wide">14,200+ Delivered Masters</p>
+                  <p className="text-[10px] text-[#2D150F]/50 italic">Freshly dispatched & loved</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#FAF7F5] flex items-center justify-center text-[#DE9088]">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-black text-[#2D150F] uppercase tracking-wide">Instant 30-Minute Dispatch</p>
+                  <p className="text-[10px] text-[#2D150F]/50 italic">For standard cakes in Faridabad enclaves</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-6">
+              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
+                <Button className="h-14 px-8 rounded-2xl bg-[#2D150F] text-white hover:bg-[#DE9088] text-xs font-black uppercase tracking-widest shadow-xl flex items-center gap-2">
+                  <span>Inquire with Chief Baker on WhatsApp</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </a>
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
+            {[
+              {
+                quote: "Absolutely pristine design! The Red Velvet cream cheese layer was moist and not overly sweet. Delivered right at 11:58 PM for the birthday launch in Faridabad.",
+                author: "Ananya Sharma",
+                loc: "Sector 15, Faridabad",
+                dish: "Signature Red Velvet Cheese"
+              },
+              {
+                quote: "Our custom triple-stack anniversary cake was a piece of pure art. The Belgian Ganache was extremely premium and our family loved it. 5/5 stars!",
+                author: "Rohan Malhotra",
+                loc: "DLF Phase 3, Gurgaon",
+                dish: "Custom Belgian Truffle"
+              }
+            ].map((feed, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-[36px] p-8 border border-[#E8DDD7]/40 shadow-sm text-left flex flex-col justify-between space-y-6"
+              >
+                <div className="space-y-4">
+                  <div className="flex gap-1 text-amber-400">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-xs text-[#2D150F]/70 leading-relaxed font-semibold italic">"{feed.quote}"</p>
+                </div>
+                <div className="pt-4 border-t border-[#FAF7F5] flex items-center justify-between">
+                  <div>
+                    <h5 className="text-[11px] font-black uppercase tracking-wide text-[#2D150F]">{feed.author}</h5>
+                    <span className="text-[9px] text-[#2D150F]/50 font-medium italic">{feed.loc}</span>
+                  </div>
+                  <span className="bg-[#DE9088]/10 text-[#cc7a74] px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-wider">{feed.dish}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
     </motion.div>
   );
 }

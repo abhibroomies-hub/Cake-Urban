@@ -116,7 +116,8 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if isAdmin();
-      allow create, update: if isOwner(userId) && isValidUser(incoming()) && 
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) && 
                             (!existing().keys().has('role') || incoming().role == existing().role);
     }
   }

@@ -30,6 +30,7 @@ export default function Login() {
   const redirect = searchParams.get('redirect') || '/';
 
   const handleGoogleLogin = async () => {
+    if (loading) return;
     const provider = new GoogleAuthProvider();
     setLoading(true);
     try {
@@ -50,9 +51,17 @@ export default function Login() {
       
       toast.success("Welcome back to Cake Urban!");
       navigate(redirect);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Google Login failed. Please retry.");
+      if (error?.code === 'auth/cancelled-popup-request' || error?.message?.includes('cancelled-popup-request')) {
+        toast.error("Another sign-in request is already in progress or popups are blocked. Please retry.");
+      } else if (error?.code === 'auth/popup-closed-by-user' || error?.message?.includes('popup-closed-by-user')) {
+        toast.error("Sign-in popup was closed before completion. Please try again.");
+      } else if (error?.code === 'auth/popup-blocked' || error?.message?.includes('popup-blocked')) {
+        toast.error("Popup was blocked by your browser. Please allow popups for Cake Urban and try again!");
+      } else {
+        toast.error("Google Login failed. Please retry.");
+      }
     } finally {
       setLoading(false);
     }
@@ -65,9 +74,13 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success("Signed in successfully!");
       navigate(redirect);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Invalid credentials. Please verify your email and password.");
+      if (error?.code === 'auth/operation-not-allowed' || error?.message?.includes('operation-not-allowed')) {
+        toast.error("Email/Password Sign-In is currently disabled. Please click 'Google Account' at the bottom to sign in instantly!", { duration: 8000 });
+      } else {
+        toast.error("Invalid credentials. Please verify your email and password.");
+      }
     } finally {
       setLoading(false);
     }
@@ -101,7 +114,11 @@ export default function Login() {
       navigate(redirect);
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.message || "Registration failed. Check password length (min 6 characters) and email.");
+      if (error?.code === 'auth/operation-not-allowed' || error?.message?.includes('operation-not-allowed')) {
+        toast.error("Email/Password registration is disabled in Firebase. Please use 'Google Account' at the bottom to register instantly!", { duration: 8000 });
+      } else {
+        toast.error(error?.message || "Registration failed. Check password length (min 6 characters) and email.");
+      }
     } finally {
       setLoading(false);
     }
@@ -162,9 +179,13 @@ export default function Login() {
 
       toast.success(`OTP verified! Logged in as +91*****${phoneNumber.slice(-4)}`);
       navigate(redirect);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Verification failed. Standard SMS Authentication issue.");
+      if (err?.code === 'auth/operation-not-allowed' || err?.message?.includes('operation-not-allowed')) {
+        toast.error("SMS Mock verification is disabled since Email/Password is disabled in Firebase. Please use 'Google Account' at the bottom!", { duration: 8000 });
+      } else {
+        toast.error("Verification failed. Standard SMS Authentication issue.");
+      }
     } finally {
       setLoading(false);
     }
