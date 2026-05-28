@@ -1,0 +1,14 @@
+{
+  "name": "CakeUrban",
+  "description": "Premium cake shop for highly customized cakes in Faridabad, India. Features AI-driven search, admin dashboard, and full checkout flow.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API",
+    "AI-driven search",
+    "Admin Dashboard",
+    "E-commerce",
+    "Local SEO"
+  ]
+}
