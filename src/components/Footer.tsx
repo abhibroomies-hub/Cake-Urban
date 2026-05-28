@@ -99,6 +99,13 @@ export function Footer() {
       <div className="bg-[#200D09] py-8 border-t border-[#3B1F17]/10 text-center text-[10px] text-white/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2026 Cake Urban. Elite Gourmet Pastry Group. All rights reserved.</p>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[10px] font-black uppercase tracking-widest text-[#f3ddd6]/40">
+            <Link to="/legal" className="hover:text-[#DE9088] transition">Terms & Conditions</Link>
+            <span>•</span>
+            <Link to="/legal" className="hover:text-[#DE9088] transition">Privacy Policy</Link>
+            <span>•</span>
+            <Link to="/legal" className="hover:text-[#DE9088] transition">Delivery & Refund Policies</Link>
+          </div>
           <p className="flex items-center gap-1 italic">
             Handcrafted with <Heart className="w-3 h-3 text-[#DE9088] fill-[#DE9088]" /> in Faridabad, Delhi NCR.
           </p>

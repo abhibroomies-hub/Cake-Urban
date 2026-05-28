@@ -3,25 +3,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { AnimatePresence } from 'motion/react';
-import Home from './pages/Home';
-import Shop from './pages/Shop';
-import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import Login from './pages/Login';
-import AdminDashboard from './pages/AdminDashboard';
-import Profile from './pages/Profile';
-import CustomOrder from './pages/CustomOrder';
-import Contact from './pages/Contact';
-import About from './pages/About';
-import LocationSEOPage from './pages/LocationSEOPage';
-import Blog from './pages/Blog';
-import SeoStudio from './pages/SeoStudio';
+import { Loader2 } from 'lucide-react';
 import { seedProducts } from './lib/seed';
+
+const Home = lazy(() => import('./pages/Home'));
+const Shop = lazy(() => import('./pages/Shop'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Login = lazy(() => import('./pages/Login'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Profile = lazy(() => import('./pages/Profile'));
+const CustomOrder = lazy(() => import('./pages/CustomOrder'));
+const Contact = lazy(() => import('./pages/Contact'));
+const About = lazy(() => import('./pages/About'));
+const LocationSEOPage = lazy(() => import('./pages/LocationSEOPage'));
+const Blog = lazy(() => import('./pages/Blog'));
+const SeoStudio = lazy(() => import('./pages/SeoStudio'));
+const Legal = lazy(() => import('./pages/Legal'));
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -30,6 +33,17 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
+}
+
+function PageLoader() {
+  return (
+    <div className="min-h-[60vh] w-full flex flex-col items-center justify-center space-y-4">
+      <Loader2 className="w-8 h-8 text-[#DE9088] animate-spin" />
+      <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#3B1F17]/40 italic">
+        Preparing Artisan Confections...
+      </p>
+    </div>
+  );
 }
 
 function AnimatedRoutes() {
@@ -50,6 +64,7 @@ function AnimatedRoutes() {
         <Route path="/about" element={<About />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/seo-studio" element={<SeoStudio />} />
+        <Route path="/legal" element={<Legal />} />
         
         {/* Dynamic Local SEO Pages for Delhi NCR */}
         <Route path="/bakery-in-delhi" element={<LocationSEOPage />} />
@@ -73,7 +88,9 @@ export default function App() {
     <Router>
       <ScrollToTop />
       <Layout>
-        <AnimatedRoutes />
+        <Suspense fallback={<PageLoader />}>
+          <AnimatedRoutes />
+        </Suspense>
       </Layout>
     </Router>
   );
