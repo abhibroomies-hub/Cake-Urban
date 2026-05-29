@@ -356,12 +356,25 @@ const DUMMY_PRODUCTS = [
 
 export async function seedProducts() {
   const path = 'products';
+  // 1. Instantly check localStorage to avoid any network call if already seeded in this browser
+  if (localStorage.getItem('cakeurban_seeded_v1') === 'true') {
+    return;
+  }
+
   try {
     const prodCol = collection(db, path);
     const snap = await getDocs(prodCol);
     
-    // Always clear the existing products to make sure they get our stunning updated catalog perfectly mapped with categories!
-    console.log("Emptying and seeding updated premium 25+ products catalog...");
+    // 2. Only seed if the database has extremely few or 0 products.
+    // This prevents wiping of products on every page load and stops permission/quota limits.
+    if (snap.size >= 5) {
+      console.log(`Database already has ${snap.size} products. Skipping seeding.`);
+      localStorage.setItem('cakeurban_seeded_v1', 'true');
+      return;
+    }
+
+    console.log("Seeding premium confections catalog...");
+    // Clear the small or corrupted list first
     for (const docObj of snap.docs) {
       await deleteDoc(doc(db, path, docObj.id));
     }
@@ -373,9 +386,12 @@ export async function seedProducts() {
       });
     }
     console.log("Seeding complete! 25+ boutique products loaded successfully.");
+    localStorage.setItem('cakeurban_seeded_v1', 'true');
   } catch (error: any) {
     if (error?.code === 'permission-denied') {
-      console.warn("Seeding skipped: Missing permissions (Admin access required).");
+      console.warn("Seeding skipped: Missing permissions (guest or unauthenticated).");
+      // Keep it as true so we don't retry on every single render in this session
+      localStorage.setItem('cakeurban_seeded_v1', 'true');
     } else {
       console.error("Seeding failed:", error);
     }

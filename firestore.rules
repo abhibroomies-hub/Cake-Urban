@@ -100,11 +100,15 @@ service cloud.firestore {
 
     // Orders
     match /orders/{orderId} {
-      allow get: if isSignedIn() && (isOwner(existing().userId) || existing().guestEmail == request.auth.token.email || isAdmin());
-      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if (isEmailVerified() || isSignedIn()) && isValidOrder(incoming()) && 
-                    (incoming().userId == request.auth.uid || incoming().guestEmail != null);
+      allow get: if (isSignedIn() && (isOwner(existing().userId) || existing().guestEmail == request.auth.token.email || isAdmin())) || (existing().userId != null && existing().userId.startsWith('local_user_'));
+      allow list: if (isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin())) || (resource.data.userId != null && resource.data.userId.startsWith('local_user_'));
+      allow create: if isValidOrder(incoming());
       allow update: if isAdmin() || (
+        existing().userId != null && existing().userId.startsWith('local_user_') &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status']) &&
+        incoming().status == 'cancelled' &&
+        existing().status == 'new'
+      ) || (
         isOwner(existing().userId) && 
         incoming().diff(existing()).affectedKeys().hasOnly(['status']) &&
         incoming().status == 'cancelled' &&
@@ -114,11 +118,12 @@ service cloud.firestore {
 
     // Users
     match /users/{userId} {
-      allow get: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin();
-      allow create: if isOwner(userId) && isValidUser(incoming());
-      allow update: if isOwner(userId) && isValidUser(incoming()) && 
-                            (!existing().keys().has('role') || incoming().role == existing().role);
+      allow get: if isOwner(userId) || isAdmin() || (resource != null && resource.data.isLocalAccount == true);
+      allow list: if isAdmin() || (request.query.limit <= 2);
+      allow create: if (isOwner(userId) && isValidUser(incoming())) || (incoming().isLocalAccount == true);
+      allow update: if (isOwner(userId) && isValidUser(incoming()) && 
+                            (!existing().keys().has('role') || incoming().role == existing().role)) || 
+                             (existing().isLocalAccount == true && incoming().isLocalAccount == true && incoming().role == 'customer');
     }
   }
 }

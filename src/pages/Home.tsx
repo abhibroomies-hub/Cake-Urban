@@ -391,7 +391,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto space-y-12 relative z-10">
           <div className="text-center space-y-4">
             <span className="text-[10px] uppercase font-black tracking-[0.35em] text-[#DE9088] block">Google SEO & Delivery Map</span>
-            <h3 className="text-3xl md:text-5xl font-display font-black text-[#2D150F] tracking-tight">我们的 Delivery Zones & Region Hubs</h3>
+            <h3 className="text-3xl md:text-5xl font-display font-black text-[#2D150F] tracking-tight">Our Elite Delivery Zones & Region Hubs</h3>
             <p className="text-[#3B1F17]/50 max-w-lg mx-auto text-xs sm:text-base font-medium italic">
               Experience air-suspended, temperature-regulated same-day confections. Explore regional bakeries and custom studios near you across Delhi NCR.
             </p>

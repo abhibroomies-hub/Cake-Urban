@@ -49,6 +49,7 @@ export default function Profile() {
   }, [navigate]);
 
   const handleLogout = async () => {
+    localStorage.removeItem('cakeurban_local_user');
     await auth.signOut();
     toast.success("Signed out successfully");
     navigate('/');

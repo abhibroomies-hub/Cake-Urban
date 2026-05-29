@@ -95,132 +95,85 @@ export default function Shop() {
     }
   }, [searchParams]);
 
+  // Fetch all products once on mount to keep database access minimal and speed ultra high
   useEffect(() => {
     const fetchProducts = async () => {
       const path = 'products';
       setLoading(true);
       try {
-        let q = collection(db, path);
+        const q = collection(db, path);
         const snap = await getDocs(q);
         let prods = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
         
         if (prods.length === 0) {
           prods = FALLBACK_PRODUCTS;
         }
-        
         setAllOriginalProducts(prods);
-
-        // Apply visual category filtering
-        if (activeCategory !== 'All') {
-          prods = prods.filter(p => 
-            p.categories?.some(c => c.toLowerCase() === activeCategory.toLowerCase())
-          );
-        }
-
-        // Apply interactive flavor filter
-        if (flavorFilter !== 'All') {
-          prods = prods.filter(p => 
-            p.flavors?.some(f => f.toLowerCase() === flavorFilter.toLowerCase())
-          );
-        }
-
-        // Apply interactive occasion filter
-        if (occasionFilter !== 'All') {
-          prods = prods.filter(p => 
-            p.occasions?.some(o => o.toLowerCase() === occasionFilter.toLowerCase())
-          );
-        }
-
-        // Apply interactive dietary preference
-        if (dietFilter !== 'All') {
-          prods = prods.filter(p => 
-            p.dietary?.some(d => d.toLowerCase() === dietFilter.toLowerCase())
-          );
-        }
-
-        // Apply interactive price range filter
-        if (priceRange !== 'All') {
-          const range = priceRanges.find(r => r.label === priceRange);
-          if (range) {
-            prods = prods.filter(p => p.price >= range.min && p.price < range.max);
-          }
-        }
-
-        // Apply interactive sorting algorithms
-        if (sortBy === 'Price: Low to High') {
-          prods.sort((a, b) => a.price - b.price);
-        } else if (sortBy === 'Price: High to Low') {
-          prods.sort((a, b) => b.price - a.price);
-        } else if (sortBy === 'Newest') {
-          prods.sort((a, b) => {
-            const timeA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : new Date(a.createdAt || 0).getTime();
-            const timeB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : new Date(b.createdAt || 0).getTime();
-            return timeB - timeA;
-          });
-        }
-        
-        setProducts(prods);
       } catch (error) {
         console.warn("Firestore error in Shop, loading premium fallback dataset:", error);
-        let prods = FALLBACK_PRODUCTS;
-        
-        // Apply visual category filtering
-        if (activeCategory !== 'All') {
-          prods = prods.filter(p => 
-            p.categories?.some(c => c.toLowerCase() === activeCategory.toLowerCase())
-          );
-        }
-
-        // Apply interactive flavor filter
-        if (flavorFilter !== 'All') {
-          prods = prods.filter(p => 
-            p.flavors?.some(f => f.toLowerCase() === flavorFilter.toLowerCase())
-          );
-        }
-
-        // Apply interactive occasion filter
-        if (occasionFilter !== 'All') {
-          prods = prods.filter(p => 
-            p.occasions?.some(o => o.toLowerCase() === occasionFilter.toLowerCase())
-          );
-        }
-
-        // Apply interactive dietary preference
-        if (dietFilter !== 'All') {
-          prods = prods.filter(p => 
-            p.dietary?.some(d => d.toLowerCase() === dietFilter.toLowerCase())
-          );
-        }
-
-        // Apply interactive price range filter
-        if (priceRange !== 'All') {
-          const range = priceRanges.find(r => r.label === priceRange);
-          if (range) {
-            prods = prods.filter(p => p.price >= range.min && p.price < range.max);
-          }
-        }
-
-        // Apply interactive sorting algorithms
-        if (sortBy === 'Price: Low to High') {
-          prods.sort((a, b) => a.price - b.price);
-        } else if (sortBy === 'Price: High to Low') {
-          prods.sort((a, b) => b.price - a.price);
-        } else if (sortBy === 'Newest') {
-          prods.sort((a, b) => {
-            const timeA = new Date(a.createdAt || 0).getTime();
-            const timeB = new Date(b.createdAt || 0).getTime();
-            return timeB - timeA;
-          });
-        }
-        
         setAllOriginalProducts(FALLBACK_PRODUCTS);
-        setProducts(prods);
       } finally {
         setLoading(false);
       }
     };
     fetchProducts();
-  }, [activeCategory, flavorFilter, occasionFilter, dietFilter, priceRange, sortBy]);
+  }, []);
+
+  // Compute filtered confections instantly in-memory without rendering/fetching lag
+  useEffect(() => {
+    let prods = [...allOriginalProducts];
+
+    // Apply visual category filtering
+    if (activeCategory !== 'All') {
+      prods = prods.filter(p => 
+        p.categories?.some(c => c.toLowerCase() === activeCategory.toLowerCase())
+      );
+    }
+
+    // Apply interactive flavor filter
+    if (flavorFilter !== 'All') {
+      prods = prods.filter(p => 
+        p.flavors?.some(f => f.toLowerCase() === flavorFilter.toLowerCase())
+      );
+    }
+
+    // Apply interactive occasion filter
+    if (occasionFilter !== 'All') {
+      prods = prods.filter(p => 
+        p.occasions?.some(o => o.toLowerCase() === occasionFilter.toLowerCase())
+      );
+    }
+
+    // Apply interactive dietary preference
+    if (dietFilter !== 'All') {
+      prods = prods.filter(p => 
+        p.dietary?.some(d => d.toLowerCase() === dietFilter.toLowerCase())
+      );
+    }
+
+    // Apply interactive price range filter
+    if (priceRange !== 'All') {
+      const range = priceRanges.find(r => r.label === priceRange);
+      if (range) {
+        prods = prods.filter(p => p.price >= range.min && p.price < range.max);
+      }
+    }
+
+    // Apply interactive sorting algorithms
+    if (sortBy === 'Price: Low to High') {
+      prods.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'Price: High to Low') {
+      prods.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'Newest') {
+      prods.sort((a, b) => {
+        const timeA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : new Date(a.createdAt || 0).getTime();
+        const timeB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : new Date(b.createdAt || 0).getTime();
+        return timeB - timeA;
+      });
+    }
+    
+    setProducts(prods);
+  }, [allOriginalProducts, activeCategory, flavorFilter, occasionFilter, dietFilter, priceRange, sortBy]);
 
   return (
     <motion.div 

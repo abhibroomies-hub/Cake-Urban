@@ -33,6 +33,7 @@ export function Header() {
   }, []);
 
   const handleLogout = async () => {
+    localStorage.removeItem('cakeurban_local_user');
     await signOut(auth);
     navigate('/');
   };
@@ -51,14 +52,13 @@ export function Header() {
         <div className="flex-1 lg:flex-none flex justify-center lg:justify-start">
           <Link to="/" className="group flex items-center gap-3.5">
             {/* Custom Leather/Gold Shield Logo matching User uploaded branding */}
-            <div className="relative w-11 h-11 md:w-14 md:h-14 shrink-0 flex items-center justify-center drop-shadow-md group-hover:scale-105 transition-transform duration-300">
-              <svg viewBox="0 0 100 110" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Shield outer shadow / glow */}
-                <path d="M50 5 C75 5 90 20 90 45 C90 75 70 95 50 105 C30 95 10 75 10 45 C10 20 25 5 50 5 Z" fill="#2d150f" stroke="#DE9088" strokeWidth="3" />
-                <path d="M50 10 C72 10 85 23 85 45 C85 71 67 89 50 98 C33 89 15 71 15 45 C15 23 28 10 50 10 Z" fill="#3B1F17" stroke="#DE9088" strokeWidth="1" strokeDasharray="3 2" />
-                {/* Embedded UC Monogram */}
-                <text x="50" y="62" textAnchor="middle" fill="#DE9088" fontSize="38" fontFamily="serif" fontWeight="bold" fontStyle="italic" letterSpacing="-2">CU</text>
-              </svg>
+            <div className="relative w-11 h-11 md:w-14 md:h-14 shrink-0 flex items-center justify-center drop-shadow-md rounded-xl overflow-hidden group-hover:scale-110 transition-transform duration-300 bg-[#FAF7F5] border border-[#DE9088]/20 shadow-sm">
+              <img 
+                src="/favicon.png" 
+                alt="Cake Urban Logo" 
+                className="w-full h-full object-cover scale-[1.95] translate-y-[-6%]" 
+                referrerPolicy="no-referrer"
+              />
             </div>
             <div className="flex flex-col">
               <h1 className="text-xl md:text-3xl font-display font-black leading-none tracking-tight text-[#2D150F]">
