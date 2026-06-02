@@ -73,7 +73,7 @@ export default function CustomOrder() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container mx-auto px-4 md:px-10 py-12 md:py-24 min-h-screen bg-[#fffdfc]"
+      className="container mx-auto px-4 md:px-10 py-12 md:py-24 min-h-screen bg-transparent"
     >
       <SEO 
         title="Custom Cake Builder & Designer Studio - Cake Urban"

@@ -102,6 +102,42 @@ export function Footer() {
 
       </div>
 
+      {/* Localized Sector and Area Targeting SEO Hubs */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 border-t border-[#3B1F17]/30 pt-10">
+        <div className="text-left space-y-4">
+          <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#DE9088] flex items-center gap-1">
+            <MapPin className="w-3.5 h-3.5 text-[#DE9088]" /> Popular Area Delivery Sectors (Local SEO Hubs)
+          </h5>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-[11px] font-medium italic text-[#f3ddd6]/70">
+            <div className="space-y-1.5">
+              <span className="font-bold text-white text-[10px] block not-italic uppercase tracking-wider text-[#DE9088]">Faridabad Sectors</span>
+              <Link to="/cake-delivery-faridabad-sector-31" className="block hover:text-[#DE9088] transition font-bold text-[#DE9088]">Sector 31 & NIT (15km radius)</Link>
+              <Link to="/cake-delivery-faridabad-sector-15" className="block hover:text-[#DE9088] transition">Sector 15 Faridabad</Link>
+              <Link to="/bakery-in-faridabad" className="block hover:text-[#DE9088] transition">Sector 14 & 21 Faridabad</Link>
+              <Link to="/best-cake-in-greenfield-faridabad" className="block hover:text-[#DE9088] transition font-bold text-[#DE9088]">Best Cake in Greenfield</Link>
+            </div>
+            <div className="space-y-1.5">
+              <span className="font-bold text-white text-[10px] block not-italic uppercase tracking-wider text-[#DE9088]">Noida Sectors</span>
+              <Link to="/cake-delivery-noida-sector-62" className="block hover:text-[#DE9088] transition">Noida Sector 62</Link>
+              <Link to="/bakery-in-noida" className="block hover:text-[#DE9088] transition">Noida Sector 15 & 18</Link>
+              <Link to="/designer-cakes-in-noida" className="block hover:text-[#DE9088] transition">Noida Sector 137 & 150</Link>
+            </div>
+            <div className="space-y-1.5">
+              <span className="font-bold text-white text-[10px] block not-italic uppercase tracking-wider text-[#DE9088]">Gurgaon Sectors</span>
+              <Link to="/cake-delivery-gurgaon-dlf" className="block hover:text-[#DE9088] transition">DLF Phase 1-5 Gurgaon</Link>
+              <Link to="/custom-cakes-in-gurgaon" className="block hover:text-[#DE9088] transition">Golf Course Road</Link>
+              <Link to="/bakery-in-gurgaon" className="block hover:text-[#DE9088] transition">Sohna Road Gurgaon</Link>
+            </div>
+            <div className="space-y-1.5">
+              <span className="font-bold text-white text-[10px] block not-italic uppercase tracking-wider text-[#DE9088]">Delhi Areas</span>
+              <Link to="/cake-delivery-delhi-dwarka" className="block hover:text-[#DE9088] transition">Dwarka Delhi</Link>
+              <Link to="/bakery-in-delhi" className="block hover:text-[#DE9088] transition">South Delhi (Saket, GK)</Link>
+              <Link to="/birthday-cakes-delhi" className="block hover:text-[#DE9088] transition">West Delhi (Punjabi Bagh)</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Extreme Bottom details */}
       <div className="bg-[#200D09] py-8 border-t border-[#3B1F17]/10 text-center text-[10px] text-white/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">

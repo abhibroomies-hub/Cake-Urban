@@ -146,7 +146,7 @@ export default function Blog() {
   const categories = ['All', 'Design Trends', 'Holiday Gifting', 'Artisanal Breads'];
 
   return (
-    <div className="min-h-screen bg-[#FAF7F5] pb-24">
+    <div className="min-h-screen bg-transparent pb-24">
       
       {/* Dynamic SEO depending on whether we are reading or listing */}
       <SEO 

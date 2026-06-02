@@ -273,7 +273,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="container mx-auto px-6 md:px-10 py-12 md:py-24 min-h-screen bg-[#FAF7F5]">
+    <div className="container mx-auto px-6 md:px-10 py-12 md:py-24 min-h-screen bg-transparent">
       
       {/* Dynamic SEO Title Tag Control */}
       <SEO 

@@ -116,7 +116,7 @@ export default function Checkout() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="container mx-auto py-32 flex flex-col items-center text-center bg-[#F8F4F1] min-h-screen relative overflow-hidden"
+        className="container mx-auto py-32 flex flex-col items-center text-center bg-transparent min-h-screen relative overflow-hidden"
       >
         <SEO 
           title="Reservation Successful" 

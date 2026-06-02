@@ -177,7 +177,7 @@ export default function Home() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="pb-32 bg-[#FAF7F5] overflow-x-hidden min-h-screen relative"
+      className="pb-32 bg-transparent overflow-x-hidden min-h-screen relative"
     >
       <SEO 
         title="Cake Urban - Premium Artisan Bakery in Faridabad"
@@ -554,7 +554,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[10px] sm:gap-6 md:gap-8"
+                className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 md:gap-8"
               >
                 {loading ? (
                   Array.from({ length: 4 }).map((_, i) => (

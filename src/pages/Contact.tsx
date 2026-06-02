@@ -8,7 +8,7 @@ import SEO from '../components/SEO';
 
 export default function Contact() {
   return (
-    <div className="min-h-screen bg-[#F8F4F1]">
+    <div className="min-h-screen bg-transparent">
       <SEO 
         title="Contact Chef & Customer Service - Cake Urban"
         description="Connect with Cake Urban's head chef and order support desk. Reach us via Phone, Mail, or WhatsApp for same-day delivery query or customization booking support in Faridabad and across Delhi NCR."

@@ -166,7 +166,7 @@ export default function SeoStudio() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF9] text-[#2D150F] py-20">
+    <div className="min-h-screen bg-transparent text-[#2D150F] py-20">
       <SEO 
         title="AI Image SEO Optimizer Studio - Cake Urban"
         description="Automate search rankings for your cakes. Upload any photo, and Cake Urban's machine-vision AI generates instant SEO titles, alt tags, keywords, and Schema.org scripts."

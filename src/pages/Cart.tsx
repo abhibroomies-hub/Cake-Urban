@@ -5,6 +5,7 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Sparkles, X, Gift } from 
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { playSuccessChime, playBtnTap, playSlidePop } from '../lib/sound';
+import SEO from '../components/SEO';
 
 const UPSELL_DECORATIONS = [
   {
@@ -108,6 +109,11 @@ export default function Cart() {
       exit={{ opacity: 0 }}
       className="container mx-auto px-6 md:px-10 py-12 md:py-24"
     >
+      <SEO 
+        title="Your Shopping Bag" 
+        description="Review your selected artisan confections, custom eggless celebration cakes, customizable weight choices, and luxury toppers of Cake Urban in Faridabad." 
+        keywords="Cake Urban cart, custom birthday cake online order, design cakes Faridabad, eggless chocolate cake order"
+      />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-20">
         <div className="space-y-4 text-center md:text-left">
             <h4 className="text-[10px] uppercase tracking-[0.4em] font-black text-[#D89C95] italic">Collection</h4>

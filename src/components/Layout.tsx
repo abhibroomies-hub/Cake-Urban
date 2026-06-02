@@ -16,6 +16,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
       className="min-h-screen bg-[#F8F4F1] flex flex-col relative overflow-hidden"
       style={{ backgroundImage: bgPattern }}
     >
+      {/* Premium Glossy Live Moving Wave Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Smooth Caramel Gold Shifting Blob */}
+        <div className="absolute top-[-5%] left-[-15%] w-[70vw] h-[70vw] sm:w-[50vw] sm:h-[50vw] bg-[#DFB15B] opacity-[0.08] blur-[100px] sm:blur-[130px] rounded-full animate-wave-slow mix-blend-multiply" />
+        
+        {/* Luxurious Rose Syrup Shifting Blob */}
+        <div className="absolute bottom-[5%] right-[-10%] w-[80vw] h-[80vw] sm:w-[55vw] sm:h-[55vw] bg-[#DE9088] opacity-[0.08] blur-[120px] sm:blur-[140px] rounded-full animate-wave-secondary mix-blend-multiply" />
+        
+        {/* Ambient Velvet Accent Shifting Blob */}
+        <div className="absolute top-[40%] left-[25%] w-[50vw] h-[50vw] bg-[#D89C95] opacity-[0.05] blur-[110px] sm:blur-[120px] rounded-full animate-wave-third" />
+      </div>
+
       <AnnouncementBar />
       <MobileNav />
       <FloatingElements />

@@ -152,12 +152,71 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-[#DFB15B]/40;
     }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#F8F4F1] text-[#3B1F17] antialiased selection:bg-[#D89C95]/20 selection:text-[#D89C95];
+    -webkit-font-smoothing: antialiased;
     }
   html {
     @apply font-sans;
     }
+}
+
+@keyframes waveSlow {
+  0% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+    border-radius: 43% 57% 70% 30% / 45% 45% 55% 55%;
+  }
+  33% {
+    transform: translate(40px, 60px) scale(1.15) rotate(120deg);
+    border-radius: 70% 30% 52% 48% / 60% 40% 60% 40%;
+  }
+  66% {
+    transform: translate(-20px, -40px) scale(0.9) rotate(240deg);
+    border-radius: 50% 50% 30% 70% / 50% 60% 40% 60%;
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1) rotate(360deg);
+    border-radius: 43% 57% 70% 30% / 45% 45% 55% 55%;
+  }
+}
+
+@keyframes waveSecondary {
+  0% {
+    transform: translate(0px, 0px) scale(1) rotate(360deg);
+    border-radius: 50% 50% 30% 70% / 50% 60% 40% 60%;
+  }
+  50% {
+    transform: translate(-50px, 70px) scale(1.25) rotate(180deg);
+    border-radius: 70% 30% 52% 48% / 60% 40% 60% 40%;
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1) rotate(0deg);
+    border-radius: 50% 50% 30% 70% / 50% 60% 40% 60%;
+  }
+}
+
+@keyframes waveThird {
+  0% {
+    transform: translate(0px, 0px) scale(1.1) rotate(120deg);
+  }
+  50% {
+    transform: translate(60px, -50px) scale(0.85) rotate(270deg);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1.1) rotate(120deg);
+  }
+}
+
+.animate-wave-slow {
+  animation: waveSlow 32s ease-in-out infinite;
+}
+
+.animate-wave-secondary {
+  animation: waveSecondary 42s ease-in-out infinite;
+}
+
+.animate-wave-third {
+  animation: waveThird 28s ease-in-out infinite;
 }

@@ -190,6 +190,92 @@ const LOCATION_DATA_MAP: Record<string, LocationDetails> = {
       { q: "Is the photo print paper on the cake edible?", a: "Yes! We use 100% safe, certified vegetarian potato/starch edible sheets and food-grade organic coloring ink." },
       { q: "How should I submit the photo for printing?", a: "You can upload high-resolution images during checkout or custom orders page to ensure a crisp, clean photo print." }
     ]
+  },
+  'cake-delivery-faridabad-sector-15': {
+    city: 'Faridabad Sector 15',
+    title: 'Top Cake Delivery in Sector 15 Faridabad - Cake Urban',
+    description: 'Craving freshly baked cakes in Sector 15 Faridabad? Order eggless Belgian chocolate truffles, red velvet romance, and photo cakes for instant 30-min home delivery.',
+    keywords: 'cake delivery faridabad sector 15, bakery in sector 15 faridabad, best cake shop faridabad sector 15, online eggless cakes faridabad',
+    heroText: 'Premium Oven Delivery in Faridabad Sector 15',
+    subText: 'Located right in Sector 15, we dispatch our signature warm chocolate crusts and seasonal toppings within minutes of baking.',
+    deliveryTime: 'Rapid 20-35 mins delivery',
+    charge: 'Complimentary delivery in Sector 15 above ₹499',
+    faqs: [
+      { q: "Is home delivery free in Sector 15 Faridabad?", a: "Yes, we offer completely free home delivery for all orders above ₹499 within Sector 15 and surrounding sectors." },
+      { q: "Can I self-pickup my cake from your kitchen?", a: "Yes, you can choose the self-pickup option during checkout to collect your fresh cake directly from our local center." }
+    ]
+  },
+  'cake-delivery-noida-sector-62': {
+    city: 'Noida Sector 62',
+    title: 'Chef Special Cakes in Noida Sector 62 - Free Office Delivery',
+    description: 'Looking for a cake shop in Noida Sector 62? Order high-end customized cakes, corporate hampers, and fresh dessert jars for rapid delivery to IT parks or homes.',
+    keywords: 'cake delivery noida sector 62, cake shop in sector 62 noida, office cake delivery noida, eggless birthday cakes sector 62',
+    heroText: 'Luxurious Confections for Sector 62 Noida',
+    subText: 'Delicious Belgian cocoa bakes and fresh pineapple towers crafted for IT park events, birthday surprises, and home celebrations in Sector 62.',
+    deliveryTime: '45-60 mins temperature-safe delivery',
+    charge: 'Calculated at checkout',
+    faqs: [
+      { q: "Do you deliver to corporate offices in Sector 62 IT Parks?", a: "Yes, we regularly deliver customized celebration cakes, cupcakes, and snack hampers directly to IT parks and offices in Sector 62 with proper gate entry care." },
+      { q: "Do you offer custom logo engraving on office celebration cakes?", a: "Certainly. Our Custom Studio can print high-resolution edible logos or customized messages on premium chocolate bars for any team celebration." }
+    ]
+  },
+  'cake-delivery-gurgaon-dlf': {
+    city: 'Gurgaon DLF Phase',
+    title: 'Premium Cake Delivery in DLF Phase 1-5 Gurgaon - Cake Urban',
+    description: 'Savor organic, pure-grade eggless cakes and hand-rolled pastries in DLF Phase 1, 2, 3, 4, 5 Gurgaon. Safely delivered in specialized climate-controlled vans.',
+    keywords: 'cake delivery gurgaon dlf, best bakery dlf phase 3, customized cake delivery gurugram, dlf phase 4 cake shop, eggless cakes dlf phase 5',
+    heroText: 'DLF Phase Elite Celebration Hub',
+    subText: 'Baking spectacular theme cakes and single-slice treats of unparalleled tier-chef craftsmanship, serving all DLF phases and Golf Course Road.',
+    deliveryTime: 'Same-day 45-75 mins delivery',
+    charge: 'Calculated at checkout',
+    faqs: [
+      { q: "Do you cover all DLF Phases in Gurgaon?", a: "Yes, we offer lightning-fast, premium van deliveries to DLF Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, and Sector 25/56 zones with pristine packaging." },
+      { q: "Are cold-storage cheesecakes delivered safely to Gurgaon?", a: "Yes! All cold-set items like our blueberry cheesecake are shipped in frozen gel-pack coolers, ensuring they arrive chilled and perfect." }
+    ]
+  },
+  'cake-delivery-delhi-dwarka': {
+    city: 'Dwarka Delhi',
+    title: 'Top Eggless Cake Delivery in Dwarka Delhi - Cake Urban',
+    description: 'Order freshly baked, 100% vegetarian designer cakes, fruit cakes, and standard celebration boxes in Dwarka, Delhi. Trust our sanitized separate ovens.',
+    keywords: 'cake delivery delhi dwarka, best cake shop in dwarka, online eggless cake dwarka delhi, custom birthday cakes dwarka',
+    heroText: 'Dwarka\'s Pure Vegetarian Cake Atelier',
+    subText: 'Delicious butterscotch towers, truffle crowns, and adorable children custom photo cakes delivered straight to your residential sector in Dwarka.',
+    deliveryTime: 'Same-day 60-90 mins delivery',
+    charge: 'Free delivery above ₹799',
+    faqs: [
+      { q: "Can we request custom theme cakes in Dwarka Sector 10/12/22?", a: "Yes! We serve all residential sectors of Dwarka with our premium Custom Studio designs. Simply share your custom references with the Chef." },
+      { q: "Is the kitchen in Dwarka fully pure vegetarian-certified?", a: "Indeed. All our eggless bakes are prepared in a dedicated, certified 100% vegetarian sanitized enclave." }
+    ]
+  },
+  'cake-delivery-faridabad-sector-31': {
+    city: 'Sector 31 Faridabad (NIT & 15km Radius)',
+    title: 'Cake Delivery in Sector 31 Faridabad - Best Bakery Shop Near me',
+    description: 'Order highly curated, 100% vegetarian cakes for delivery in Sector 31 Faridabad & 15km radius (Sector 14, 15, 16, 21, 28, 30, 35, 37, NIT, Greenfields Colony, Surajkund Road).',
+    keywords: 'cake delivery in sector 31 faridabad, best cake shop near sector 31 faridabad, eggless cakes sector 31 faridabad, birthday cake faridabad sector 31, cake delivery near NIT faridabad, greenfields colony cake home delivery, premium cake shop faridabad sector 21, cake shop near sector 15 faridabad, midnight cake delivery faridabad sector 31',
+    heroText: 'Ultra-Fast Pure Eggless Cake Delivery in Sector 31 Faridabad',
+    subText: 'Serving Sector 31, Sector 14, 15, 16, 21, 28, 30, 34, 35, 37, 46, NIT Faridabad, Greenfield Colony, Charmwood, and Surajkund within a rapid 30-minute hot-dispatch cycle.',
+    deliveryTime: 'Superfast 30-45 Mins Transit (15km radius guaranteed)',
+    charge: 'Free home delivery for orders above ₹499',
+    faqs: [
+      { q: "What areas within 15km of Sector 31 Faridabad do you cover for same-day delivery?", a: "We cover every single corner within a 15km radius of Sector 31, including Sector 14, 15, 16, 17, 21A/21D, 28, 29, 30, 31, 35, 37, NIT Faridabad (1, 2, 3, 5), Greenfield Colony, Charmwood, Surajkund Road, Sarai, and Mathura Road." },
+      { q: "Do you offer pure vegetarian eggless cakes in Sector 31?", a: "Absolutely! Every cake baked for Sector 31 Faridabad is 100% vegetarian, prepared in a certified eggless-only sanitary zone, ensuring perfect religious and dietary satisfaction." },
+      { q: "Can we order midnight customized designer cakes in Faridabad Sector 31?", a: "Yes, we specialize in midnight delivery (11:30 PM - 12:00 AM) across Sector 31 and surrounding neighborhoods. Customizations are welcomed by our head chefs!" }
+    ]
+  },
+  'best-cake-in-greenfield-faridabad': {
+    city: 'Greenfield Colony Faridabad',
+    title: 'Best Cake in Greenfield Colony Faridabad | 100% Eggless Home Delivery',
+    description: 'Looking for the best cake in Greenfield Colony Faridabad? Order eggless red velvet deluxe, rich Belgian chocolate truffle, and customized theme cakes for door delivery within 30 mins.',
+    keywords: 'best cake in greenfield faridabad, cake delivery in greenfield colony faridabad, eggless cakes greenfield faridabad, best cake shop near greenfields colony, customized cake delivery greenfield plc, online bakery shop greenfield colony faridabad',
+    heroText: 'Greenfield Colony\'s Ultimate Artisanal Cake Corner',
+    subText: 'Delivering hand-creamed custom bakes, premium bento gems, and signature celebration layers directly into Greenfield Colony gates inside 30-40 mintues flat.',
+    deliveryTime: 'Rapid 30-40 mins delivery inside Greenfield Colony',
+    charge: 'Free delivery above ₹499 in Greenfields',
+    faqs: [
+      { q: "Is home delivery fully free inside Greenfield Colony Faridabad?", a: "Yes, we offer complimentary contactless doorstep delivery within Greenfield Colony and immediately surrounding areas for all orders above ₹499." },
+      { q: "Where closest is your oven located to Greenfield Colony?", a: "We operate our major oven facility extremely close by, enabling super-fast, warm, fresh product handovers with no transport damages." },
+      { q: "Can we get custom shapes, photos, or message plaques in Greenfields?", a: "Absolutely! You can use our customized studio or share ideas directly with our Head Chef to get high-resolution edible photos and beautiful sugar models made fresh." }
+    ]
   }
 };
 
@@ -212,7 +298,7 @@ export default function LocationSEOPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-[#FAF7F5] pb-24"
+      className="min-h-screen bg-transparent pb-24"
     >
       <SEO 
         title={data.title}

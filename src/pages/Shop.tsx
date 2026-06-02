@@ -124,36 +124,36 @@ export default function Shop() {
     let prods = [...allOriginalProducts];
 
     // Apply visual category filtering
-    if (activeCategory !== 'All') {
+    if (activeCategory.toLowerCase() !== 'all') {
       prods = prods.filter(p => 
         p.categories?.some(c => c.toLowerCase() === activeCategory.toLowerCase())
       );
     }
 
     // Apply interactive flavor filter
-    if (flavorFilter !== 'All') {
+    if (flavorFilter.toLowerCase() !== 'all') {
       prods = prods.filter(p => 
         p.flavors?.some(f => f.toLowerCase() === flavorFilter.toLowerCase())
       );
     }
 
     // Apply interactive occasion filter
-    if (occasionFilter !== 'All') {
+    if (occasionFilter.toLowerCase() !== 'all') {
       prods = prods.filter(p => 
         p.occasions?.some(o => o.toLowerCase() === occasionFilter.toLowerCase())
       );
     }
 
     // Apply interactive dietary preference
-    if (dietFilter !== 'All') {
+    if (dietFilter.toLowerCase() !== 'all') {
       prods = prods.filter(p => 
         p.dietary?.some(d => d.toLowerCase() === dietFilter.toLowerCase())
       );
     }
 
     // Apply interactive price range filter
-    if (priceRange !== 'All') {
-      const range = priceRanges.find(r => r.label === priceRange);
+    if (priceRange.toLowerCase() !== 'all') {
+      const range = priceRanges.find(r => r.label.toLowerCase() === priceRange.toLowerCase());
       if (range) {
         prods = prods.filter(p => p.price >= range.min && p.price < range.max);
       }
@@ -181,7 +181,7 @@ export default function Shop() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-[#FAF7F5] pb-24"
+      className="min-h-screen bg-transparent pb-24"
     >
       <SEO 
         title={`${activeCategory === 'All' ? 'Artisanal Bakery Catalog' : `${activeCategory} Collection`}`}
@@ -496,7 +496,7 @@ export default function Shop() {
           ) : products.length > 0 ? (
             <motion.div 
               layout
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[10px] sm:gap-6 md:gap-8"
+              className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 md:gap-8"
             >
               <AnimatePresence mode="popLayout">
                 {products.map((product) => (
