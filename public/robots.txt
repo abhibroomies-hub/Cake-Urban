@@ -1,6 +1,31 @@
 User-agent: *
 Allow: /
 
+# Specifically Allow AI Bot Crawlers to discover LLM Schema
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+
+User-agent: Anthropic-AI
+Allow: /
+Allow: /llms.txt
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+
 # Exclude Admin and Private sections
 Disallow: /admin
 Disallow: /profile
@@ -8,3 +33,5 @@ Disallow: /checkout
 Disallow: /cart
 
 Sitemap: https://www.cakeurban.com/sitemap.xml
+Info: https://www.cakeurban.com/llms.txt
+

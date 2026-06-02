@@ -3,6 +3,7 @@ import { auth, db } from '../lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { UserProfile } from '../types';
+import { secureGetItem } from '../lib/secureStorage';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -11,12 +12,16 @@ export function useAuth() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
-      const localUserStr = localStorage.getItem('cakeurban_local_user');
-      let localUserObj: any = null;
-      if (localUserStr) {
-        try {
-          localUserObj = JSON.parse(localUserStr);
-        } catch (e) {}
+      let localUserObj = secureGetItem<any>('cakeurban_local_user');
+      
+      // Secondary fallback check for legacy raw strings to ensure zero breaks
+      if (!localUserObj) {
+        const legacyStr = localStorage.getItem('cakeurban_local_user');
+        if (legacyStr) {
+          try {
+            localUserObj = JSON.parse(legacyStr);
+          } catch (e) {}
+        }
       }
 
       if (u) {

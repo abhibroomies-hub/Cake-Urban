@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../lib/firebase';
-import { collection, query, where, getDocs, orderBy, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
+import { useAuth } from '../hooks/useAuth';
 import { motion } from 'motion/react';
 import { Package, MapPin, Calendar, Clock, ChevronRight, User, Settings, LogOut } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -10,27 +12,21 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export default function Profile() {
+  const { user, profile, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
+  const [ordersLoading, setOrdersLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const user = auth.currentUser;
-      if (!user) {
-        navigate('/login');
-        return;
-      }
+    if (authLoading) return;
 
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    const fetchOrders = async () => {
       try {
-        // Fetch Profile
-        const profileDoc = await getDoc(doc(db, 'users', user.uid));
-        if (profileDoc.exists()) {
-          setProfile(profileDoc.data());
-        }
-
-        // Fetch Orders
         const q = query(
           collection(db, 'orders'),
           where('userId', '==', user.uid),
@@ -39,21 +35,25 @@ export default function Profile() {
         const snap = await getDocs(q);
         setOrders(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (error) {
-        console.error("Error fetching profile data:", error);
+        console.error("Error fetching profile order history:", error);
       } finally {
-        setLoading(false);
+        setOrdersLoading(false);
       }
     };
 
-    fetchUserData();
-  }, [navigate]);
+    fetchOrders();
+  }, [user, authLoading, navigate]);
 
   const handleLogout = async () => {
     localStorage.removeItem('cakeurban_local_user');
-    await auth.signOut();
+    await signOut(auth);
     toast.success("Signed out successfully");
     navigate('/');
   };
+
+  const loading = authLoading || ordersLoading;
+
+  const defaultAddress = profile?.addresses?.[0] || (profile as any)?.address;
 
   const statusColors: any = {
     'new': 'bg-blue-500/10 text-blue-500',
@@ -168,12 +168,12 @@ export default function Profile() {
                     <div className="space-y-6">
                         <div className="space-y-1">
                             <p className="text-[9px] font-black uppercase tracking-widest text-[#3B1F17]/30">Location</p>
-                            <p className="text-sm font-bold text-[#3B1F17]">{profile?.address?.line1 || 'No address saved'}</p>
-                            <p className="text-sm font-bold text-[#3B1F17]">{profile?.address?.sector && `Sector ${profile.address.sector}, Faridabad`}</p>
+                            <p className="text-sm font-bold text-[#3B1F17]">{defaultAddress?.line1 || 'No address saved'}</p>
+                            <p className="text-sm font-bold text-[#3B1F17]">{defaultAddress?.sector && `Sector ${defaultAddress.sector}, Faridabad`}</p>
                         </div>
                         <div className="space-y-1">
                             <p className="text-[9px] font-black uppercase tracking-widest text-[#3B1F17]/30">Protocol</p>
-                            <p className="text-sm font-serif font-light italic text-[#D89C95]">{profile?.address?.pincode || 'Update Info'}</p>
+                            <p className="text-sm font-serif font-light italic text-[#D89C95]">{defaultAddress?.pincode || 'Update Info'}</p>
                         </div>
                     </div>
                 </CardContent>

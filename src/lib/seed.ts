@@ -67,7 +67,7 @@ const DUMMY_PRODUCTS = [
     occasions: ["Birthday", "Festival"],
     flavors: ["Vanilla"],
     dietary: ["Eggless"],
-    images: ["https://images.unsplash.com/photo-1535141192574-5d4897c13636?auto=format&fit=crop&q=80&w=800"],
+    images: ["https://images.unsplash.com/photo-1505976378723-9726af549e4a?auto=format&fit=crop&q=80&w=800"],
     stockStatus: "in-stock",
     isCustomizable: true,
     isBestseller: false,
@@ -357,7 +357,7 @@ const DUMMY_PRODUCTS = [
 export async function seedProducts() {
   const path = 'products';
   // 1. Instantly check localStorage to avoid any network call if already seeded in this browser
-  if (localStorage.getItem('cakeurban_seeded_v1') === 'true') {
+  if (localStorage.getItem('cakeurban_seeded_v2') === 'true') {
     return;
   }
 
@@ -367,9 +367,9 @@ export async function seedProducts() {
     
     // 2. Only seed if the database has extremely few or 0 products.
     // This prevents wiping of products on every page load and stops permission/quota limits.
-    if (snap.size >= 5) {
+    if (snap.size >= 5 && localStorage.getItem('cakeurban_seeded_v1') === 'true') {
       console.log(`Database already has ${snap.size} products. Skipping seeding.`);
-      localStorage.setItem('cakeurban_seeded_v1', 'true');
+      localStorage.setItem('cakeurban_seeded_v2', 'true');
       return;
     }
 
@@ -386,12 +386,12 @@ export async function seedProducts() {
       });
     }
     console.log("Seeding complete! 25+ boutique products loaded successfully.");
-    localStorage.setItem('cakeurban_seeded_v1', 'true');
+    localStorage.setItem('cakeurban_seeded_v2', 'true');
   } catch (error: any) {
     if (error?.code === 'permission-denied') {
       console.warn("Seeding skipped: Missing permissions (guest or unauthenticated).");
       // Keep it as true so we don't retry on every single render in this session
-      localStorage.setItem('cakeurban_seeded_v1', 'true');
+      localStorage.setItem('cakeurban_seeded_v2', 'true');
     } else {
       console.error("Seeding failed:", error);
     }

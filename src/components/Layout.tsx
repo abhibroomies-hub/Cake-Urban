@@ -13,7 +13,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div 
-      className="min-h-screen bg-[#F8F4F1] flex flex-col relative overflow-hidden select-none"
+      className="min-h-screen bg-[#F8F4F1] flex flex-col relative overflow-hidden"
       style={{ backgroundImage: bgPattern }}
     >
       <AnnouncementBar />

@@ -77,6 +77,13 @@ export function Footer() {
             <Link to="/bakery-in-gurgaon" className="block hover:text-[#DE9088] transition flex items-center gap-1.5"><MapPin className="w-3 h-3 text-[#DE9088]" />DLF Gourmet Gurgaon</Link>
             <Link to="/bakery-in-faridabad" className="block hover:text-[#DE9088] transition flex items-center gap-1.5"><MapPin className="w-3 h-3 text-[#DE9088]" />Main Bakery Faridabad</Link>
           </div>
+          <h5 className="text-[9px] font-black uppercase tracking-widest text-amber-100 border-b border-white/5 pt-4 pb-1">Specialty Hubs</h5>
+          <div className="space-y-1.5 text-[10px] text-stone-200/80 font-medium italic">
+            <Link to="/cake-delivery-in-faridabad" className="block hover:text-amber-300 transition">⚡ Eggless Delivery Faridabad</Link>
+            <Link to="/designer-cakes-in-noida" className="block hover:text-amber-300 transition">🎨 Designer Theme Noida</Link>
+            <Link to="/custom-cakes-in-gurgaon" className="block hover:text-amber-300 transition">🏢 Corporate & Tiered Gurgaon</Link>
+            <Link to="/photo-cakes-in-ghaziabad" className="block hover:text-amber-300 transition">📸 Photo Print Ghaziabad</Link>
+          </div>
         </div>
 
         {/* Branch 4: Specialty niches */}

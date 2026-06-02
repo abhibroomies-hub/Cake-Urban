@@ -71,7 +71,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     occasions: ["Birthday", "Festival"],
     flavors: ["Vanilla"],
     dietary: ["Eggless"],
-    images: ["https://images.unsplash.com/photo-1535141192574-5d4897c13636?auto=format&fit=crop&q=80&w=800"],
+    images: ["https://images.unsplash.com/photo-1505976378723-9726af549e4a?auto=format&fit=crop&q=80&w=800"],
     stockStatus: "in-stock",
     isCustomizable: true,
     isBestseller: false,

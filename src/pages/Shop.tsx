@@ -187,6 +187,27 @@ export default function Shop() {
         title={`${activeCategory === 'All' ? 'Artisanal Bakery Catalog' : `${activeCategory} Collection`}`}
         description={`Explore Cake Urban's exquisite selection of hand-crafted ${activeCategory.toLowerCase()}. Premium quality eggs and customized eggless alternatives for local Faridabad celebrations.`}
         keywords={`cake urban, buy cakes in faridabad, eggless cakes, chocolate pastries, premium bakery faridabad, custom cake order`}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": `${activeCategory === 'All' ? 'Cake Urban Master Confectionary' : `${activeCategory} Collection`}`,
+          "description": `Bespoke artisanal catalog of premium eggless ${activeCategory.toLowerCase()} in Faridabad. Available for express delivery.`,
+          "url": "https://www.cakeurban.com/shop",
+          "numberOfItems": products.length,
+          "itemListElement": products.slice(0, 15).map((p, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "url": `https://www.cakeurban.com/product/${p.id}`,
+            "name": p.name,
+            "image": p.images?.[0] || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600&auto=format&fit=crop',
+            "description": p.description,
+            "offers": {
+              "@type": "Offer",
+              "price": p.price,
+              "priceCurrency": "INR"
+            }
+          }))
+        }}
       />
 
       {/* BOUTIQUE BANNER HEADER */}
@@ -475,7 +496,7 @@ export default function Shop() {
           ) : products.length > 0 ? (
             <motion.div 
               layout
-              className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8"
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[10px] sm:gap-6 md:gap-8"
             >
               <AnimatePresence mode="popLayout">
                 {products.map((product) => (

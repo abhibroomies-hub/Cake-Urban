@@ -366,7 +366,7 @@ export default function Blog() {
                   <p className="text-xs text-[#2D150F]/50 font-semibold italic">Handcrafted fresh in Faridabad, ready-to-celebrate.</p>
                 </div>
                 
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-[10px] sm:gap-6">
                   {FALLBACK_PRODUCTS
                     .filter(p => activePost.relatedProductIds.includes(p.id))
                     .map((prod) => (

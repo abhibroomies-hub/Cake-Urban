@@ -71,6 +71,13 @@ function AnimatedRoutes() {
         <Route path="/bakery-in-noida" element={<LocationSEOPage />} />
         <Route path="/bakery-in-faridabad" element={<LocationSEOPage />} />
         <Route path="/bakery-in-gurgaon" element={<LocationSEOPage />} />
+        
+        {/* Sitemap Specific Dynamic Mappings */}
+        <Route path="/cake-delivery-in-faridabad" element={<LocationSEOPage />} />
+        <Route path="/designer-cakes-in-noida" element={<LocationSEOPage />} />
+        <Route path="/custom-cakes-in-gurgaon" element={<LocationSEOPage />} />
+        <Route path="/photo-cakes-in-ghaziabad" element={<LocationSEOPage />} />
+
         <Route path="/custom-cakes-noida" element={<LocationSEOPage />} />
         <Route path="/birthday-cakes-delhi" element={<LocationSEOPage />} />
         <Route path="/anniversary-cakes-faridabad" element={<LocationSEOPage />} />

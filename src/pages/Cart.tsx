@@ -1,13 +1,88 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../lib/store';
 import { Button } from '../components/ui/button';
-import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Sparkles, X, Gift } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { playSuccessChime, playBtnTap, playSlidePop } from '../lib/sound';
+
+const UPSELL_DECORATIONS = [
+  {
+    id: "premium-gold-candle",
+    name: "Premium Golden Candle (Set of 4)",
+    price: 49,
+    categories: ["Extras"],
+    occasions: ["Birthday"],
+    flavors: [],
+    images: ["https://images.unsplash.com/photo-1541417904950-b855846fe074?auto=format&fit=crop&q=80&w=400"],
+    stockStatus: "in-stock" as const,
+    isCustomizable: false,
+    description: "Metallic gold candles to illuminate your master cake.",
+    selectedWeight: 0
+  },
+  {
+    id: "party-popper-magic",
+    name: "Magic Birthday Party Popper",
+    price: 99,
+    categories: ["Extras"],
+    occasions: ["Festival", "Birthday"],
+    flavors: [],
+    images: ["https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=400"],
+    stockStatus: "in-stock" as const,
+    isCustomizable: false,
+    description: "Colorful confetti popper for dramatic birthday celebrations.",
+    selectedWeight: 0
+  },
+  {
+    id: "metallic-balloons-set",
+    name: "Metallic Rose Gold Balloon Set (6 Pcs)",
+    price: 199,
+    categories: ["Extras"],
+    occasions: ["Anniversary", "Birthday"],
+    flavors: [],
+    images: ["https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=80&w=400"],
+    stockStatus: "in-stock" as const,
+    isCustomizable: false,
+    description: "Rose gold metallic latex balloons to elevate the room.",
+    selectedWeight: 0
+  },
+  {
+    id: "luxury-wooden-banner",
+    name: "Birchwood 'Happy Birthday' Topper",
+    price: 149,
+    categories: ["Extras"],
+    occasions: ["Birthday"],
+    flavors: [],
+    images: ["https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=400"],
+    stockStatus: "in-stock" as const,
+    isCustomizable: false,
+    description: "Laser cut birchwood reusable topper which sits elegantly on top.",
+    selectedWeight: 0
+  }
+];
 
 export default function Cart() {
-  const { items, updateQuantity, removeItem, getTotal, clearCart } = useCart();
+  const { items, addItem, updateQuantity, removeItem, getTotal, clearCart } = useCart();
   const navigate = useNavigate();
+  const [showUpsell, setShowUpsell] = useState(false);
+
+  const handleCheckoutClick = () => {
+    // Check if we already have extras category in cart
+    const hasExtras = items.some(item => 
+      item.id.includes('candle') || 
+      item.id.includes('popper') || 
+      item.id.includes('balloon') || 
+      item.id.includes('banner') || 
+      item.categories?.includes('Extras')
+    );
+    if (hasExtras) {
+      playBtnTap();
+      navigate('/checkout');
+    } else {
+      playSlidePop();
+      setShowUpsell(true);
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -135,7 +210,7 @@ export default function Cart() {
             </div>
             <Button 
               className="w-full h-20 rounded-[32px] bg-[#3B1F17] hover:bg-[#2A1610] text-[10px] font-black uppercase tracking-[0.4em] flex items-center justify-between px-10 shadow-2xl transition-all duration-300"
-              onClick={() => navigate('/checkout')}
+              onClick={handleCheckoutClick}
             >
               Secure Order
               <ArrowRight className="w-5 h-5 ml-2 opacity-40 shrink-0" />
@@ -154,6 +229,101 @@ export default function Cart() {
           </div>
         </div>
       </div>
+
+      {/* Celebration Upgrade Pop-up Modal */}
+      <AnimatePresence>
+        {showUpsell && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop Blur */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-[#3B1F17]/60 backdrop-blur-md"
+              onClick={() => { playBtnTap(); setShowUpsell(false); }}
+            />
+
+            {/* Modal Body */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="bg-[#FAF7F5] w-full max-w-3xl rounded-[40px] md:rounded-[52px] border border-white overflow-hidden shadow-2xl relative z-10 p-6 md:p-10 text-left"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-start mb-6 md:mb-8">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-[#DE9088] font-black uppercase tracking-widest">
+                    <Sparkles className="w-4 h-4 animate-pulse text-[#DE9088]" />
+                    <span>CELEB KIT UPGRADES</span>
+                  </div>
+                  <h3 className="text-xl md:text-3xl font-display font-black text-[#3B1F17] tracking-tight">Complete the celebration!</h3>
+                  <p className="text-[#3B1F17]/50 text-xs font-medium italic">Make your cake presentation truly unforgettable with curated celebration essentials.</p>
+                </div>
+                <button 
+                  onClick={() => { playBtnTap(); setShowUpsell(false); }}
+                  className="w-10 h-10 rounded-full bg-white border border-[#E8DDD7] hover:bg-[#DE9088]/10 hover:text-[#DE9088] transition-colors flex items-center justify-center cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Grid lists */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[350px] overflow-y-auto pr-2 no-scrollbar mb-8 md:mb-10">
+                {UPSELL_DECORATIONS.map((tool) => {
+                  const isInCart = items.some(item => item.id === tool.id);
+                  return (
+                    <div 
+                      key={tool.id}
+                      className={`p-4 rounded-3xl bg-white border transition-all flex gap-4 items-center ${
+                        isInCart ? 'border-[#DE9088] shadow-inner bg-[#DE9088]/5' : 'border-[#E8DDD7]/40 hover:border-[#DE9088]/40 shadow-sm'
+                      }`}
+                    >
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-[#FAF7F5] border border-[#E8DDD7]/30">
+                        <img src={tool.images[0]} alt={tool.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      </div>
+                      <div className="flex-grow space-y-1">
+                        <h5 className="font-display font-bold text-xs md:text-sm text-[#3B1F17] leading-tight line-clamp-1">{tool.name}</h5>
+                        <p className="text-[10px] text-[#3B1F17]/40 italic line-clamp-1 leading-none">{tool.description}</p>
+                        <p className="font-serif font-black text-xs text-[#DE9088]">₹{tool.price}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => { playSuccessChime(); addItem({ ...tool, trackingId: tool.id } as any); }}
+                        className={`h-9 px-4 rounded-xl text-[10px] uppercase font-black tracking-widest ${
+                          isInCart 
+                            ? 'bg-[#DE9088]/20 text-[#DE9088] hover:bg-[#DE9088]/30' 
+                            : 'bg-[#3B1F17] text-white hover:bg-[#D89C95]'
+                        }`}
+                      >
+                        {isInCart ? 'Added' : 'Add'}
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Action feet */}
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between border-t border-[#E8DDD7]/30 pt-6">
+                <button
+                  onClick={() => { playBtnTap(); setShowUpsell(false); navigate('/checkout'); }}
+                  className="text-xs font-black uppercase tracking-[0.2em] text-[#3B1F17]/50 hover:text-[#3B1F17] transition-all cursor-pointer"
+                >
+                  No thanks, proceed to checkout
+                </button>
+                <Button
+                  onClick={() => { playSlidePop(); setShowUpsell(false); navigate('/checkout'); }}
+                  className="w-full sm:w-auto h-14 px-8 rounded-2xl bg-[#3B1F17] hover:bg-[#2A1610] text-xs font-black uppercase tracking-widest flex items-center gap-2 justify-center"
+                >
+                  <span>Go to Checkout</span>
+                  <ArrowRight className="w-4 h-4 text-white/50" />
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

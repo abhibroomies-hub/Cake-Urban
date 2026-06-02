@@ -24,6 +24,8 @@ export interface Product {
     title: string;
     description: string;
   };
+  reviewsCount?: number;
+  rating?: number;
 }
 
 export interface CartItem extends Product {
@@ -33,6 +35,7 @@ export interface CartItem extends Product {
   cakeMessage?: string;
   eggless?: boolean;
   extras?: string[];
+  additionalInstructions?: string;
 }
 
 export interface UserProfile {

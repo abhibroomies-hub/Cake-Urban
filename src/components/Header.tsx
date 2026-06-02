@@ -10,6 +10,7 @@ import { db, auth } from '../lib/firebase';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { FALLBACK_PRODUCTS } from '../lib/fallbackProducts';
+import { toast } from 'sonner';
 
 export function Header() {
   const { setSearchOpen } = useUI();
@@ -34,7 +35,10 @@ export function Header() {
 
   const handleLogout = async () => {
     localStorage.removeItem('cakeurban_local_user');
-    await signOut(auth);
+    try {
+      await signOut(auth);
+    } catch (e) {}
+    toast.success("Disconnected securely!");
     navigate('/');
   };
 

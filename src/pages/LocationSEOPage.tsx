@@ -134,6 +134,62 @@ const LOCATION_DATA_MAP: Record<string, LocationDetails> = {
       { q: "Do you bake multi-tiered anniversary cakes?", a: "We specialize in two-tier and three-tier anniversary cakes with robust support bases for smooth delivery transit." },
       { q: "Can we customize the text message on plaque?", a: "Yes, you can add any personalized couple wish which our chefs will hand-pipe on a premium chocolate slab placed on the cake." }
     ]
+  },
+  'cake-delivery-in-faridabad': {
+    city: 'Faridabad Delivery Hub',
+    title: 'Same Day Eggless Cake Delivery in Faridabad - Cake Urban',
+    description: 'Craving sugar? Order birthday cakes, premium pastries, brownies, and hampers online in Faridabad with rapid 30-45 minutes home delivery. 100% pure vegetarian-certified ovens.',
+    keywords: 'cake delivery in faridabad, online cake delivery faridabad, eggless cake order faridabad, same day cake delivery faridabad, bakery sector 15 faridabad',
+    heroText: 'Faridabad\'s Lighting Fast Cake Delivery Hub',
+    subText: 'Indulge in freshly baked pastries and luxury chocolate truffles dispatched straight from our Sector 15 ovens to your doorstep in minutes.',
+    deliveryTime: '30 to 45 minutes instant dispatch',
+    charge: 'Free delivery above ₹500 across Faridabad',
+    faqs: [
+      { q: "What is your fastest delivery time in Faridabad?", a: "For our catalog favorites like Belgian Chocolate Truffle and Fresh Fruit cakes, we can bake, pack and deliver in just 30 to 45 minutes." },
+      { q: "Do you support surprise midnight deliveries in Faridabad?", a: "Yes, we support premium midnight deliveries between 11:30 PM & 12:00 AM across Faridabad residential sectors." }
+    ]
+  },
+  'designer-cakes-in-noida': {
+    city: 'Noida Premium Studio',
+    title: 'Customized Designer Theme Cakes in Noida - Custom Studio',
+    description: 'Handcrafting spectacular designer cakes, cartoon shapes, makeup boxes, and customized tiered creations in Noida. Pure vegetarian bakes optimized for perfect celebration events.',
+    keywords: 'designer cakes in noida, customized theme cake noida, birthday designer cake noida, baby shower cakes noida, top cake shop noida',
+    heroText: 'Noida\'s Landmark Designer Cake Studio',
+    subText: 'Translate your vision, doodles, or Pinterest boards into delicious hand-sculpted buttercream and edible fondant masterpieces.',
+    deliveryTime: '12-24 hours advance ordering',
+    charge: 'Calculated at checkout based on location',
+    faqs: [
+      { q: "Can I choose my own customized shape and character?", a: "Absolutely! Simply drop your reference picture or sketch in our Custom Studio page and mention your flavor preferences." },
+      { q: "Are all components of Noida designer cakes edible?", a: "Our hand-sculpted toppers are crafted from premium Swiss fondant paste and are 100% food-safe and delicious." }
+    ]
+  },
+  'custom-cakes-in-gurgaon': {
+    city: 'Gurgaon Custom Atelier',
+    title: 'Customized & Tiered Theme Cakes in Gurgaon - Cake Urban',
+    description: 'Indulge in customized corporate branding cakes, multi-tier wedding confections, and theme birthday cakes in Gurgaon. 100% vegetarian, organic recipes.',
+    keywords: 'custom cakes in gurgaon, customized birthday cake gurgaon, kids theme cakes gurugram, dlf phase 3 cake delivery, premium customized bakes',
+    heroText: 'Gurgaon\'s Premier Custom Cake Atelier',
+    subText: 'Catering luxurious celebrations, kids birthday motifs, and brand launch milestones across DLF, Golf Course Road, and Gurgaon enclaves.',
+    deliveryTime: 'Requires 12 to 24 hours prep time',
+    charge: 'Free delivery across Golf Course Ext Road',
+    faqs: [
+      { q: "Can we order customized gift hampers or branding cupcakes?", a: "Yes! We specialize in premium branded bulk corporate bakes and bespoke dessert hampers with edible logo tags." },
+      { q: "Do you deliver to cyber sectors and corporate tech parks?", a: "We run fully refrigerated van dispatch routes directly to corporate tech parks and DLF complexes with customized setups." }
+    ]
+  },
+  'photo-cakes-in-ghaziabad': {
+    city: 'Ghaziabad Printed Confections',
+    title: 'Edible Photo Printed Cake Delivery in Ghaziabad - Cake Urban',
+    description: 'Cherish memories with high-resolution edible photo cakes ordered online in Ghaziabad. Certified organic starch ink, fully eggless, and safe cream frosting.',
+    keywords: 'photo cakes in ghaziabad, edible picture cake ghaziabad, print photo cake online, custom picture cake delivery',
+    heroText: 'High-Res Edible Photo Cakes in Ghaziabad',
+    subText: 'Transform your precious family moments, corporate designs, or character poster prints into customized, delicious, safe edible photo frames.',
+    deliveryTime: 'Same-day delivery within 2-3 hours',
+    charge: 'Calculated based on residential sectors',
+    faqs: [
+      { q: "Is the photo print paper on the cake edible?", a: "Yes! We use 100% safe, certified vegetarian potato/starch edible sheets and food-grade organic coloring ink." },
+      { q: "How should I submit the photo for printing?", a: "You can upload high-resolution images during checkout or custom orders page to ensure a crisp, clean photo print." }
+    ]
   }
 };
 
@@ -268,7 +324,7 @@ export default function LocationSEOPage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[10px] sm:gap-6 md:gap-8">
             {relevantProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

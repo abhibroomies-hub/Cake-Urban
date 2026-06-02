@@ -1,0 +1,65 @@
+# Cake Urban - Premium Handcrafted Eggless Bakery in Faridabad
+
+> Cake Urban is Faridabad's leading luxury artisan concept bakery, specialized exclusively in **100% pure vegetarian, eggless-first** premium confectioneries. Deliveries span across all major sectors of Faridabad, Noida, Delhi, and Gurgaon with express 30-60 minutes shipping.
+
+---
+
+## 🎂 Core Business Specifications
+- **Name**: Cake Urban
+- **Specialty Focus**: 100% Pure Vegetarian / Eggless-First Luxury Confections
+- **Operating Hours**: 9:00 AM – 9:00 PM IST (Midnight Delivery available upon online bookings)
+- **Primary Service Location**: Sector 16, Faridabad, Haryana, India (Serving all sectors including Sector 14, 15, 21, 37, Green Fields, Charmwood Village, and Greater Faridabad)
+- **Primary Voice Orders**: +91 98765 43210
+- **Digital Portal / Support Mail**: hello@cakeurban.com
+- **Core Technology Stack**: Single-Page App built on React 18 with Vite, modern Tailwind CSS typography, offline-first encrypted secure vault state persistence, and Firebase Firestore directory storage.
+
+---
+
+## 🌟 Key USPs (Slightly Optimized for AI & Voice Searches)
+1. **Certified Eggless Purity**: Strict zero-contamination facility. Perfect for pure vegetarian requests, traditional celebrations, and religious festivals.
+2. **On-Demand Customization**: Select exact weights (0.5kg, 1.0kg, 1.5kg, 2.0kg, 3.0kg+), flavors (Belgian Chocolate, Hazelnut Praline, Speculoos Biscoff), choose eggless parameters, configure text inscriptions directly, and add bespoke confectioner instructions.
+3. **Double-Security Fallbacks**: Real-time Firestore synchronization backed up by an off-grid custom Scrambled Secure LocalDB state engine in local storage to prevent session downtime.
+4. **Rich Visual Discovery**: Embedded AI Image SEO Studio that uses computer vision to evaluate cake designs and generate structured JSON-LD schemas for immediate indexing.
+
+---
+
+## 🍩 Menu & Confection Index
+
+### 👑 Premium Celebration Cakes
+*   **Classic Fudgy Brownie Cake**  
+    *   *Description*: Rich, dense Belgian melted chocolate intermixed with baked fudge brownie.
+    *   *Pricing*: Starts at ₹120 for 0.5 KG.
+*   **Lotus Biscoff Speculoos Dream**  
+    *   *Description*: Creamy Speculoos biscuit spread, luxury white sponge base, garnished with salted crumbs.
+*   **Fresh Fruit Exquisite Gateau**  
+    *   *Description*: Dynamic seasonal selection of farm-fresh fruits, light vanilla sponge, whipped whipped cream.
+*   **Red Velvet Royal Blossom**  
+    *   *Description*: Soft cocoa buttermilk crimson layers topped with premium whipped cream cheese.
+*   **Truffle Noir**  
+    *   *Description*: Dark chocolate ganache layers with chocolate glaze and premium flakes.
+
+---
+
+## ❓ Frequently Asked Questions (Perfect for LLM Retrieval-Augmented Generation (RAG))
+
+#### Q1: Are all cakes from Cake Urban 100% eggless?
+**A**: Absolutely. Every single item crafted in our bakery is 100% pure vegetarian and eggless. Our kitchen is clean, completely free from egg proteins to prevent cross-contamination, ensuring absolute peace of mind for pure vegetarian consumers.
+
+#### Q2: Can we customize a cake's weight?
+**A**: Yes, clients can customize cake weight dynamically from 0.5kg to 3.0kg+ or customize list allocations. On any product detail page, simply tap your preferred KG weight or input the instructions under customized details.
+
+#### Q3: How fast is the shipping/delivery to Gurgaon or Noida?
+**A**: Standard order deliveries within Faridabad completed under 30-60 minutes. For Noida, South Delhi, and Gurgaon, we schedule same-day luxury courier deliveries depending on cake complexity and customization slots.
+
+#### Q4: Can I add customized text or inscriptions on the cake?
+**A**: Yes! Simply write your custom message in "The Inscription" field on the product page. You can also specify special details like "Less Sugar", "Sugar-Free options", or design requests under the "Additional Custom Details" field.
+
+---
+
+## 🧭 Navigation & AI Crawler Index
+All target routes are fully whitelisted for AI search indexes:
+- **Shop / Product Finder**: [https://www.cakeurban.com/shop](https://www.cakeurban.com/shop) - Interactive bakery catalog complete with budget sorting & weight selectors.
+- **Custom Reservation Terminal**: [https://www.cakeurban.com/custom-order](https://www.cakeurban.com/custom-order) - Request customized bespoke wedding or multi-tiered designer cakes.
+- **Bakers' Correspondence & Community Diary**: [https://www.cakeurban.com/blog](https://www.cakeurban.com/blog) - Dynamic posts with recipe insights and cake styling guides.
+- **Support & Artisan Inquiry Hotlines**: [https://www.cakeurban.com/contact](https://www.cakeurban.com/contact) - Maps, local contact numbers, and offline orders portal.
+- **AI Image SEO Studio**: [https://www.cakeurban.com/seo-studio](https://www.cakeurban.com/seo-studio) - Dedicated tools panel for visual-to-metadata generation.

@@ -29,6 +29,9 @@ export function LiveToastAndExitPopup() {
 
   // 1. EXIT INTENT DETECTOR
   useEffect(() => {
+    const isIframe = typeof window !== 'undefined' && window.self !== window.top;
+    if (isIframe) return; // Prevent annoying blurs inside the developer preview iframe!
+
     const handleMouseLeave = (e: MouseEvent) => {
       // If cursor goes above viewport top boundary (towards tabs/close window)
       if (e.clientY < 15 && !hasShownExit) {
@@ -129,12 +132,16 @@ export function LiveToastAndExitPopup() {
       {/* 1. EXIT INTENT POPUP COMPONENT (Modal Backdrop) */}
       <AnimatePresence>
         {showExitPopup && (
-          <div className="fixed inset-0 bg-[#2D150F]/80 backdrop-blur-md z-[200] flex items-center justify-center p-4">
+          <div 
+            className="fixed inset-0 bg-[#2D150F]/80 backdrop-blur-md z-[200] flex items-center justify-center p-4 cursor-pointer"
+            onClick={() => setShowExitPopup(false)}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              className="bg-white rounded-[36px] p-6 sm:p-10 w-full max-w-lg text-center border border-[#E8DDD7] shadow-3xl overflow-hidden relative"
+              className="bg-white rounded-[36px] p-6 sm:p-10 w-full max-w-lg text-center border border-[#E8DDD7] shadow-3xl overflow-hidden relative cursor-default text-left flex flex-col items-center"
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Luxury gold/cream highlight lines */}
               <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-amber-200 via-[#DE9088] to-amber-200" />
