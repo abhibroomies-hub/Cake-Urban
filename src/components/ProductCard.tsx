@@ -84,16 +84,16 @@ export function ProductCard({ product }: { product: Product }) {
       <motion.div 
         whileHover={{ y: -8, scale: 1.01 }}
         transition={{ type: "spring", stiffness: 350, damping: 20 }}
-        className="group relative bg-[#FFFDF9] rounded-[24px] xs:rounded-[36px] md:rounded-[48px] p-2.5 xs:p-3.5 md:p-5 flex flex-col justify-between border-2 border-[#E8DDD7] hover:border-[#DE9088] shadow-[0_15px_45px_rgba(45,21,15,0.05)] hover:shadow-[0_25px_65px_rgba(45,21,15,0.12)] transition-all duration-300 h-full cursor-pointer overflow-hidden w-full min-w-0 box-border"
+        className="group relative bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] xs:rounded-[36px] md:rounded-[48px] p-2.5 xs:p-3.5 md:p-5 flex flex-col justify-between border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.45)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] transition-all duration-300 h-full cursor-pointer overflow-hidden w-full min-w-0 box-border text-[#FFFDFB]"
         onClick={() => { playSlidePop(); setIsExpanded(true); }}
         id={`product-card-${product.id}`}
       >
         {/* Glow gold backdrop on hover */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#DFB15B]/5 via-transparent to-[#2D150F]/5 rounded-[20px] xs:rounded-[32px] md:rounded-[44px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#DFB15B]/10 via-transparent to-[#2D150F]/20 rounded-[20px] xs:rounded-[32px] md:rounded-[44px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
 
         <div className="w-full flex flex-col">
           {/* Beautiful Rounded Image Pedestal */}
-          <div className="relative w-full aspect-square rounded-[18px] xs:rounded-[28px] md:rounded-[36px] overflow-hidden drop-shadow-[0_15px_30px_rgba(45,21,15,0.12)] border border-[#E8DDD7]/60 bg-[#FAF7F5] transition-all duration-500 group-hover:drop-shadow-[0_25px_45px_rgba(45,21,15,0.2)]">
+          <div className="relative w-full aspect-square rounded-[18px] xs:rounded-[28px] md:rounded-[36px] overflow-hidden drop-shadow-[0_15px_30px_rgba(0,0,0,0.5)] border border-white/10 bg-[#1D0A07] transition-all duration-500 group-hover:drop-shadow-[0_25px_45px_rgba(223,177,91,0.15)]">
             <img 
               src={product.images?.[0] || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=600'} 
               className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
@@ -103,7 +103,7 @@ export function ProductCard({ product }: { product: Product }) {
 
             {/* Bestseller Badge */}
             {product.isBestseller && (
-              <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-gradient-to-r from-[#FAD390] to-[#DFB15B] text-[#2D150F] border border-[#DE9088]/20 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[7px] sm:text-[9px] font-black uppercase tracking-wider shadow-md flex items-center gap-0.5 sm:gap-1 z-10 transition-transform duration-300 group-hover:scale-105">
+              <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-gradient-to-r from-[#FAD390] to-[#DFB15B] text-[#2D150F] border border-amber-600/30 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[7px] sm:text-[9px] font-black uppercase tracking-wider shadow-md flex items-center gap-0.5 sm:gap-1 z-10 transition-transform duration-300 group-hover:scale-105">
                 <Star className="w-2 sm:w-2.5 h-2 sm:h-2.5 fill-[#2D150F] text-[#2D150F]" /> BESTSELLER
               </div>
             )}
@@ -120,14 +120,14 @@ export function ProductCard({ product }: { product: Product }) {
             {/* Small helper row for rating and wishlist on mobile only */}
             <div className="flex items-center justify-between w-full sm:hidden">
               {/* STAR RATING BADGE */}
-              <div className="flex items-center gap-0.5 bg-[#FAF7F5] border border-[#E8DDD7] px-2 py-1 rounded-xl shadow-sm shrink-0">
+              <div className="flex items-center gap-0.5 bg-[#1C0D0A]/70 border border-white/10 px-2 py-1 rounded-xl shadow-sm shrink-0">
                 <Star className="w-2.5 h-2.5 fill-[#DFB15B] text-[#DFB15B]" />
-                <span className="text-[9px] font-black text-[#2D150F]">4.9</span>
-                <span className="text-[7px] font-black text-[#3B1F17]/50">({product.reviewsCount || 42})</span>
+                <span className="text-[9px] font-black text-[#FFFDFB]">4.9</span>
+                <span className="text-[7px] font-black text-[#FFFDFB]/50">({product.reviewsCount || 42})</span>
               </div>
               {/* WISHLIST HEART */}
               <button 
-                className="w-7 h-7 rounded-full bg-white hover:bg-[#DE9088]/10 text-[#2D150F]/60 hover:text-[#DE9088] transition-all flex items-center justify-center border border-[#E8DDD7]/70 shrink-0 active:scale-90"
+                className="w-7 h-7 rounded-full bg-[#1C0D0A]/80 hover:bg-[#DE9088]/20 text-[#FFFDFB] hover:text-[#DE9088] transition-all flex items-center justify-center border border-white/10 shrink-0 active:scale-90"
                 onClick={(e) => {
                   e.stopPropagation();
                   playBtnTap();
@@ -141,20 +141,20 @@ export function ProductCard({ product }: { product: Product }) {
             {/* Main row layout (Rating & Heart are displayed inline only on desktop) */}
             <div className="flex items-center justify-between gap-1.5 sm:gap-2.5 w-full">
               {/* Title layout using fluid typography and clamp */}
-              <h4 className="text-[clamp(11px,3.8vw,18px)] font-display font-black text-[#2D150F] flex-grow text-left leading-tight line-clamp-1 group-hover:text-amber-800 transition-colors truncate">
+              <h4 className="text-[clamp(11px,3.8vw,18px)] font-display font-black text-[#FFFDFB] flex-grow text-left leading-tight line-clamp-1 group-hover:text-[#DFB15B] transition-colors truncate">
                 {product.name}
               </h4>
 
               {/* Rating badge & heart button for tablet & desktop (hidden on mobile) */}
               <div className="hidden sm:flex items-center gap-2 shrink-0">
-                <div className="flex items-center gap-1 bg-[#FAF7F5] border border-[#E8DDD7] px-2.5 py-1.5 rounded-2xl shadow-sm shrink-0">
+                <div className="flex items-center gap-1 bg-[#1C0D0A]/70 border border-white/10 px-2.5 py-1.5 rounded-2xl shadow-sm shrink-0">
                   <Star className="w-3 h-3 fill-[#DFB15B] text-[#DFB15B]" />
-                  <span className="text-[10px] font-black text-[#2D150F]">4.9</span>
-                  <span className="text-[7px] font-black tracking-normal text-[#3B1F17]/50 uppercase">({product.reviewsCount || 42})</span>
+                  <span className="text-[10px] font-black text-[#FFFDFB]">4.9</span>
+                  <span className="text-[7px] font-black tracking-normal text-[#FFFDFB]/50 uppercase">({product.reviewsCount || 42})</span>
                 </div>
 
                 <button 
-                  className="w-8 h-8 rounded-full bg-white hover:bg-[#DE9088]/10 text-[#2D150F]/60 hover:text-[#DE9088] transition-all duration-300 flex items-center justify-center border border-[#E8DDD7]/70 shrink-0 active:scale-90"
+                  className="w-8 h-8 rounded-full bg-[#1C0D0A]/70 hover:bg-[#DE9088]/20 text-[#FFFDFB] hover:text-[#DE9088] transition-all duration-300 flex items-center justify-center border border-white/10 shrink-0 active:scale-90"
                   onClick={(e) => {
                     e.stopPropagation();
                     playBtnTap();
@@ -169,18 +169,18 @@ export function ProductCard({ product }: { product: Product }) {
 
           {/* Separation Line with central gold diamond ornament */}
           <div className="flex items-center justify-center my-2 sm:my-3 w-full">
-            <div className="h-[1px] bg-[#E8DDD7]/70 flex-grow" />
+            <div className="h-[1px] bg-white/10 flex-grow" />
             <Sparkle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#DFB15B] mx-1.5 sm:mx-2 animate-spin-slow shrink-0" />
-            <div className="h-[1px] bg-[#E8DDD7]/70 flex-grow" />
+            <div className="h-[1px] bg-white/10 flex-grow" />
           </div>
 
           {/* Description */}
-          <p className="text-center text-[#2D150F]/75 text-[9px] xs:text-[10px] sm:text-xs leading-relaxed font-semibold italic line-clamp-2 min-h-[24px] xs:min-h-[28px] sm:min-h-[32px] w-full px-0.5">
+          <p className="text-center text-white/80 text-[10px] sm:text-xs leading-relaxed font-semibold italic line-clamp-2 min-h-[24px] xs:min-h-[28px] sm:min-h-[32px] w-full px-0.5">
             {product.description}
           </p>
 
           {/* Custom micro boundary lines */}
-          <div className="h-[1px] bg-[#E8DDD7]/40 my-2 sm:my-3 w-full" />
+          <div className="h-[1px] bg-white/5 my-2 sm:my-3 w-full" />
         </div>
 
         {/* Pricing, Personalise and Direct Buy Buttons */}
@@ -188,9 +188,9 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="flex items-center justify-between gap-1 sm:gap-4 w-full">
             {/* Price section */}
             <div className="text-left shrink-0">
-              <span className="text-[7px] xs:text-[8px] sm:text-[9px] font-black text-[#3B1F17]/55 uppercase tracking-[0.12em] xs:tracking-[0.25em] block leading-none mb-0.5">Starting from</span>
+              <span className="text-[7px] xs:text-[8px] sm:text-[9px] font-black text-zinc-400 uppercase tracking-[0.12em] xs:tracking-[0.25em] block leading-none mb-0.5">Starting from</span>
               <div className="flex items-center gap-0.5 xs:gap-1">
-                <span className="text-[clamp(14px,4.5vw,24px)] font-serif font-black text-amber-900 italic tracking-tighter leading-none">
+                <span className="text-[clamp(14px,4.5vw,24px)] font-serif font-black text-[#DFB15B] italic tracking-tighter leading-none">
                   ₹{product.price}
                 </span>
                 <Sparkle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#DE9088] animate-pulse shrink-0" />
@@ -204,7 +204,7 @@ export function ProductCard({ product }: { product: Product }) {
                 playSlidePop();
                 setIsExpanded(true);
               }}
-              className="h-7 xs:h-8 sm:h-10 px-2 sm:px-4 rounded-full bg-gradient-to-r from-[#3B1F17] to-[#1E0D08] hover:from-[#DE9088] hover:to-[#cc7a74] text-amber-100 hover:text-white border border-[#DFB15B]/30 font-black text-[7px] xs:text-[8px] sm:text-[9px] uppercase tracking-wider transition-all duration-300 flex items-center gap-1 shadow-md hover:shadow-lg active:scale-95 shrink-0"
+              className="h-7 xs:h-8 sm:h-10 px-2 sm:px-4 rounded-full bg-gradient-to-r from-[#DFB15B] to-[#C99A43] hover:from-[#FFFDFB] hover:to-[#FFFDFB] text-black hover:text-[#2D150F] border border-[#DFB15B]/30 font-black text-[7px] xs:text-[8px] sm:text-[9px] uppercase tracking-wider transition-all duration-300 flex items-center gap-1 shadow-md hover:shadow-lg active:scale-95 shrink-0"
             >
               <span>Personalise</span>
               <ArrowRight className="w-2.5 sm:w-3 h-2.5 sm:h-3 shrink-0" />
@@ -220,7 +220,7 @@ export function ProductCard({ product }: { product: Product }) {
                 playSlidePop();
                 openDirectWeightSelector('add_to_cart');
               }}
-              className="flex-1 min-w-0 h-8 xs:h-9 sm:h-11 rounded-xl xs:rounded-2xl bg-white hover:bg-[#FAF7F5] text-[#2D150F] border border-[#2D150F] font-black text-[clamp(7px,1.8vw,10px)] uppercase tracking-tight xs:tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-sm active:scale-95"
+              className="flex-1 min-w-0 h-8 xs:h-9 sm:h-11 rounded-xl xs:rounded-2xl bg-white/5 hover:bg-white/10 text-white border border-white/20 font-black text-[clamp(7px,1.8vw,10px)] uppercase tracking-tight xs:tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-sm active:scale-95"
             >
               <ShoppingCart className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               <span className="truncate">Add to Cart</span>
@@ -233,23 +233,23 @@ export function ProductCard({ product }: { product: Product }) {
                 playSlidePop();
                 openDirectWeightSelector('buy_now');
               }}
-              className="flex-1 min-w-0 h-8 xs:h-9 sm:h-11 rounded-xl xs:rounded-2xl bg-gradient-to-r from-[#DFB15B] to-[#C99A43] hover:from-[#EABF73] hover:to-[#B68732] text-black font-black text-[clamp(7px,1.8vw,10px)] uppercase tracking-tight xs:tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-md active:scale-95"
+              className="flex-1 min-w-0 h-8 xs:h-9 sm:h-11 rounded-xl xs:rounded-2xl bg-gradient-to-r from-[#DE9088] to-[#cc7a74] hover:from-[#E4A49E] hover:to-[#DE9088] text-white font-black text-[clamp(7px,1.8vw,10px)] uppercase tracking-tight xs:tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-md active:scale-95"
             >
-              <span className="text-amber-950 font-black truncate">⚡ Buy Now</span>
+              <span className="font-black truncate">⚡ Buy Now</span>
             </button>
           </div>
 
           {/* Premium Quality Indicators Footer inside the card */}
-          <div className="grid grid-cols-3 gap-0.5 pt-2 sm:pt-3.5 border-t border-[#E8DDD7]/40 w-full text-center">
-            <div className="flex items-center justify-center gap-0.5 xs:gap-1 text-[6px] xs:text-[7px] md:text-[8px] font-black text-[#2D150F]/55 uppercase tracking-tight md:tracking-wider">
+          <div className="grid grid-cols-3 gap-0.5 pt-2 sm:pt-3.5 border-t border-white/10 w-full text-center">
+            <div className="flex items-center justify-center gap-0.5 xs:gap-1 text-[6px] xs:text-[7px] md:text-[8px] font-black text-zinc-400 uppercase tracking-tight md:tracking-wider">
               <span className="text-[#DE9088] text-[8px] md:text-sm">🛡️</span>
               <span className="truncate">Premium</span>
             </div>
-            <div className="flex items-center justify-center gap-0.5 xs:gap-1 text-[6px] xs:text-[7px] md:text-[8px] font-black text-[#2D150F]/55 uppercase tracking-tight md:tracking-wider border-x border-[#E8DDD7]/40 px-0.5">
+            <div className="flex items-center justify-center gap-0.5 xs:gap-1 text-[6px] xs:text-[7px] md:text-[8px] font-black text-zinc-400 uppercase tracking-tight md:tracking-wider border-x border-white/10 px-0.5">
               <span className="text-[#DE9088] text-[8px] md:text-sm">🍰</span>
               <span className="truncate">Fresh</span>
             </div>
-            <div className="flex items-center justify-center gap-0.5 xs:gap-1 text-[6px] xs:text-[7px] md:text-[8px] font-black text-[#2D150F]/55 uppercase tracking-tight md:tracking-wider">
+            <div className="flex items-center justify-center gap-0.5 xs:gap-1 text-[6px] xs:text-[7px] md:text-[8px] font-black text-zinc-400 uppercase tracking-tight md:tracking-wider">
               <span className="text-[#DE9088] text-[8px] md:text-sm">🚚</span>
               <span className="truncate">Fast Delv</span>
             </div>
@@ -264,18 +264,18 @@ export function ProductCard({ product }: { product: Product }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: "100%" }}
               transition={{ type: "spring", stiffness: 350, damping: 24 }}
-              className="absolute inset-0 bg-[#FFFDFB] z-30 p-3 xs:p-4 md:p-5 flex flex-col justify-between rounded-[20px] xs:rounded-[32px] md:rounded-[44px] border-2 border-[#DE9088]/60 shadow-[0_-15px_40px_rgba(45,21,15,0.15)]"
+              className="absolute inset-0 bg-[#25120E]/95 backdrop-blur-2xl z-30 p-3 xs:p-4 md:p-5 flex flex-col justify-between rounded-[20px] xs:rounded-[32px] md:rounded-[44px] border border-[#DFB15B]/40 shadow-[0_-15px_40px_rgba(0,0,0,0.6)]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="space-y-4">
                 {/* Header inside overlay */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase font-black tracking-[0.2em] text-[#DE9088]">
+                  <span className="text-[9px] uppercase font-black tracking-[0.2em] text-[#DFB15B]">
                     Select Cake Weight
                   </span>
                   <button 
                     onClick={(e) => { e.stopPropagation(); playSlidePop(); setIsWeightSelecting(false); }}
-                    className="w-7 h-7 rounded-full bg-[#FAF7F5] hover:bg-[#DE9088]/15 border border-[#E8DDD7] text-[#2D150F] flex items-center justify-center transition-all"
+                    className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white flex items-center justify-center transition-all"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -283,8 +283,8 @@ export function ProductCard({ product }: { product: Product }) {
 
                 {/* Product preview line */}
                 <div className="text-left space-y-0.5">
-                  <p className="text-xs font-black text-[#2D150F] truncate">{product.name}</p>
-                  <p className="text-[10px] text-emerald-600 font-bold block">✓ Handcrafted Eggless Available</p>
+                  <p className="text-xs font-black text-white truncate">{product.name}</p>
+                  <p className="text-[10px] text-emerald-400 font-bold block">✓ Handcrafted Eggless Available</p>
                 </div>
 
                 {/* Weight Options Grid */}
@@ -299,12 +299,12 @@ export function ProductCard({ product }: { product: Product }) {
                       }}
                       className={`py-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center ${
                         selectedWeight === weight 
-                          ? 'bg-[#2D150F] text-white border-[#2D150F] shadow-md font-black scale-105' 
-                          : 'bg-[#FAF7F5] text-[#2D150F]/70 border-[#E8DDD7]/70 hover:bg-[#DE9088]/5'
+                          ? 'bg-[#DFB15B] text-black border-[#DFB15B] shadow-md font-black scale-105' 
+                          : 'bg-white/5 text-zinc-300 border-white/10 hover:bg-[#DE9088]/10'
                       }`}
                     >
                       <span className="text-xs font-black tracking-tighter">{weight} KG</span>
-                      <span className="text-[7px] font-black uppercase tracking-wider opacity-60">
+                      <span className={`text-[7px] font-black uppercase tracking-wider ${selectedWeight === weight ? 'text-amber-950 opacity-100' : 'opacity-60'}`}>
                         {weight === 0.5 ? 'Classic' : weight === 1.0 ? 'Premium' : weight === 2.0 ? 'Party' : 'Grand'}
                       </span>
                     </button>
@@ -314,16 +314,16 @@ export function ProductCard({ product }: { product: Product }) {
                 {/* Pure vegetarian switch options */}
                 <button
                   onClick={(e) => { e.stopPropagation(); playBtnTap(); setIsEggless(!isEggless); }}
-                  className="w-full flex items-center justify-between bg-[#FAF7F5] hover:bg-[#DE9088]/5 border border-[#E8DDD7]/60 px-3 py-2.5 rounded-xl text-left transition-colors"
+                  className="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-2.5 rounded-xl text-left transition-colors"
                 >
                   <div>
-                    <p className="text-[7px] font-black text-[#2D150F]/45 uppercase tracking-widest leading-none">Dietary Choice</p>
-                    <p className="text-[10px] font-black text-[#2D150F] mt-0.5">{isEggless ? '100% Chef Eggless' : 'Vegetarian Only'}</p>
+                    <p className="text-[7px] font-black text-zinc-400 uppercase tracking-widest leading-none">Dietary Choice</p>
+                    <p className="text-[10px] font-black text-white mt-0.5">{isEggless ? '100% Chef Eggless' : 'Vegetarian Only'}</p>
                   </div>
                   <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider transition-all ${
                     isEggless 
                       ? 'bg-emerald-600 text-white shadow-sm' 
-                      : 'bg-white text-[#2D150F]/50 border border-[#E8DDD7]'
+                      : 'bg-white/5 text-zinc-300 border border-white/10'
                   }`}>
                     {isEggless ? '✓ Active Eggless' : 'Normal Vegetarian'}
                   </span>
@@ -331,14 +331,14 @@ export function ProductCard({ product }: { product: Product }) {
               </div>
 
               {/* Price & Confirm action */}
-              <div className="pt-3 border-t border-[#E8DDD7]/55 flex items-center justify-between gap-2.5">
+              <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2.5">
                 <div className="text-left">
-                  <span className="text-[8px] font-black text-[#3B1F17]/50 uppercase tracking-widest block leading-none mb-0.5">Calculated Rate</span>
+                  <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest block leading-none mb-0.5">Calculated Rate</span>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-serif font-black text-amber-950 italic">
+                    <span className="text-lg font-serif font-black text-[#DFB15B] italic">
                       ₹{calculatedPrice}
                     </span>
-                    <span className="text-[8px] font-black text-[#2D150F]/50 uppercase">
+                    <span className="text-[8px] font-black text-zinc-400 uppercase">
                       ({selectedWeight} KG)
                     </span>
                   </div>
@@ -349,7 +349,7 @@ export function ProductCard({ product }: { product: Product }) {
                   className={`flex-grow h-11 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 text-white ${
                     pendingAction === 'buy_now' 
                       ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' 
-                      : 'bg-[#2D150F] hover:bg-[#DE9088]'
+                      : 'bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-black hover:opacity-90'
                   }`}
                 >
                   {pendingAction === 'buy_now' ? '⚡ Buy Now' : '✓ Add To Basket'}

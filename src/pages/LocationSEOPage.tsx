@@ -279,6 +279,198 @@ const LOCATION_DATA_MAP: Record<string, LocationDetails> = {
   }
 };
 
+export function generateDynamicSEO(slug: string): LocationDetails {
+  const cleanSlug = slug.toLowerCase();
+
+  let city = 'Faridabad & Delhi NCR';
+  let title = 'Premium Artisan Cakes Online Home Delivery';
+  let description = 'Order 100% vegetarian, eggless designer cakes, cupcakes, and chocolate truffles online at Cake Urban. Fast home delivery within minutes.';
+  let keywords = `${slug.replace(/-/g, ' ')}, cake delivery, online cake shop, eggless cakes near me`;
+  let heroText = 'Artisanal Cakes Crafted with Passion';
+  let subText = 'Delivering fresh cream cakes, customized celebration creations, and premium bento options to your door with temperature-controlled precision.';
+  let deliveryTime = '30-45 minutes rapid transit';
+  let charge = 'Free home delivery for orders above ₹499';
+  
+  let faqs = [
+    { q: "What makes Cake Urban different from normal bakeries?", a: "We operate dedicated 100% pure vegetarian-certified ovens using real gourmet ingredients like Belgian chocolate and Madagascar vanilla. No cheap synthetic gels or artificial fats." },
+    { q: "Do you offer safe contactless delivery?", a: "Yes, our team is certified in health-safe transits. All orders are moved in temperature-regulated containers to avoid cream melts." },
+    { q: "Can I customize message plates and shapes?", a: "Absolutely! You can upload custom layouts in our Custom Studio or request custom plates directly during ordering." }
+  ];
+
+  // Specific dynamic rules based on slug words:
+  if (cleanSlug.includes('sector-15')) {
+    city = 'Sector 15 Faridabad';
+  } else if (cleanSlug.includes('sector-16')) {
+    city = 'Sector 16 Faridabad';
+  } else if (cleanSlug.includes('sector-21')) {
+    city = 'Sector 21 Faridabad';
+  } else if (cleanSlug.includes('sector-28')) {
+    city = 'Sector 28 Faridabad';
+  } else if (cleanSlug.includes('sector-31')) {
+    city = 'Sector 31 Faridabad';
+  } else if (cleanSlug.includes('sector-37')) {
+    city = 'Sector 37 Faridabad';
+  } else if (cleanSlug.includes('sector-46')) {
+    city = 'Sector 46 Faridabad';
+  } else if (cleanSlug.includes('greenfield')) {
+    city = 'Greenfield Colony Faridabad';
+  } else if (cleanSlug.includes('nit-faridabad') || cleanSlug.includes('nit')) {
+    city = 'NIT Faridabad';
+  } else if (cleanSlug.includes('greater-faridabad')) {
+    city = 'Greater Faridabad';
+  } else if (cleanSlug.includes('surajkund')) {
+    city = 'Surajkund Faridabad';
+  } else if (cleanSlug.includes('charmwood')) {
+    city = 'Charmwood Faridabad';
+  } else if (cleanSlug.includes('dwarka')) {
+    city = 'Dwarka, Delhi';
+  } else if (cleanSlug.includes('south-delhi')) {
+    city = 'South Delhi';
+  } else if (cleanSlug.includes('noida-sector-15')) {
+    city = 'Sector 15 Noida';
+  } else if (cleanSlug.includes('noida-sector-18')) {
+    city = 'Sector 18 Noida';
+  } else if (cleanSlug.includes('noida-sector-62')) {
+    city = 'Sector 62 Noida';
+  } else if (cleanSlug.includes('dlf-phase')) {
+    const phaseMatch = cleanSlug.match(/phase-(\d+)/);
+    city = `DLF Phase ${phaseMatch ? phaseMatch[1] : '1-5'} Gurgaon`;
+  } else if (cleanSlug.includes('golf-course')) {
+    city = 'Golf Course Road Gurgaon';
+  } else if (cleanSlug.includes('faridabad')) {
+    city = 'Faridabad';
+  } else if (cleanSlug.includes('delhi')) {
+    city = 'Delhi';
+  } else if (cleanSlug.includes('noida')) {
+    city = 'Noida';
+  } else if (cleanSlug.includes('gurgaon') || cleanSlug.includes('gurugram')) {
+    city = 'Gurgaon';
+  }
+
+  // Detect Flavors
+  if (cleanSlug.includes('chocolate')) {
+    title = `Order Rich Belgian Chocolate Cakes in ${city} | Cake Urban`;
+    heroText = `Premium Chocolate Truffle & Fudge Cakes in ${city}`;
+    subText = `Indulge in our exquisite layers of premium Belgian chocolate ganache, moist dark cocoa bakes, and velvety chocolate curls.`;
+    description = `Order the most premium 100% vegetarian Belgian chocolate cakes online in ${city}. Rapid 30-min home delivery, fresh raw dairy cream guaranteed.`;
+    faqs[0] = { q: "Do you use real dark Belgian chocolate?", a: "Yes, we exclusively work with couverture dark Belgian chocolate with 54.5% cocoa solids to achieve a rich, premium flavor profile." };
+  } else if (cleanSlug.includes('red-velvet')) {
+    title = `Luxurious Red Velvet Cakes Delivery in ${city} | Cream Cheese Frosting`;
+    heroText = `Double-Whipped Red Velvet Delights in ${city}`;
+    subText = `Experience the silky textures of gourmet red velvet crumbs combined beautifully with our signature premium cream cheese frosting.`;
+    description = `Shop handcrafted eggless Red Velvet cakes in ${city}. Infused with genuine cream cheese frosting and rich artisan design touches.`;
+    faqs[0] = { q: "Is the frosting real cream cheese?", a: "Absolutely! We do not use cheap artificial mock-cream. Our frosting is whipped with genuine artisan dairy cream cheese." };
+  } else if (cleanSlug.includes('black-forest')) {
+    title = `Classic Creamy Black Forest Cake Delivery in ${city}`;
+    heroText = `Traditional Premium Black Forest in ${city}`;
+    subText = `Layers of super-moist chocolate sponge, tart dark cherries, and fresh dairy whipped cream, finished with premium chocolate flakes.`;
+  } else if (cleanSlug.includes('pineapple')) {
+    title = `Fresh Juicy Pineapple Cakes Online in ${city} | Cake Urban`;
+    heroText = `Signature Sunshine Pineapple Cakes in ${city}`;
+    subText = `Whipped cream layered with organic caramelized pineapple chunks, vanilla-infused sponge, and sweet glazed cherries.`;
+  } else if (cleanSlug.includes('butterscotch')) {
+    title = `Crunchy Golden Butterscotch Cakes Delivery in ${city}`;
+    heroText = `Premium Handcrafted Butterscotch in ${city}`;
+    subText = `Symphony of brown sugar caramel, light butterscotch sponge, and homemade crunchy cashew praline elements.`;
+  } else if (cleanSlug.includes('fruit')) {
+    title = `Healthy Fresh Seasonal Fruit Cakes in ${city}`;
+    heroText = `Gourmet Orchards Fresh Fruit Cakes in ${city}`;
+    subText = `Lush layers of Madagascar vanilla cream loaded with hand-cut kiwi, apples, grapes, plums, orange segments, and sweet berries.`;
+  } else if (cleanSlug.includes('vanilla')) {
+    title = `Premium Madagascar Vanilla Bean Cakes in ${city}`;
+    heroText = `Pure Vanilla Bean Masterpieces in ${city}`;
+    subText = `Experience vanilla the way nature intended! Crafted using premium organic vanilla bean caviar and super light whipped sponge.`;
+  } else if (cleanSlug.includes('strawberry')) {
+    title = `Sweet Summer Strawberry Cakes in ${city} | Cake Urban`;
+    heroText = `Fragrant Strawberry Cream Cakes in ${city}`;
+    subText = `A light, sweet escape layered with home-stewed organic strawberry compote and freshly whipped light dairy cream.`;
+  }
+  
+  // Detect Occasions
+  else if (cleanSlug.includes('birthday')) {
+    title = `Best Birthday Cakes Online Delivery in ${city} | 100% Eggless`;
+    heroText = `Make Birthdays Brilliant inside ${city}`;
+    subText = `Discover our range of custom birthday creations, personalized photo frames, cute mini bento boxes, and luxury tiered showstoppers.`;
+    description = `Order delicious, pure eggless birthday cakes online in ${city} with rapid home delivery. Complimentary candles, matches, and designer wish knife.`;
+    faqs[1] = { q: "Do you provide birthday packages?", a: "Yes! Every birthday cake receives our luxury curation kit (premium gold-lined cake board, complimentary candles, matchbox, and a premium designer cake knife)." };
+  } else if (cleanSlug.includes('anniversary')) {
+    title = `Elegant Wedding Anniversary Cakes in ${city} | Cake Urban`;
+    heroText = `Bespoke Romantic Anniversary Cakes in ${city}`;
+    subText = `Celebrate your beautiful milestone with romantic custom silhouettes, rose-gold blush decorations, and rich double-cream layers.`;
+    description = `Premium anniversary bakes in ${city}. Beautifully hand-creamed red velvet, rich chocolate truffles, and custom tier arrangements for a lovely night.`;
+  } else if (cleanSlug.includes('wedding')) {
+    title = `Bespoke Multi-Tiered Wedding Cakes in ${city} | Designer Studio`;
+    heroText = `Your Dream Wedding Cake Designed for ${city}`;
+    subText = `Collaborate with our Head Pastry Chef to build spectacular tiered centerpiece monuments decorated with handcrafted sugar flowers.`;
+    deliveryTime = 'Requires 24-48 hours lead time';
+  } else if (cleanSlug.includes('engagement') || cleanSlug.includes('roka')) {
+    title = `Customized Engagement & Roka Ceremony Cakes in ${city}`;
+    heroText = `Elegant Engagement Cake Art in ${city}`;
+    subText = `Aesthetic modern layouts, premium gold-leaf foliage wrappers, and customizable single or double-tier structures.`;
+  } else if (cleanSlug.includes('baby-shower')) {
+    title = `Delicious Baby Shower Theme Cakes in ${city} | 100% Vegetarian`;
+    heroText = `Welcoming Little Miracles inside ${city}`;
+    subText = `Super cute butter-cream designs, pastel stencils, teddy bears, and edible clouds customizable in baby blue, pink, or neutral mint colors.`;
+  } else if (cleanSlug.includes('retirement') || cleanSlug.includes('farewell')) {
+    title = `Warm Farewell & Retirement Celebration Cakes in ${city}`;
+    heroText = `Honoring Beautiful Journeys in ${city}`;
+    subText = `Thoughtful, customizable book-shapes, suitcase designs, or sweet custom-piped wishes commemorating decades of success.`;
+  } else if (cleanSlug.includes('corporate')) {
+    title = `Corporate Events & Milestone Branding Cakes in ${city}`;
+    heroText = `Premium Branded Corporate Bakes in ${city}`;
+    subText = `Sleek high-resolution edible company logos, matching customized cupcakes, and customized gourmet chocolate presentation trays.`;
+  }
+
+  // Detect Delivery Options
+  else if (cleanSlug.includes('midnight')) {
+    title = `Midnight Cake Delivery in ${city} | Safe Contactless Online Cake Order`;
+    heroText = `Surprise announcements at Midnight in ${city}`;
+    subText = `Hand-delivery scheduled carefully between 11:30 PM & 12:00 midnight to trigger a beautiful surprise at the start of their special day.`;
+    deliveryTime = 'Guaranteed 11:30 PM - 12:00 AM Slot';
+    faqs[1] = { q: "How do you guarantee prompt midnight delivery?", a: "We run a dedicated midnight delivery fleet that operates with absolute priority to hand over your order precisely within the 11:30 PM to midnight window." };
+  } else if (cleanSlug.includes('same-day')) {
+    title = `Same Day Eggless Cake Delivery in ${city} | Freshly Baked 30-Mins`;
+    heroText = `Fresh Oven-to-Door Cakes in ${city} Today`;
+    subText = `Spontaneous celebration? Don't worry. Choose our master-chef favorites and have a warm, fresh artisan cake doorstep-delivered in under 45 mins.`;
+  } else if (cleanSlug.includes('express')) {
+    title = `Express Online Cake Delivery in ${city} | Cake Urban`;
+    heroText = `Lightning Fast Express Baking in ${city}`;
+    subText = `Skipped the calendar check? Our hyper-local dispatch gets fresh cream layers baked, decorated, and delivered to you within minutes.`;
+  } else if (cleanSlug.includes('near-me')) {
+    title = `Best Cake Shop Near Me in ${city} | Cake Urban 100% Veg`;
+    heroText = `Your Neighborhood's Best Quality Cake Corner`;
+    subText = `Stop looking for local mediocre sweet stands. Indulge in certified eggless luxury baking utilizing pure cream and rich premium ingredients near you.`;
+  }
+
+  // General SEO fallback updates:
+  else if (cleanSlug.includes('best-cake-shop') || cleanSlug.includes('best-cake-in')) {
+    title = `Best Cake Shop in ${city} | Order 100% Eggless Gourmet Cakes`;
+    heroText = `The Master Baker Elite in ${city}`;
+    subText = `Acclaimed for our hand-craftsmanship, premium couverture chocolates, separate pure veg ovens, and prompt contactless home delivery.`;
+  } else if (cleanSlug.includes('online-cake') || cleanSlug.includes('cake-delivery')) {
+    title = `Online Eggless Cake Delivery in ${city} | Gourmet Cakes Order`;
+    heroText = `Online Cake Delivery to your Door in ${city}`;
+    subText = `Choose from an array of premium, designer, photo, and customized cream cakes baked inside local pure vegetarian kitchens.`;
+  } else if (cleanSlug.includes('eggless-cake')) {
+    title = `100% Pure Vegetarian Eggless Cakes in ${city} | Cake Urban`;
+    heroText = `Certified 100% Pure Eggless Cakes inside ${city}`;
+    subText = `Prepared inside our separate certified sanitised pure-vegetarian enclaves. Double-checked to satisfy religious and dietary guidelines.`;
+    faqs[1] = { q: "Is the kitchen strictly pure-veg?", a: "Yes, our baking spaces are thoroughly 100% eggless. No eggs, egg derivatives, or synthetic animal gelatin are allowed in our master bakery." };
+  }
+
+  return {
+    city,
+    title,
+    description,
+    keywords,
+    heroText,
+    subText,
+    deliveryTime,
+    charge,
+    faqs
+  };
+}
+
 export default function LocationSEOPage() {
   const { pathName } = useParams();
   const location = useLocation();
@@ -286,7 +478,7 @@ export default function LocationSEOPage() {
   
   // Resolve which config to load
   const routeKey = location.pathname.replace(/^\//, '');
-  const data = LOCATION_DATA_MAP[routeKey] || LOCATION_DATA_MAP['bakery-in-faridabad'];
+  const data = LOCATION_DATA_MAP[routeKey] || generateDynamicSEO(routeKey);
 
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 

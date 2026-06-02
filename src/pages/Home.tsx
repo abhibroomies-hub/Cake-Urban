@@ -449,7 +449,7 @@ export default function Home() {
       </section>
 
       {/* DYNAMIC SHINY WAVES LAYER SECTION DIVIDER (Liquid brown gold flowing chocolate theme) */}
-      <div className="relative h-12 w-full overflow-hidden pointer-events-none z-10 bg-[#FAF7F5]">
+      <div className="relative h-12 w-full overflow-hidden pointer-events-none z-10 bg-transparent">
         <svg viewBox="0 0 1440 120" className="absolute top-0 left-0 w-full h-24 preserve-3d" preserveAspectRatio="none">
           <path 
             fill="url(#liquid-chocolate)" 
@@ -459,7 +459,7 @@ export default function Home() {
           <defs>
             <linearGradient id="liquid-chocolate" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#1C0A05" />
-              <stop offset="100%" stopColor="#E6C2AC" stopOpacity="0" />
+              <stop offset="100%" stopColor="#2D150F" stopOpacity="0" />
             </linearGradient>
           </defs>
         </svg>
@@ -470,20 +470,20 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <button 
             onClick={() => setSearchOpen(true)}
-            className="w-full bg-white/95 backdrop-blur-md rounded-[24px] sm:rounded-[36px] p-4 sm:p-5 flex items-center justify-between shadow-[0_20px_45px_rgba(45,21,15,0.08)] border border-[#E8DDD7] hover:border-[#DE9088] transition-all group"
+            className="w-full bg-[#26130F]/90 backdrop-blur-md rounded-[24px] sm:rounded-[36px] p-4 sm:p-5 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 transition-all group text-white"
           >
             <div className="flex items-center gap-4 text-left">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#DE9088]/15 flex items-center justify-center text-[#DE9088] group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-105 transition-transform">
                 <Search className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div>
-                <p className="text-[10px] xs:text-[11px] sm:text-xs font-black uppercase tracking-widest text-[#2D150F]">Looking for a specific cake?</p>
-                <p className="text-[9px] xs:text-[10px] sm:text-sm text-[#3B1F17]/50 font-medium italic">Try "Chocolate Truffle Extra Creamy Eggless" or "Rainbow Smash Cake"</p>
+                <p className="text-[10px] xs:text-[11px] sm:text-xs font-black uppercase tracking-widest text-white">Looking for a specific cake?</p>
+                <p className="text-[9px] xs:text-[10px] sm:text-sm text-[#FFFDFB]/60 font-medium italic">Try "Chocolate Truffle Extra Creamy Eggless" or "Rainbow Smash Cake"</p>
               </div>
             </div>
-            <div className="hidden sm:flex items-center gap-2 bg-[#2D150F] text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#DE9088] transition-colors shadow-md">
-              <span>Ask AI Search</span>
-              <ArrowRight className="w-4 h-4 ml-1" />
+            <div className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-black px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:opacity-95 transition-opacity shadow-md">
+              <span className="font-black text-amber-950">Ask AI Search</span>
+              <ArrowRight className="w-4 h-4 ml-1 text-amber-950" />
             </div>
           </button>
         </div>
@@ -627,32 +627,32 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center space-y-3"
           >
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#DE9088]">Curator Choice</span>
-            <h3 className="text-2xl sm:text-4xl font-display font-black text-[#2D150F]">Why Cake Urban Faridabad?</h3>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#DFB15B]">Curator Choice</span>
+            <h3 className="text-2xl sm:text-4xl font-display font-black text-white">Why Cake Urban Faridabad?</h3>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* CARD 1: THE CAKE ARTISANRY */}
             <motion.div 
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-gradient-to-b from-[#FFFDFB] via-[#FAF3EC] to-[#FAF5F0] rounded-[40px] p-8 border-2 border-[#DFB15B]/30 hover:border-[#DFB15B] shadow-[0_12px_45px_rgba(45,21,15,0.04)] hover:shadow-[0_30px_70px_rgba(45,21,15,0.15)] flex flex-col justify-between group transition-all duration-500"
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
             >
               <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-amber-950/10 flex items-center justify-center text-amber-900 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
                   <Cake className="w-8 h-8" />
                 </div>
                 <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-[#2D150F]">100% Chef Curated</h4>
-                  <p className="text-xs text-[#2D150F]/75 leading-relaxed font-semibold italic">
+                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">100% Chef Curated</h4>
+                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
                     Every frosting stroke is perfected. Chef-guided, real chocolate truffles, fresh strawberries, and luxury grade dairy.
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-[#DFB15B]/20 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-amber-900">Pure Chocolate & Fruit</span>
+              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Pure Chocolate & Fruit</span>
                 <Sparkles className="w-4 h-4 text-[#DE9088] animate-pulse" />
               </div>
             </motion.div>
@@ -663,21 +663,21 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="bg-gradient-to-b from-[#FFFDFB] via-[#FAF3EC] to-[#FAF5F0] rounded-[40px] p-8 border-2 border-[#DFB15B]/30 hover:border-[#DFB15B] shadow-[0_12px_45px_rgba(45,21,15,0.04)] hover:shadow-[0_30px_70px_rgba(45,21,15,0.15)] flex flex-col justify-between group transition-all duration-500"
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
             >
               <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-amber-950/10 flex items-center justify-center text-amber-900 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
                   <Clock className="w-8 h-8" />
                 </div>
                 <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-[#2D150F]">Midnight Surprise Slot</h4>
-                  <p className="text-xs text-[#2D150F]/75 leading-relaxed font-semibold italic">
+                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Midnight Surprise Slot</h4>
+                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
                     Delight those who matter most exactly when they turn a year older. Elite slot operations from 11:30 PM to midnight.
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-[#DFB15B]/20 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-amber-900">Midnight Enclaves</span>
+              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Midnight Enclaves</span>
                 <Truck className="w-4 h-4 text-[#DE9088] animate-bounce" />
               </div>
             </motion.div>
@@ -688,22 +688,47 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-gradient-to-b from-[#FFFDFB] via-[#FAF3EC] to-[#FAF5F0] rounded-[40px] p-8 border-2 border-[#DFB15B]/30 hover:border-[#DFB15B] shadow-[0_12px_45px_rgba(45,21,15,0.04)] hover:shadow-[0_30px_70px_rgba(45,21,15,0.15)] flex flex-col justify-between group transition-all duration-500"
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
             >
               <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-amber-950/10 flex items-center justify-center text-amber-900 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
                   <ChefHat className="w-8 h-8" />
                 </div>
                 <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-[#2D150F]">Creative Canvas Studio</h4>
-                  <p className="text-xs text-[#2D150F]/75 leading-relaxed font-semibold italic">
+                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Creative Canvas Studio</h4>
+                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
                     Have a digital reference? We accept reference designs and color swatches to paint custom buttercream masterworks.
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-[#DFB15B]/20 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DE9088]">Customizable Weights</span>
+              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Customizable Weights</span>
                 <ChevronRight className="w-4 h-4 text-[#DE9088] group-hover:translate-x-1 transition-transform" />
+              </div>
+            </motion.div>
+
+            {/* CARD 4: ARTISANAL LUXURY HAMPERS */}
+            <motion.div 
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+            >
+              <div className="space-y-6 text-left">
+                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <Gift className="w-8 h-8" />
+                </div>
+                <div className="space-y-3">
+                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Artisanal Gifting Hampers</h4>
+                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
+                    Deliver handcrafted chocolate crates, cookie trays, and custom balloons. Beautifully wrapped with luxury satin bows and personalized parchment.
+                  </p>
+                </div>
+              </div>
+              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Bespoke Box Curations</span>
+                <Sparkle className="w-4 h-4 text-[#DE9088] animate-spin" style={{ animationDuration: '3s' }} />
               </div>
             </motion.div>
           </div>
@@ -721,14 +746,14 @@ export default function Home() {
             <linearGradient id="shimmer-wave-gradient-2" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#1A0A06" />
               <stop offset="50%" stopColor="#DFB15B" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#FAF7F5" />
+              <stop offset="100%" stopColor="#240F0A" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
       {/* BESTSELLERS SECTION */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-[#FAF7F5]">
+      <section className="px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-transparent">
         <div className="max-w-7xl mx-auto animate-reveal">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
@@ -737,13 +762,13 @@ export default function Home() {
             className="text-center mb-16 space-y-4"
           >
             <div className="flex items-center justify-center gap-4">
-              <div className="h-px bg-[#E8DDD7] w-12 md:w-20" />
+              <div className="h-px bg-white/10 w-12 md:w-20" />
               <Heart className="w-4 h-4 text-[#DE9088] fill-[#DE9088]" />
-              <h3 className="text-3xl md:text-5xl font-display font-black text-[#2D150F] tracking-tight">Favorite BestSellers</h3>
+              <h3 className="text-3xl md:text-5xl font-display font-black text-white tracking-tight">Favorite BestSellers</h3>
               <Heart className="w-4 h-4 text-[#DE9088] fill-[#DE9088]" />
-              <div className="h-px bg-[#E8DDD7] w-12 md:w-20" />
+              <div className="h-px bg-white/10 w-12 md:w-20" />
             </div>
-            <p className="text-[#3B1F17]/50 text-xs sm:text-lg font-medium italic">
+            <p className="text-white/60 text-xs sm:text-lg font-medium italic">
               Indulge in Faridabad's absolute favorites. Baked fresh with pure goodness.
             </p>
           </motion.div>
@@ -751,7 +776,7 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[10px] sm:gap-6 md:gap-8">
             {loading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-[400px] rounded-[40px] bg-[#FAF7F5] animate-pulse" />
+                <div key={i} className="h-[400px] rounded-[40px] bg-[#2D150F]/45 animate-pulse" />
               ))
             ) : (
               featuredProducts.map((p) => (
@@ -763,7 +788,7 @@ export default function Home() {
       </section>
 
       {/* DELIVERABLE NCR ZONES & SEARCH OPTIMIZATION MAP - CRITICAL SEO ACCELERATOR */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-[#FAF7F5] border-t border-[#E8DDD7]/40 relative overflow-hidden">
+      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-transparent border-t border-white/5 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-[#cc7a74]/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto space-y-12 relative z-10">
           <motion.div 
@@ -772,9 +797,9 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center space-y-4"
           >
-            <span className="text-[10px] uppercase font-black tracking-[0.35em] text-[#DE9088] block">Google SEO & Delivery Map</span>
-            <h3 className="text-3xl md:text-5xl font-display font-black text-[#2D150F] tracking-tight">Our Elite Delivery Zones & Region Hubs</h3>
-            <p className="text-[#3B1F17]/50 max-w-lg mx-auto text-xs sm:text-base font-medium italic">
+            <span className="text-[10px] uppercase font-black tracking-[0.35em] text-[#DFB15B] block">Google SEO & Delivery Map</span>
+            <h3 className="text-3xl md:text-5xl font-display font-black text-white tracking-tight">Our Elite Delivery Zones & Region Hubs</h3>
+            <p className="text-white/60 max-w-lg mx-auto text-xs sm:text-base font-medium italic">
               Experience air-suspended, temperature-regulated same-day confections. Explore regional bakeries and custom studios near you across Delhi NCR.
             </p>
           </motion.div>
@@ -805,16 +830,16 @@ export default function Home() {
               <motion.div
                 key={idx}
                 whileHover={{ y: -6 }}
-                className="bg-white rounded-[32px] p-6 sm:p-8 border border-[#E8DDD7]/40 shadow-sm flex flex-col justify-between hover:shadow-xl transition-all duration-300 text-left"
+                className="bg-[#26130F]/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 border border-[#DFB15B]/25 shadow-lg flex flex-col justify-between hover:shadow-2xl hover:border-[#DFB15B]/80 hover:shadow-[0_20px_45px_rgba(223,177,91,0.15)] transition-all duration-300 text-left text-white"
               >
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-2xl bg-[#DE9088]/10 text-[#DE9088] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-[#DFB15B]/15 text-[#DFB15B] flex items-center justify-center">
                     <MapPin className="w-5 h-5" />
                   </div>
-                  <h4 className="text-base font-black text-[#2D150F]">{node.title}</h4>
-                  <p className="text-xs text-[#2D150F]/60 font-semibold italic leading-relaxed">{node.desc}</p>
+                  <h4 className="text-base font-black text-white">{node.title}</h4>
+                  <p className="text-xs text-zinc-300 font-semibold italic leading-relaxed">{node.desc}</p>
                 </div>
-                <Link to={node.link} className="mt-6 flex items-center gap-1 text-[10px] uppercase font-black tracking-widest text-[#DE9088] hover:text-[#2D150F] transition-colors font-sans">
+                <Link to={node.link} className="mt-6 flex items-center gap-1 text-[10px] uppercase font-black tracking-widest text-[#DFB15B] hover:text-white transition-colors font-sans">
                   <span>Explore Hub</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
@@ -823,9 +848,9 @@ export default function Home() {
           </div>
 
           {/* Master SEO Keywords cloud list */}
-          <div className="bg-white rounded-[40px] p-6 sm:p-10 border border-[#E8DDD7]/40 max-w-4xl mx-auto space-y-4 shadow-sm text-center">
-            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#DE9088] block">Our Confectionery Breadcrumbs</span>
-            <p className="text-[10px] text-[#2D150F]/50 leading-relaxed italic font-medium">
+          <div className="bg-[#1E0D0A]/90 backdrop-blur-md rounded-[40px] p-6 sm:p-10 border border-[#DFB15B]/25 max-w-4xl mx-auto space-y-4 shadow-lg text-center text-white">
+            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#DFB15B] block">Our Confectionery Breadcrumbs</span>
+            <p className="text-[10px] text-white/70 leading-relaxed italic font-medium">
               We specialize in: <strong>Custom cakes in Faridabad</strong> · <strong>Bestseller Red Velvet Pastry</strong> · Edible Photo Cakes Noida · Same Day Birthday Cakes Gurgaon · Pure Eggless Bakery Delhi NCR · French Macarons delivery · Belgian Chocolate Truffles · Pinata Smash Cakes · Double-Decker Wedding Tier cakes.
             </p>
           </div>
@@ -833,57 +858,57 @@ export default function Home() {
       </section>
 
       {/* ROCKET CONVERSION & LIVE TRUST TESTIMONIALS */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-gradient-to-b from-[#FAF7F5] to-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#DE9088]/5 rounded-full blur-3xl pointer-events-none" />
+      <section className="px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-transparent relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#DFB15B]/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           <div className="lg:col-span-12 xl:col-span-5 space-y-6 text-left">
-            <div className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+            <div className="inline-flex items-center gap-1.5 bg-emerald-400/15 text-emerald-400 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-500/25">
+              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
               <span>Verified 4.9★ Gastronomical Rank</span>
             </div>
             
-            <h3 className="text-3xl sm:text-5xl font-display font-black text-[#2D150F] tracking-tight leading-none">
+            <h3 className="text-3xl sm:text-5xl font-display font-black text-white tracking-tight leading-none">
               Loved by NCR's<br />
-              <span className="italic font-serif font-light text-[#DE9088]">Elite Connoisseurs</span>
+              <span className="italic font-serif font-light text-[#DFB15B]">Elite Connoisseurs</span>
             </h3>
 
-            <p className="text-xs sm:text-base text-[#3B1F17]/60 leading-relaxed font-semibold italic">
+            <p className="text-xs sm:text-base text-white/70 leading-relaxed font-semibold italic">
               From surprise corporate gatherings in Cyber City to sweet first birthday moments in Faridabad, over 14,200+ cakes have been shaped with pure organic dairy products and premium gourmet cocoa.
             </p>
 
             <div className="space-y-4 pt-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#FAF7F5] flex items-center justify-center text-[#DE9088]">
-                  <Star className="w-5 h-5 fill-[#DE9088]" />
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-[#DFB15B] border border-white/10">
+                  <Star className="w-5 h-5 fill-[#DFB15B]" />
                 </div>
                 <div>
-                  <p className="text-xs font-black text-[#2D150F] uppercase tracking-wide">14,200+ Delivered Masters</p>
-                  <p className="text-[10px] text-[#2D150F]/50 italic">Freshly dispatched & loved</p>
+                  <p className="text-xs font-black text-white uppercase tracking-wide">14,200+ Delivered Masters</p>
+                  <p className="text-[10px] text-zinc-400 italic">Freshly dispatched & loved</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#FAF7F5] flex items-center justify-center text-[#DE9088]">
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-[#DFB15B] border border-white/10">
                   <Clock className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-black text-[#2D150F] uppercase tracking-wide">Instant 30-Minute Dispatch</p>
-                  <p className="text-[10px] text-[#2D150F]/50 italic">For standard cakes in Faridabad enclaves</p>
+                  <p className="text-xs font-black text-white uppercase tracking-wide">Instant 30-Minute Dispatch</p>
+                  <p className="text-[10px] text-zinc-400 italic">For standard cakes in Faridabad enclaves</p>
                 </div>
               </div>
             </div>
 
             <div className="pt-6">
               <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
-                <Button className="h-14 px-8 rounded-2xl bg-[#2D150F] text-white hover:bg-[#DE9088] text-xs font-black uppercase tracking-widest shadow-xl flex items-center gap-2">
+                <Button className="h-14 px-8 rounded-2xl bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-black font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:opacity-90">
                   <span>Inquire with Chief Baker on WhatsApp</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-black" />
                 </Button>
               </a>
             </div>
           </div>
 
-          <div className="lg:col-span-12 xl:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
+          <div className="lg:col-span-12 xl:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 relative text-white">
             {[
               {
                 quote: "Absolutely pristine design! The Red Velvet cream cheese layer was moist and not overly sweet. Delivered right at 11:58 PM for the birthday launch in Faridabad.",
@@ -900,22 +925,22 @@ export default function Home() {
             ].map((feed, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-[36px] p-8 border border-[#E8DDD7]/40 shadow-sm text-left flex flex-col justify-between space-y-6"
+                className="bg-[#26130F]/90 backdrop-blur-xl rounded-[36px] p-8 border border-[#DFB15B]/25 shadow-lg text-left flex flex-col justify-between space-y-6 text-white"
               >
                 <div className="space-y-4">
-                  <div className="flex gap-1 text-amber-400">
+                  <div className="flex gap-1 text-[#DFB15B]">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
+                      <Star key={i} className="w-4 h-4 fill-current animate-pulse" />
                     ))}
                   </div>
-                  <p className="text-xs text-[#2D150F]/70 leading-relaxed font-semibold italic">"{feed.quote}"</p>
+                  <p className="text-xs text-zinc-200 leading-relaxed font-semibold italic">"{feed.quote}"</p>
                 </div>
-                <div className="pt-4 border-t border-[#FAF7F5] flex items-center justify-between">
+                <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                   <div>
-                    <h5 className="text-[11px] font-black uppercase tracking-wide text-[#2D150F]">{feed.author}</h5>
-                    <span className="text-[9px] text-[#2D150F]/50 font-medium italic">{feed.loc}</span>
+                    <h5 className="text-[11px] font-black uppercase tracking-wide text-white">{feed.author}</h5>
+                    <span className="text-[9px] text-zinc-400 font-medium italic">{feed.loc}</span>
                   </div>
-                  <span className="bg-[#DE9088]/10 text-[#cc7a74] px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-wider">{feed.dish}</span>
+                  <span className="bg-[#DFB15B]/15 text-[#DFB15B] px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-wider">{feed.dish}</span>
                 </div>
               </div>
             ))}

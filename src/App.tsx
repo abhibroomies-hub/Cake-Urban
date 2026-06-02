@@ -89,6 +89,9 @@ function AnimatedRoutes() {
         <Route path="/custom-cakes-noida" element={<LocationSEOPage />} />
         <Route path="/birthday-cakes-delhi" element={<LocationSEOPage />} />
         <Route path="/anniversary-cakes-faridabad" element={<LocationSEOPage />} />
+        
+        {/* Dynamic Catch-All Dynamic SEO page catcher for Occasion, Flavor, Delivery and Expansion Pages */}
+        <Route path="/:seoSlug" element={<LocationSEOPage />} />
       </Routes>
     </AnimatePresence>
   );

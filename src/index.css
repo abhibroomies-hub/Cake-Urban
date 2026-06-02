@@ -16,7 +16,7 @@
 
 @layer base {
   body {
-    @apply font-sans antialiased text-chocolate bg-[#F8F4F1] selection:bg-brand/20 selection:text-brand;
+    @apply font-sans antialiased text-[#FFFDFB] bg-[#140603] selection:bg-[#DFB15B]/30 selection:text-[#DFB15B];
     -webkit-font-smoothing: antialiased;
   }
 }
@@ -155,7 +155,7 @@
     @apply border-border outline-[#DFB15B]/40;
     }
   body {
-    @apply bg-[#F8F4F1] text-[#3B1F17] antialiased selection:bg-[#D89C95]/20 selection:text-[#D89C95];
+    @apply bg-[#140603] text-[#FFFDFB] antialiased selection:bg-[#DFB15B]/30 selection:text-[#DFB15B];
     -webkit-font-smoothing: antialiased;
     }
   html {
@@ -209,6 +209,15 @@
   }
 }
 
+@keyframes glossySheen {
+  0% {
+    transform: translateY(-100%) rotate(12deg);
+  }
+  30%, 100% {
+    transform: translateY(200%) rotate(12deg);
+  }
+}
+
 .animate-wave-slow {
   animation: waveSlow 32s ease-in-out infinite;
 }
@@ -219,4 +228,8 @@
 
 .animate-wave-third {
   animation: waveThird 28s ease-in-out infinite;
+}
+
+.animate-glossy-sheen {
+  animation: glossySheen 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }

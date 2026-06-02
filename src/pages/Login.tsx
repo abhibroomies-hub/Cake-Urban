@@ -134,9 +134,10 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     playBtnTap();
+    const cleanEmail = email.trim().toLowerCase();
     try {
       // 1. Try to check if this user exists in our encrypted offline localDB first
-      const validatedLocal = secureLocalDB.validateUser(email, password);
+      const validatedLocal = secureLocalDB.validateUser(cleanEmail, password);
       if (validatedLocal) {
         const localSession = {
           uid: validatedLocal.uid,
@@ -155,7 +156,7 @@ export default function Login() {
 
       // 2. Also check if this is an active local account in our Firestore first
       try {
-        const q = query(collection(db, 'users'), where('email', '==', email), limit(1));
+        const q = query(collection(db, 'users'), where('email', '==', cleanEmail), limit(1));
         const snap = await getDocs(q);
         if (!snap.empty) {
           const userDoc = snap.docs[0];
@@ -198,14 +199,14 @@ export default function Login() {
       }
 
       // 3. Fallback to Firebase authentication
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, cleanEmail, password);
       
       // Save in local encrypted DB for offline capabilities
       const curUser = auth.currentUser;
       if (curUser) {
         secureLocalDB.saveUser({
           uid: curUser.uid,
-          email: email,
+          email: cleanEmail,
           displayName: curUser.displayName || 'Artisan Collector',
           passwordHash: password,
           role: 'customer',
@@ -213,7 +214,7 @@ export default function Login() {
         });
         secureSetItem('cakeurban_local_user', {
           uid: curUser.uid,
-          email: email,
+          email: cleanEmail,
           displayName: curUser.displayName || 'Artisan Collector',
           role: 'customer'
         });
@@ -256,10 +257,11 @@ export default function Login() {
     setLoading(true);
     playBtnTap();
     
+    const cleanEmail = email.trim().toLowerCase();
     const localUid = `local_user_${Date.now()}`;
     const userProfile = {
       uid: localUid,
-      email: email,
+      email: cleanEmail,
       displayName: fullName,
       passwordHash: password,
       role: 'customer',
@@ -275,18 +277,18 @@ export default function Login() {
     secureLocalDB.saveUser(userProfile);
     secureSetItem('cakeurban_local_user', {
       uid: localUid,
-      email: email,
+      email: cleanEmail,
       displayName: fullName,
       role: 'customer'
     });
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, password);
       const user = userCredential.user;
 
       // Create/update Firestore User profile
       await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
+        email: cleanEmail,
         displayName: fullName,
         role: 'customer',
         createdAt: new Date().toISOString(),
@@ -304,7 +306,7 @@ export default function Login() {
       });
       secureSetItem('cakeurban_local_user', {
         uid: user.uid,
-        email: email,
+        email: cleanEmail,
         displayName: fullName,
         role: 'customer'
       });
@@ -318,7 +320,7 @@ export default function Login() {
       console.error("Firebase auth registration failed, fallback to local secure storage:", error);
       
       try {
-        const q = query(collection(db, 'users'), where('email', '==', email), limit(1));
+        const q = query(collection(db, 'users'), where('email', '==', cleanEmail), limit(1));
         const snap = await getDocs(q);
         if (!snap.empty) {
           toast.error("This email address is already verified!");
