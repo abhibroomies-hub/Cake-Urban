@@ -4,6 +4,7 @@ import cors from "cors";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -112,6 +113,95 @@ async function startServer() {
     }
   });
 
+  // AI-powered text specs builder to auto-populate add cake forms instantly
+  app.post("/api/seo/generate-specs", async (req, res) => {
+    const { prompt } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required to generate specs" });
+    }
+
+    try {
+      const model = "gemini-3.5-flash";
+      const systemInstruction = `
+        You are an expert AI master pâtissier and visual curator for "Cake Urban", an elite custom online bakery in Delhi NCR (operating in Faridabad, South Delhi, Noida, Gurgaon, Ghaziabad).
+        Your task is to take a short input description of a cake concept, like "chocolate truffle birthday cake" or "2 tier elegant gold wedding fondant sponge", and generate a complete, rich, ready-to-publish digital catalog profile.
+        All generated details must capture the highest premium boutique tone and suggest realistic luxurious Indian pricing in Rupees (A general range of ₹899 to ₹2999 depending on the tier/complexity).
+      `;
+
+      const instructionPrompt = `
+        Draft a comprehensive boutique product configuration profile based on this short description: "${prompt}".
+        
+        Provide:
+        1. A sophisticated productName
+        2. A realistic luxury price in INR (e.g. 1199, 1499, 1999) depending on tiers described
+        3. A premium descriptive copywriter-style product description detailing taste profile, layers, frosting textures, and styling details.
+        4. Matching categories (comma-separated, e.g. "Cakes, Premium Cakes, Birthday Cakes")
+        5. Matching flavors (comma-separated, e.g. "Belgian Dark Chocolate, Truffle fudge")
+        6. Ideal occasions (comma-separated, e.g. "Birthday, Anniversary, Celebration")
+        7. A highly optimized Google SEO Title tag
+        8. A clean URL slug
+        9. Alt text describing its physical visuals for image accessibility.
+        10. A compelling Google meta description (max 160 characters) with a luxury CTA.
+        11. An array of 10-15 high volume search keywords.
+        12. Raw Product structured LD-JSON schema details.
+        13. An irresistible boutique Instagram caption with hashtags.
+        14. Pinterest pin title and rich description.
+      `;
+
+      const response = await genAI.models.generateContent({
+        model,
+        contents: instructionPrompt,
+        config: {
+          systemInstruction,
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              productName: { type: Type.STRING },
+              price: { type: Type.NUMBER },
+              description: { type: Type.STRING },
+              categories: { type: Type.STRING },
+              flavors: { type: Type.STRING },
+              occasions: { type: Type.STRING },
+              seoTitle: { type: Type.STRING },
+              slug: { type: Type.STRING },
+              altText: { type: Type.STRING },
+              metaDescription: { type: Type.STRING },
+              keywords: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
+              },
+              structuredSchema: { type: Type.STRING },
+              instagramCaption: { type: Type.STRING },
+              pinterestPin: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type: Type.STRING },
+                  description: { type: Type.STRING }
+                }
+              }
+            },
+            required: [
+              "productName", "price", "description", "categories", "flavors", 
+              "occasions", "seoTitle", "slug", "altText", "metaDescription", 
+              "keywords", "structuredSchema", "instagramCaption", "pinterestPin"
+            ]
+          }
+        }
+      });
+
+      const resultText = response.text;
+      if (!resultText) {
+        throw new Error("No response received from Gemini engine");
+      }
+
+      res.json(JSON.parse(resultText));
+    } catch (error) {
+      console.error("AI Spec Generation Error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate spec sheet" });
+    }
+  });
+
   app.post("/api/search", async (req, res) => {
     const { query, products } = req.body;
     try {
@@ -147,6 +237,284 @@ async function startServer() {
        res.status(400).json({ status: "failed" });
     }
   });
+
+  // ==========================================
+  // GODADDY / CUSTOM SMTP EMAIL TRANSMISSION HUB
+  // ==========================================
+
+  let mailTransporter: any = null;
+
+  function getMailTransporter() {
+    const user = process.env.SMTP_USER;
+    const pass = process.env.SMTP_PASS;
+    const host = process.env.SMTP_HOST || "smtpout.secureserver.net";
+    const port = parseInt(process.env.SMTP_PORT || "465", 10);
+
+    if (!user || !pass) {
+      console.warn("⚠️ SMTP credentials not set in environment. Email notifications will be mock-simulated on server console.");
+      return null;
+    }
+
+    if (!mailTransporter) {
+      try {
+        mailTransporter = nodemailer.createTransport({
+          host,
+          port,
+          secure: port === 465,
+          auth: { user, pass },
+          tls: {
+            rejectUnauthorized: false // Helps bypass strict SSL cert issues on GoDaddy SMTP out
+          }
+        });
+      } catch (err) {
+        console.error("❌ Failed to initiate GoDaddy SMTP connection:", err);
+        return null;
+      }
+    }
+    return mailTransporter;
+  }
+
+  async function sendTransactionalMail(to: string, subject: string, htmlContent: string) {
+    const transporter = getMailTransporter();
+    const fromName = process.env.SMTP_FROM_NAME || "Cake Urban";
+    const fromUser = process.env.SMTP_USER || "noreply@cakeurban.com";
+
+    if (!transporter) {
+      console.log(`\n========================================`);
+      console.log(`[SIMULATED EMAIL LOG]`);
+      console.log(`To:      ${to}`);
+      console.log(`Subject: ${subject}`);
+      console.log(`Body Fragment:\n${htmlContent.slice(0, 800)}...`);
+      console.log(`========================================\n`);
+      return { simulated: true };
+    }
+
+    try {
+      const info = await transporter.sendMail({
+        from: `"${fromName}" <${fromUser}>`,
+        to,
+        subject,
+        html: htmlContent,
+      });
+      console.log(`Email dispatched successfully to ${to}. MessageId: ${info.messageId}`);
+      return { messageId: info.messageId };
+    } catch (err) {
+      console.error(`❌ SMTP delivery failed to ${to}:`, err);
+      throw err;
+    }
+  }
+
+  // Signup OTP verification memory store
+  const signupOtps = new Map<string, { code: string; expiresAt: number }>();
+
+  // Send Registration Verification Code OTP
+  app.post("/api/email/send-signup-otp", async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Missing email address field" });
+    }
+
+    try {
+      const cleanEmail = email.trim().toLowerCase();
+      // Generate secure 6-digit OTP
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes expiry
+
+      signupOtps.set(cleanEmail, { code: otpCode, expiresAt });
+
+      const emailHtml = `
+        <div style="font-family: 'Inter', system-ui, sans-serif; background-color: #FFFDFB; padding: 40px; border-radius: 20px; border: 1px solid #E8DDD7; max-width: 600px; margin: 0 auto; color: #3B1F17;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #3D140B; font-family: 'Times New Roman', serif; font-size: 32px; letter-spacing: -0.02em; margin: 0;">CAKE URBAN</h1>
+            <p style="text-transform: uppercase; font-size: 10px; font-weight: 900; letter-spacing: 0.3em; color: #DFB15B; margin: 5px 0 0 0;">Elite Custom Confections</p>
+          </div>
+          
+          <div style="background-color: #140603; padding: 40px; border-radius: 16px; color: #FFFDFB; text-align: center;">
+            <p style="font-size: 9px; text-transform: uppercase; font-weight: 900; letter-spacing: 0.25em; color: #DFB15B; margin-bottom: 10px;">Security Verification</p>
+            <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 20px 0;">Membership Confirmation Code</h2>
+            
+            <div style="background-color: #3D140B; border: 1px solid #DFB15B; padding: 25px; border-radius: 12px; margin: 25px 0; font-size: 32px; font-weight: 900; letter-spacing: 0.4em; font-family: monospace; color: #DFB15B; display: inline-block;">
+              ${otpCode}
+            </div>
+            
+            <p style="font-size: 11px; opacity: 0.6; margin: 0; line-height: 1.6;">
+              Please enter this security verification phrase to instantly validate your email address and activate your Cake House account. This code is valid for the next 10 minutes.
+            </p>
+          </div>
+
+          <p style="font-size: 11px; opacity: 0.5; text-align: center; margin-top: 35px; line-height: 1.6;">
+            If you did not initiate this request, you can safely ignore this email. Your registry remains secure.<br>
+            &copy; 2026 Cake Urban. Operating in Faridabad and across Delhi NCR.
+          </p>
+        </div>
+      `;
+
+      await sendTransactionalMail(
+        cleanEmail,
+        `Cake Urban Registration Code: ${otpCode} [CONFIDENTIAL]`,
+        emailHtml
+      );
+
+      res.json({ success: true, message: "Verification code sent successfully", simulated: !process.env.SMTP_USER, code: !process.env.SMTP_USER ? otpCode : undefined });
+    } catch (error) {
+      console.error("OTP send failure:", error);
+      res.status(500).json({ error: "Failed to dispatch verification code via SMTP" });
+    }
+  });
+
+  // Verify Registration Code OTP
+  app.post("/api/email/verify-signup-otp", (req, res) => {
+    const { email, code } = req.body;
+    if (!email || !code) {
+      return res.status(400).json({ error: "Missing email address or verification code" });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const stored = signupOtps.get(cleanEmail);
+
+    if (!stored) {
+      return res.status(400).json({ error: "No verification code exists for this email address" });
+    }
+
+    if (Date.now() > stored.expiresAt) {
+      signupOtps.delete(cleanEmail);
+      return res.status(400).json({ error: "Verification code has expired. Please request a new one." });
+    }
+
+    if (stored.code !== code.trim()) {
+      return res.status(400).json({ error: "Invalid verification code. Please check and try again." });
+    }
+
+    // Success - consume code
+    signupOtps.delete(cleanEmail);
+    res.json({ success: true });
+  });
+
+  // Automated Send transactional email replies (Welcome, Custom Inquiries, Checkout Orders)
+  app.post("/api/email/send-auto-reply", async (req, res) => {
+    const { email, type, details } = req.body;
+    if (!email || !type) {
+      return res.status(400).json({ error: "Missing email address or trigger type" });
+    }
+
+    try {
+      const cleanEmail = email.trim().toLowerCase();
+      let subject = "Transaction Received - Cake Urban";
+      let emailHtml = "";
+
+      if (type === "welcome") {
+        subject = "Welcome to the Elite Collector Circle - Cake Urban";
+        emailHtml = `
+          <div style="font-family: 'Inter', system-ui, sans-serif; background-color: #FFFDFB; padding: 40px; border-radius: 20px; border: 1px solid #E8DDD7; max-width: 600px; margin: 0 auto; color: #3B1F17;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #3D140B; font-family: 'Times New Roman', serif; font-size: 32px; letter-spacing: -0.02em; margin: 0;">CAKE URBAN</h1>
+              <p style="text-transform: uppercase; font-size: 10px; font-weight: 900; letter-spacing: 0.3em; color: #DFB15B; margin: 5px 0 0 0;">Elite Custom Confections</p>
+            </div>
+            
+            <div style="background-color: #3D140B; padding: 40px; border-radius: 16px; color: #FFFDFB; text-align: left;">
+              <h2 style="font-family: 'Times New Roman', serif; font-size: 24px; color: #DFB15B; margin: 0 0 15px 0; font-weight: normal;">Greeting, ${details.name || "Artisan Member"}</h2>
+              <p style="font-size: 13px; line-height: 1.7; margin: 0 0 20px 0; font-weight: 400; opacity: 0.9;">
+                Welcome to Cake Urban's digital atelier! We verify and celebrate your enrollment inside our exclusive boutique circle.
+              </p>
+              <p style="font-size: 13px; line-height: 1.7; margin: 0; font-weight: 400; opacity: 0.9;">
+                Your account is now activated. You gain instant access to bespoke customized creations, direct tracking, same-day delivery scheduling, and private chef consultation suites.
+              </p>
+            </div>
+
+            <div style="margin-top: 30px; border-top: 1px solid #E8DDD7; padding-top: 25px; text-align: left;">
+               <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #3D140B; margin: 0 0 10px 0;">Membership Credentials:</h3>
+               <p style="font-size: 12px; margin: 5px 0; font-family: monospace;">Email ID: ${cleanEmail}</p>
+               <p style="font-size: 12px; margin: 5px 0; font-family: monospace;">Phone: +91 ${details.phone || "Verified"}</p>
+            </div>
+
+            <p style="font-size: 11px; opacity: 0.5; text-align: center; margin-top: 35px; line-height: 1.6;">
+              If you have any queries about our same-day logistics in Faridabad or Delhi NCR, contact our lead baker desk directly.<br>
+              &copy; 2026 Cake Urban. All Rights Reserved.
+            </p>
+          </div>
+        `;
+      } else if (type === "custom_inquiry") {
+        subject = "We've Received Your Majestic Cake Design Inquiry! ✦";
+        emailHtml = `
+          <div style="font-family: 'Inter', system-ui, sans-serif; background-color: #FFFDFB; padding: 40px; border-radius: 20px; border: 1px solid #E8DDD7; max-width: 600px; margin: 0 auto; color: #3B1F17;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #3D140B; font-family: 'Times New Roman', serif; font-size: 32px; letter-spacing: -0.02em; margin: 0;">CAKE URBAN</h1>
+              <p style="text-transform: uppercase; font-size: 10px; font-weight: 900; letter-spacing: 0.3em; color: #DFB15B; margin: 5px 0 0 0;">Elite Custom Confections</p>
+            </div>
+            
+            <div style="background-color: #140603; padding: 40px; border-radius: 16px; color: #FFFDFB; text-align: left; border-left: 4px solid #DFB15B;">
+              <p style="font-size: 9px; text-transform: uppercase; font-weight: 900; letter-spacing: 0.25em; color: #DFB15B; margin-bottom: 10px;">Atelier Ingestion Confirmation</p>
+              <h2 style="font-family: 'Times New Roman', serif; font-size: 24px; font-weight: normal; margin: 0 0 15px 0;">Design Vision Under Review</h2>
+              <p style="font-size: 12.5px; opacity: 0.85; line-height: 1.7; margin: 0;">
+                Hello ${details.name || "Collector"}, we have successfully registered your custom cake architectural configuration. Our lead baking artisan and culinary decorators are reviewing the geometric constraints, icing tone properties, and reference images.
+              </p>
+            </div>
+
+            <div style="margin-top: 30px; background-color: #FFFDFB; border: 1px solid #E8DDD7; border-radius: 12px; padding: 25px;">
+              <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #3D140B; margin: 0 0 15px 0; border-bottom: 1px solid #E8DDD7; padding-bottom: 10px;">Architectural Blueprint Specs:</h3>
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px; line-height: 1.8;">
+                <tr><td style="font-weight: bold; width: 40%; color: #3B1F17/70;">Artisan Flavor:</td><td style="color: #3D140B; font-weight: bold;">${details.flavor || "Belgian Dark"}</td></tr>
+                <tr><td style="font-weight: bold; color: #3B1F17/70;">Shape Geometry:</td><td>${details.shape || "Classic Round"}</td></tr>
+                <tr><td style="font-weight: bold; color: #3B1F17/70;">Custom Message:</td><td style="font-style: italic;">${details.message ? `"${details.message}"` : "None"}</td></tr>
+                <tr><td style="font-weight: bold; color: #3B1F17/70;">Event Celebration:</td><td>${details.date || "Urgent Delivery"}</td></tr>
+              </table>
+            </div>
+
+            <p style="font-size: 13px; line-height: 1.7; margin-top: 25px; color: #3B1F17;">
+              Our concierge team will reach out to you via <strong>WhatsApp (+91 phone)</strong> or via <strong>phone call</strong> shortly to confirm shipping parameters and finalize delivery pricing estimates.
+            </p>
+
+            <p style="font-size: 11px; opacity: 0.5; text-align: center; margin-top: 35px; line-height: 1.6;">
+              This mailbox is integrated. Reply directly if you wish to upload or replace reference image attachments.<br>
+              &copy; 2026 Cake Urban. Faridabad and Delhi NCR Luxury Confectioners.
+            </p>
+          </div>
+        `;
+      } else if (type === "order_completion") {
+        subject = "Order Confirmed! Your Gourmet Creation is Scheduled 🧁 - Cake Urban";
+        emailHtml = `
+          <div style="font-family: 'Inter', system-ui, sans-serif; background-color: #FFFDFB; padding: 40px; border-radius: 20px; border: 1px solid #E8DDD7; max-width: 600px; margin: 0 auto; color: #3B1F17;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #3D140B; font-family: 'Times New Roman', serif; font-size: 32px; letter-spacing: -0.02em; margin: 0;">CAKE URBAN</h1>
+              <p style="text-transform: uppercase; font-size: 10px; font-weight: 900; letter-spacing: 0.3em; color: #DFB15B; margin: 5px 0 0 0;">Elite Custom Confections</p>
+            </div>
+            
+            <div style="background-color: #3D140B; padding: 40px; border-radius: 16px; color: #FFFDFB; text-align: center;">
+              <span style="font-size: 30px; display: block; margin-bottom: 10px;">✓</span>
+              <h2 style="font-family: 'Times New Roman', serif; font-size: 24px; margin: 0 0 10px 0; font-weight: normal; color: #DFB15B;">Gourmet Confection Booked!</h2>
+              <p style="font-size: 12px; opacity: 0.8; margin: 0; text-transform: uppercase; letter-spacing: 0.1em;">Order Total: ₹${details.total}</p>
+            </div>
+
+            <div style="margin-top: 30px; background-color: #FFFDFB; border: 1px solid #E8DDD7; border-radius: 12px; padding: 25px;">
+              <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #3D140B; margin: 0 0 15px 0; border-bottom: 1px solid #E8DDD7; padding-bottom: 10px;">Order Shipment Parameters:</h3>
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px; line-height: 1.8;">
+                <tr><td style="font-weight: bold; width: 45%; color: #3B1F17/70;">Artisanal Items:</td><td style="font-weight: bold;">${details.items}</td></tr>
+                <tr><td style="font-weight: bold; color: #3B1F17/70;">Delivery Date Target:</td><td>${details.deliveryDate}</td></tr>
+                <tr><td style="font-weight: bold; color: #3B1F17/70;">Requested Slot:</td><td>${details.deliverySlot}</td></tr>
+                <tr><td style="font-weight: bold; color: #3B1F17/70;">Baker Instructions:</td><td style="font-style: italic;">${details.instructions || "None"}</td></tr>
+              </table>
+            </div>
+
+            <p style="font-size: 12.5px; opacity: 0.9; line-height: 1.7; margin-top: 25px;">
+              Our dedicated temperature-controlled routing riders will coordinate direct handoff drop-off when approaching your destination pin. Active phone validation response is required on arrival.
+            </p>
+
+            <p style="font-size: 11px; opacity: 0.5; text-align: center; margin-top: 35px; line-height: 1.6;">
+              Please reach out on our support WhatsApp or phone desk for route coordination or adjustments.<br>
+              &copy; 2026 Cake Urban. Gourmet Frosting Laboratories.
+            </p>
+          </div>
+        `;
+      }
+
+      await sendTransactionalMail(cleanEmail, subject, emailHtml);
+      res.json({ success: true, message: "Transactional auto-reply dispatched successfully", simulated: !process.env.SMTP_USER });
+    } catch (error) {
+      console.error("Auto-reply trigger error:", error);
+      res.status(500).json({ error: "Failed to dispatch auto-reply transactional email" });
+    }
+  });
+
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {

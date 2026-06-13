@@ -39,11 +39,18 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
 
-  // OTP States
-  const [phoneNumber, setPhoneNumber] = useState('');
+  // OTP & phone states
+  const [phoneNumber, setPhoneNumber] = useState(''); // For SMS OTP fallback sign in
+  const [loginPhone, setLoginPhone] = useState('');   // For mandatory login phone input
+  const [registerPhone, setRegisterPhone] = useState(''); // For mandatory register phone input
   const [otpCode, setOtpCode] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [generatedOtp, setGeneratedOtp] = useState('');
+
+  // Email Registration OTP state
+  const [emailVerificationCode, setEmailVerificationCode] = useState('');
+  const [isVerifyingEmailOtp, setIsVerifyingEmailOtp] = useState(false);
+  const [pendingUserData, setPendingUserData] = useState<any>(null);
 
   const [loading, setLoading] = useState(false);
   
@@ -93,15 +100,33 @@ export default function Login() {
       toast.success("Welcome back to Cakehouse!");
       navigate(redirect);
     } catch (error: any) {
-      console.error(error);
-      if (error?.code === 'auth/cancelled-popup-request' || error?.message?.includes('cancelled-popup-request')) {
+      console.error("Google Auth error info:", error);
+      const errorCode = error?.code || '';
+      const errorMessage = error?.message || '';
+
+      if (errorCode === 'auth/cancelled-popup-request' || errorMessage.includes('cancelled-popup-request')) {
          toast.error("Another sign-in request is already in progress. Please retry.");
-      } else if (error?.code === 'auth/popup-closed-by-user' || error?.message?.includes('popup-closed-by-user')) {
+      } else if (errorCode === 'auth/popup-closed-by-user' || errorMessage.includes('popup-closed-by-user')) {
          toast.error("Sign-in prompt closed. Please try again.");
-      } else if (error?.code === 'auth/popup-blocked' || error?.message?.includes('popup-blocked')) {
+      } else if (errorCode === 'auth/popup-blocked' || errorMessage.includes('popup-blocked')) {
          toast.error("Popups are blocked by your browser. Please permit popups for Cakehouse.");
+      } else if (errorCode === 'auth/unauthorized-domain' || errorMessage.includes('unauthorized-domain')) {
+         toast.error(
+           "Domain Not Authorized! Please log in to your Firebase Console, navigate to Build > Authentication > Settings > Authorized Domains, and add: '" + window.location.hostname + "'",
+           { duration: 10000 }
+         );
+      } else if (
+        errorCode === 'auth/web-storage-unsupported' || 
+        errorCode === 'auth/operation-not-supported-in-this-environment' || 
+        errorMessage.includes('web-storage-unsupported') ||
+        errorMessage.includes('third-party cookies')
+      ) {
+         toast.error(
+           "Browser Context Blocked: Iframes prevent Google Login. Please click the 'Open in New Tab' button or use the URL shown at the top of the chat to run this app directly!",
+           { duration: 8000 }
+         );
       } else {
-         toast.error("Google secure sign-in was unsuccessful.");
+         toast.error(`Google Secure Sign-In failed: ${errorCode || error.message || 'Check firebase console'}`);
       }
     } finally {
       setLoading(false);
@@ -132,6 +157,10 @@ export default function Login() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!loginPhone || loginPhone.length !== 10) {
+      toast.error("Please enter your valid 10-digit registered phone number.");
+      return;
+    }
     setLoading(true);
     playBtnTap();
     const cleanEmail = email.trim().toLowerCase();
@@ -139,11 +168,25 @@ export default function Login() {
       // 1. Try to check if this user exists in our encrypted offline localDB first
       const validatedLocal = secureLocalDB.validateUser(cleanEmail, password);
       if (validatedLocal) {
+        // Enforce phone number verification
+        if (validatedLocal.phoneNumber && validatedLocal.phoneNumber !== loginPhone) {
+          toast.error("The phone number provided does not match our records for this account.");
+          setLoading(false);
+          return;
+        }
+        
+        // If legacy locally saved user has no phone number, auto-link it now
+        if (!validatedLocal.phoneNumber) {
+          validatedLocal.phoneNumber = loginPhone;
+          secureLocalDB.saveUser(validatedLocal);
+        }
+
         const localSession = {
           uid: validatedLocal.uid,
           email: validatedLocal.email,
           displayName: validatedLocal.displayName,
-          role: validatedLocal.role || 'customer'
+          role: validatedLocal.role || 'customer',
+          phoneNumber: loginPhone
         };
         secureSetItem('cakeurban_local_user', localSession);
         playSuccessChime();
@@ -161,13 +204,28 @@ export default function Login() {
         if (!snap.empty) {
           const userDoc = snap.docs[0];
           const userData = userDoc.data();
+          
+          // Enforce phone number verification
+          if (userData.phoneNumber && userData.phoneNumber !== loginPhone) {
+            toast.error("The phone number provided does not match our records for this account.");
+            setLoading(false);
+            return;
+          }
+
           if (userData.isLocalAccount || userData.localPassword) {
-            if (userData.localPassword === password || userData.passwordHash) {
+            if (userData.localPassword === password || userData.passwordHash === password) {
+              
+              // If legacy firestore user has no phone number, auto-link it now
+              if (!userData.phoneNumber) {
+                await setDoc(doc(db, 'users', userDoc.id), { phoneNumber: loginPhone }, { merge: true });
+              }
+
               const localSession = {
                 uid: userDoc.id,
                 email: userData.email,
                 displayName: userData.displayName || 'Artisan Guest',
-                role: userData.role || 'customer'
+                role: userData.role || 'customer',
+                phoneNumber: loginPhone
               };
               
               // Cache in local offline DB for next offline logins
@@ -177,6 +235,7 @@ export default function Login() {
                 displayName: userData.displayName || 'Artisan Guest',
                 passwordHash: password,
                 role: userData.role || 'customer',
+                phoneNumber: loginPhone,
                 createdAt: userData.createdAt || new Date().toISOString()
               });
 
@@ -204,19 +263,47 @@ export default function Login() {
       // Save in local encrypted DB for offline capabilities
       const curUser = auth.currentUser;
       if (curUser) {
+        const userRef = doc(db, 'users', curUser.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          if (userData.phoneNumber && userData.phoneNumber !== loginPhone) {
+            // Phone mismatch: forced signout
+            await auth.signOut();
+            toast.error("The phone number provided does not match our records for this account.");
+            setLoading(false);
+            return;
+          } else if (!userData.phoneNumber) {
+            // First login with phone verification: tie phone number to profile
+            await setDoc(userRef, { phoneNumber: loginPhone }, { merge: true });
+          }
+        } else {
+          // If Firestore profile doesn't exist, create it cleanly
+          await setDoc(userRef, {
+            email: cleanEmail,
+            displayName: curUser.displayName || 'Artisan Collector',
+            role: 'customer',
+            phoneNumber: loginPhone,
+            createdAt: new Date().toISOString()
+          });
+        }
+
         secureLocalDB.saveUser({
           uid: curUser.uid,
           email: cleanEmail,
           displayName: curUser.displayName || 'Artisan Collector',
           passwordHash: password,
           role: 'customer',
+          phoneNumber: loginPhone,
           createdAt: new Date().toISOString()
         });
+        
         secureSetItem('cakeurban_local_user', {
           uid: curUser.uid,
           email: cleanEmail,
           displayName: curUser.displayName || 'Artisan Collector',
-          role: 'customer'
+          role: 'customer',
+          phoneNumber: loginPhone
         });
       }
 
@@ -245,6 +332,10 @@ export default function Login() {
       toast.error("Please provide your full name.");
       return;
     }
+    if (!registerPhone || registerPhone.length !== 10) {
+      toast.error("Please enter a valid 10-digit mobile number.");
+      return;
+    }
     if (password !== confirmPassword) {
       toast.error("Passwords do not match. Please verify.");
       return;
@@ -258,91 +349,179 @@ export default function Login() {
     playBtnTap();
     
     const cleanEmail = email.trim().toLowerCase();
-    const localUid = `local_user_${Date.now()}`;
-    const userProfile = {
-      uid: localUid,
-      email: cleanEmail,
-      displayName: fullName,
-      passwordHash: password,
-      role: 'customer',
-      createdAt: new Date().toISOString(),
-      address: {
-        line1: '',
-        sector: '',
-        pincode: ''
-      }
-    };
 
-    // Save into our secure offline encrypted DB instantly
-    secureLocalDB.saveUser(userProfile);
-    secureSetItem('cakeurban_local_user', {
-      uid: localUid,
-      email: cleanEmail,
-      displayName: fullName,
-      role: 'customer'
-    });
+    // Instead of completing registration immediately, request security code dispatch from SMTP server
+    try {
+      const response = await fetch('/api/email/send-signup-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail })
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to dispatch verification code");
+      }
+
+      setPendingUserData({
+        fullName,
+        email: cleanEmail,
+        phoneNumber: registerPhone,
+        password
+      });
+      setIsVerifyingEmailOtp(true);
+
+      if (data.simulated && data.code) {
+        // Fallback info toast if SMTP details have not been supplied yet
+        toast.info(`[SMTP DEMO SIMULATION] Validation code sent to ${cleanEmail}: ${data.code}`, {
+          duration: 20000,
+        });
+      } else {
+        toast.success("Membership Confirmation Code dispatched to your mailbox!");
+      }
+    } catch (err: any) {
+      console.error("OTP flow launch failure:", err);
+      toast.error(err.message || "Failed to initiate verification code. Please check standard connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyEmailRegisterOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailVerificationCode || emailVerificationCode.length !== 6) {
+      toast.error("Please enter the complete 6-digit Membership Confirmation Code.");
+      return;
+    }
+    if (!pendingUserData) {
+      toast.error("Verification state is uninitialized. Please fill options and recreate account signup.");
+      setIsVerifyingEmailOtp(false);
+      return;
+    }
+
+    setLoading(true);
+    playBtnTap();
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, password);
-      const user = userCredential.user;
+      // 1. Validate against backend storage
+      const response = await fetch('/api/email/verify-signup-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: pendingUserData.email,
+          code: emailVerificationCode
+        })
+      });
+      const data = await response.json();
 
-      // Create/update Firestore User profile
-      await setDoc(doc(db, 'users', user.uid), {
-        email: cleanEmail,
-        displayName: fullName,
+      if (!response.ok) {
+        throw new Error(data.error || "Incorrect confirmation code");
+      }
+
+      // 2. Verified successfully! Save to DB & complete registration
+      const localUid = `local_user_${Date.now()}`;
+      const userProfile = {
+        uid: localUid,
+        email: pendingUserData.email,
+        displayName: pendingUserData.fullName,
+        passwordHash: pendingUserData.password,
         role: 'customer',
+        phoneNumber: pendingUserData.phoneNumber,
         createdAt: new Date().toISOString(),
         address: {
           line1: '',
           sector: '',
           pincode: ''
         }
-      });
+      };
 
-      // Update local storage with real firebase UID to keep in sync
-      secureLocalDB.saveUser({
-        ...userProfile,
-        uid: user.uid
-      });
+      // Instantly cache in secure offline DB
+      secureLocalDB.saveUser(userProfile);
       secureSetItem('cakeurban_local_user', {
-        uid: user.uid,
-        email: cleanEmail,
-        displayName: fullName,
-        role: 'customer'
+        uid: localUid,
+        email: pendingUserData.email,
+        displayName: pendingUserData.fullName,
+        role: 'customer',
+        phoneNumber: pendingUserData.phoneNumber
       });
 
-      playSuccessChime();
-      toast.success("Account created successfully! Welcome to Cakehouse.");
-      setTimeout(() => {
-        navigate(redirect);
-      }, 800);
-    } catch (error: any) {
-      console.error("Firebase auth registration failed, fallback to local secure storage:", error);
-      
       try {
-        const q = query(collection(db, 'users'), where('email', '==', cleanEmail), limit(1));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          toast.error("This email address is already verified!");
-          setLoading(false);
-          return;
-        }
+        const userCredential = await createUserWithEmailAndPassword(auth, pendingUserData.email, pendingUserData.password);
+        const user = userCredential.user;
 
-        // Write the custom local account to cloud Firestore too
-        await setDoc(doc(db, 'users', localUid), {
-          ...userProfile,
+        // Create/update Firestore User profile
+        await setDoc(doc(db, 'users', user.uid), {
+          email: pendingUserData.email,
+          displayName: pendingUserData.fullName,
+          role: 'customer',
+          phoneNumber: pendingUserData.phoneNumber,
+          createdAt: new Date().toISOString(),
           isLocalAccount: true,
-          localPassword: password
+          localPassword: pendingUserData.password,
+          passwordHash: pendingUserData.password,
+          address: {
+            line1: '',
+            sector: '',
+            pincode: ''
+          }
         });
-      } catch (localErr) {
-        console.error("Bypassed online registration write:", localErr);
+
+        // Update local storage with real firebase UID to keep in sync
+        secureLocalDB.saveUser({
+          ...userProfile,
+          uid: user.uid
+        });
+        secureSetItem('cakeurban_local_user', {
+          uid: user.uid,
+          email: pendingUserData.email,
+          displayName: pendingUserData.fullName,
+          role: 'customer',
+          phoneNumber: pendingUserData.phoneNumber
+        });
+      } catch (error: any) {
+        console.error("Firebase Auth syncer bypassed, using secure local profiles:", error);
+        
+        try {
+          // Write the custom local account to cloud Firestore too
+          await setDoc(doc(db, 'users', localUid), {
+            ...userProfile,
+            isLocalAccount: true,
+            localPassword: pendingUserData.password
+          });
+        } catch (localErr) {
+          console.error("Bypassed online registration write:", localErr);
+        }
+      }
+
+      // 3. Dispatch automated welcome circle registration receipt email!
+      try {
+        await fetch('/api/email/send-auto-reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: pendingUserData.email,
+            type: 'welcome',
+            details: {
+              name: pendingUserData.fullName,
+              phone: pendingUserData.phoneNumber
+            }
+          })
+        });
+      } catch (welcomeErr) {
+        console.error("Welcome dispatch trig error:", welcomeErr);
       }
 
       playSuccessChime();
-      toast.success("Profile created successfully via Encrypted Secure Fallback!");
+      toast.success("Membership successfully verified and activated! Welcome.");
+      setIsVerifyingEmailOtp(false);
+      setPendingUserData(null);
+      
       setTimeout(() => {
         window.location.href = redirect;
       }, 800);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Confirmation code verification failed. Check input.");
     } finally {
       setLoading(false);
     }
@@ -554,6 +733,24 @@ export default function Login() {
                 </div>
 
                 <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                    Phone Number (Compulsory)
+                  </label>
+                  <div className="relative flex items-center">
+                    <span className="absolute left-4 font-bold text-xs text-[#3B1F17]/50">+91</span>
+                    <Input
+                      type="tel"
+                      placeholder="99999 99999"
+                      maxLength={10}
+                      value={loginPhone}
+                      onChange={(e) => setLoginPhone(e.target.value.replace(/\D/g, ''))}
+                      required
+                      className="h-14 rounded-2xl border border-[#E8DDD7] pl-14 pr-4 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30 tracking-widest font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
                   <div className="flex justify-between items-center pr-0.5">
                     <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
                       Password
@@ -694,145 +891,220 @@ export default function Login() {
 
               <LogoAndCake />
 
-              <h2 className="text-3xl font-serif font-black tracking-tight text-[#3B1F17] flex items-center gap-1.5">
-                Create your account <span className="text-[#DFB15B] text-xl">✦</span>
-              </h2>
-              <p className="text-xs text-[#3B1F17]/65 font-medium mt-1 mb-8">
-                Sign up to start ordering your favorite cakes
-              </p>
-
-              {/* REGISTRATION FORM */}
-              <form onSubmit={handleEmailRegister} className="space-y-5">
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
-                    Full Name
-                  </label>
-                  <div className="relative flex items-center">
-                    <User className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
-                    <Input
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required
-                      className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-4 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
-                    Email Address
-                  </label>
-                  <div className="relative flex items-center">
-                    <Mail className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-4 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
-                    Password
-                  </label>
-                  <div className="relative flex items-center">
-                    <Lock className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Create a password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-11 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => { playBtnTap(); setShowPassword(!showPassword); }}
-                      className="absolute right-4 text-[#3B1F17]/40 hover:text-[#3B1F17]"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
-                    Confirm Password
-                  </label>
-                  <div className="relative flex items-center">
-                    <Lock className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
-                    <Input
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm your password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-11 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => { playBtnTap(); setShowConfirmPassword(!showConfirmPassword); }}
-                      className="absolute right-4 text-[#3B1F17]/40 hover:text-[#3B1F17]"
-                    >
-                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Terms and conditions switch bar */}
-                <div className="py-1 pl-0.5">
-                  <label className="flex items-start gap-2.5 cursor-pointer select-none">
-                    <button
-                      type="button"
-                      onClick={() => { playBtnTap(); setAgreeTerms(!agreeTerms); }}
-                      className={`w-4.5 h-4.5 rounded border flex items-center justify-center transition-all mt-0.5 shrink-0 ${
-                        agreeTerms ? 'bg-[#3D140B] border-[#3D140B] text-white' : 'border-[#E8DDD7] bg-white'
-                      }`}
-                    >
-                      {agreeTerms && <span className="text-[9px] font-bold">✓</span>}
-                    </button>
-                    <span className="text-[10px] font-black text-[#3B1F17]/65 uppercase tracking-wide leading-tight">
-                      I agree to the <span className="text-[#DE9088] underline hover:text-[#3D140B]">Terms & Conditions</span>
-                    </span>
-                  </label>
-                </div>
-
-                {/* REGISTER SIGNUP BUTTON */}
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-14 rounded-2xl bg-[#3D140B] hover:bg-[#DE9088]/90 text-amber-50 border border-[#DFB15B]/30 hover:border-transparent font-black tracking-[0.22em] text-xs uppercase shadow-[0_5px_15px_rgba(61,20,11,0.25)] transition-all flex items-center justify-center gap-2 active:scale-95"
+              {isVerifyingEmailOtp ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-6 text-left"
                 >
-                  {loading ? 'Submitting Membership...' : 'SIGN UP'}
-                </Button>
-              </form>
+                  <div>
+                    <h2 className="text-3xl font-serif font-black tracking-tight text-[#3B1F17] flex items-center gap-1.5">
+                      Verify Your Email <span className="text-[#DFB15B] text-xl">✦</span>
+                    </h2>
+                    <p className="text-xs text-[#3B1F17]/65 font-semibold mt-1">
+                      We sent a 6-digit Membership Confirmation Code to <span className="text-[#3D140B] font-bold underline">{pendingUserData?.email}</span>.
+                    </p>
+                  </div>
 
-              {/* SIGNUP DIVIDER OPTIONS */}
-              <div className="relative flex items-center justify-center my-6">
-                <div className="h-[1px] bg-[#E8DDD7] w-full" />
-                <span className="absolute bg-[#FFFDFB] px-4 text-[#3B1F17]/35 text-[9px] font-black uppercase tracking-[0.2em] italic">
-                  OR
-                </span>
-              </div>
+                  <form onSubmit={handleVerifyEmailRegisterOtp} className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17] text-center block">
+                        6-Digit Security Confirmation Code
+                      </label>
+                      <Input
+                        type="text"
+                        maxLength={6}
+                        placeholder="Ex. 123456"
+                        value={emailVerificationCode}
+                        onChange={(e) => setEmailVerificationCode(e.target.value.replace(/\D/g, ''))}
+                        required
+                        className="h-15 rounded-2xl border-2 border-[#DFB15B]/50 text-center font-black tracking-[0.6em] text-xl bg-[#FFFDFB] focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/20"
+                      />
+                    </div>
 
-              {/* SOCIAL BUTTON TOGGLING */}
-              <div className="text-center">
-                <p className="text-[11px] font-bold text-[#3B1F17]/70">
-                  Already have an account?{' '}
-                  <button
-                    onClick={() => { playSlidePop(); setMode('login'); }}
-                    className="text-[#DFB15B] font-black uppercase tracking-wider hover:underline ml-1.5 focus:outline-none"
-                  >
-                    Login
-                  </button>
-                </p>
-              </div>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full h-14 rounded-2xl bg-[#3D140B] hover:bg-[#DE9088]/90 text-amber-50 border border-[#DFB15B]/30 hover:border-transparent font-black tracking-[0.22em] text-xs uppercase shadow-[0_5px_15px_rgba(61,20,11,0.25)] transition-all flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      {loading ? 'Validating Registry...' : 'VERIFY & CREATE MEMBERSHIPS'}
+                    </Button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playSlidePop();
+                        setIsVerifyingEmailOtp(false);
+                        setPendingUserData(null);
+                        setEmailVerificationCode('');
+                      }}
+                      className="w-full text-center text-[10px] font-black uppercase tracking-widest text-[#D89C95] hover:text-[#3B1F17] transition-colors"
+                    >
+                      ← Back & Restart Signup
+                    </button>
+                  </form>
+                </motion.div>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-serif font-black tracking-tight text-[#3B1F17] flex items-center gap-1.5">
+                    Create your account <span className="text-[#DFB15B] text-xl">✦</span>
+                  </h2>
+                  <p className="text-xs text-[#3B1F17]/65 font-medium mt-1 mb-8">
+                    Sign up to start ordering your favorite cakes
+                  </p>
+
+                  {/* REGISTRATION FORM */}
+                  <form onSubmit={handleEmailRegister} className="space-y-5">
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                        Full Name
+                      </label>
+                      <div className="relative flex items-center">
+                        <User className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
+                        <Input
+                          type="text"
+                          placeholder="Enter your full name"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          required
+                          className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-4 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                        Email Address
+                      </label>
+                      <div className="relative flex items-center">
+                        <Mail className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
+                        <Input
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-4 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                        Mobile Phone Number (Compulsory)
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 font-bold text-xs text-[#3B1F17]/50">+91</span>
+                        <Input
+                          type="tel"
+                          placeholder="99999 99999"
+                          maxLength={10}
+                          value={registerPhone}
+                          onChange={(e) => setRegisterPhone(e.target.value.replace(/\D/g, ''))}
+                          required
+                          className="h-14 rounded-2xl border border-[#E8DDD7] pl-14 pr-4 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30 tracking-widest font-mono"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                        Password
+                      </label>
+                      <div className="relative flex items-center">
+                        <Lock className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Create a password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-11 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => { playBtnTap(); setShowPassword(!showPassword); }}
+                          className="absolute right-4 text-[#3B1F17]/40 hover:text-[#3B1F17]"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                        Confirm Password
+                      </label>
+                      <div className="relative flex items-center">
+                        <Lock className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirm your password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                          className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-11 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] placeholder:text-[#3B1F17]/30"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => { playBtnTap(); setShowConfirmPassword(!showConfirmPassword); }}
+                          className="absolute right-4 text-[#3B1F17]/40 hover:text-[#3B1F17]"
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Terms and conditions switch bar */}
+                    <div className="py-1 pl-0.5">
+                      <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                        <button
+                          type="button"
+                          onClick={() => { playBtnTap(); setAgreeTerms(!agreeTerms); }}
+                          className={`w-4.5 h-4.5 rounded border flex items-center justify-center transition-all mt-0.5 shrink-0 ${
+                            agreeTerms ? 'bg-[#3D140B] border-[#3D140B] text-white' : 'border-[#E8DDD7] bg-white'
+                          }`}
+                        >
+                          {agreeTerms && <span className="text-[9px] font-bold">✓</span>}
+                        </button>
+                        <span className="text-[10px] font-black text-[#3B1F17]/65 uppercase tracking-wide leading-tight">
+                          I agree to the <span className="text-[#DE9088] underline hover:text-[#3D140B]">Terms & Conditions</span>
+                        </span>
+                      </label>
+                    </div>
+
+                    {/* REGISTER SIGNUP BUTTON */}
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full h-14 rounded-2xl bg-[#3D140B] hover:bg-[#DE9088]/90 text-amber-50 border border-[#DFB15B]/30 hover:border-transparent font-black tracking-[0.22em] text-xs uppercase shadow-[0_5px_15px_rgba(61,20,11,0.25)] transition-all flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      {loading ? 'Submitting Membership...' : 'SIGN UP'}
+                    </Button>
+                  </form>
+
+                  {/* SIGNUP DIVIDER OPTIONS */}
+                  <div className="relative flex items-center justify-center my-6">
+                    <div className="h-[1px] bg-[#E8DDD7] w-full" />
+                    <span className="absolute bg-[#FFFDFB] px-4 text-[#3B1F17]/35 text-[9px] font-black uppercase tracking-[0.2em] italic">
+                      OR
+                    </span>
+                  </div>
+
+                  {/* SOCIAL BUTTON TOGGLING */}
+                  <div className="text-center">
+                    <p className="text-[11px] font-bold text-[#3B1F17]/70">
+                      Already have an account?{' '}
+                      <button
+                        onClick={() => { playSlidePop(); setMode('login'); }}
+                        className="text-[#DFB15B] font-black uppercase tracking-wider hover:underline ml-1.5 focus:outline-none"
+                      >
+                        Login
+                      </button>
+                    </p>
+                  </div>
+                </>
+              )}
             </motion.div>
           )}
 

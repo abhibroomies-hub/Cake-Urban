@@ -120,7 +120,7 @@ export default function SEO({ title, description, keywords, ogImage, schema }: S
       "image": ogImage || "https://picsum.photos/seed/bakery/1200/630",
       "description": "Premium handcrafted 100% pure vegetarian and eggless bakery in Faridabad, Delhi NCR.",
       "url": "https://www.cakeurban.com",
-      "telephone": "+91 98765 43210",
+      "telephone": "+91 73185 31953",
       "priceRange": "$$",
       "menu": "https://www.cakeurban.com/shop",
       "servesCuisine": "Bakery, desserts, eggless cakes, customizable designer celebration cakes",

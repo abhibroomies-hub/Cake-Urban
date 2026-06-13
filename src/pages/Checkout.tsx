@@ -80,6 +80,7 @@ export default function Checkout() {
       const orderData = {
         userId: user?.uid || null,
         guestEmail: user?.email || null,
+        phoneNumber: profile?.phoneNumber || null,
         items,
         total: getTotal(),
         status: 'new',
@@ -92,6 +93,31 @@ export default function Checkout() {
       };
       
       await addDoc(collection(db, path), orderData);
+
+      // Dispatch automated order completion transactional email via SMTP
+      try {
+        const orderEmail = user?.email || profile?.email || null;
+        if (orderEmail) {
+          await fetch('/api/email/send-auto-reply', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: orderEmail,
+              type: 'order_completion',
+              details: {
+                total: getTotal(),
+                deliveryDate,
+                deliverySlot,
+                instructions: cakeInstructions,
+                items: items.map(item => `${item.quantity}x ${item.name}${item.selectedWeight ? ` (${item.selectedWeight} kg)` : ''}${item.selectedFlavor ? ` [${item.selectedFlavor}]` : ''}`).join(', ')
+              }
+            })
+          });
+        }
+      } catch (emailErr) {
+        console.error("Order auto-reply trigger failed:", emailErr);
+      }
+
       setOrderComplete(true);
       clearCart();
       toast.success("Artisanal order requested successfully!");

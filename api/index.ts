@@ -94,6 +94,74 @@ app.post("/api/seo/optimize-image", async (req, res) => {
   }
 });
 
+// AI-powered text specs builder to auto-populate forms serverless
+app.post("/api/seo/generate-specs", async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ error: "Prompt is required to generate specs" });
+  }
+
+  try {
+    const model = "gemini-3.5-flash";
+    const systemInstruction = `
+      You are an expert AI master pâtissier and visual curator for "Cake Urban", an elite custom online bakery in Delhi NCR (operating in Faridabad, South Delhi, Noida, Gurgaon, Ghaziabad).
+      Your task is to take a short input description of a cake concept and generate a complete ready-to-publish digital profile with standard INR premium pricing (e.g. ₹1199, ₹1499).
+    `;
+
+    const instructionPrompt = `
+      Draft a comprehensive boutique product configuration profile based on this short description: "${prompt}".
+      Include: productName, suggested price (number), premium description copy, category list (comma-separated), flavor list (comma-separated), occasions, seo title, search slug, visual alt text, short metaDescription, tags, schema, social media caption, pinterest pin details.
+    `;
+
+    const response = await genAI.models.generateContent({
+      model,
+      contents: instructionPrompt,
+      config: {
+        systemInstruction,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            productName: { type: Type.STRING },
+            price: { type: Type.NUMBER },
+            description: { type: Type.STRING },
+            categories: { type: Type.STRING },
+            flavors: { type: Type.STRING },
+            occasions: { type: Type.STRING },
+            seoTitle: { type: Type.STRING },
+            slug: { type: Type.STRING },
+            altText: { type: Type.STRING },
+            metaDescription: { type: Type.STRING },
+            keywords: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
+            },
+            structuredSchema: { type: Type.STRING },
+            instagramCaption: { type: Type.STRING },
+            pinterestPin: {
+              type: Type.OBJECT,
+              properties: {
+                title: { type: Type.STRING },
+                description: { type: Type.STRING }
+              }
+            }
+          },
+          required: [
+            "productName", "price", "description", "categories", "flavors", 
+            "occasions", "seoTitle", "slug", "altText", "metaDescription", 
+            "keywords", "structuredSchema", "instagramCaption", "pinterestPin"
+          ]
+        }
+      }
+    });
+
+    res.json(JSON.parse(response.text || "{}"));
+  } catch (error) {
+    console.error("AI Spec Serverless Gen Error:", error);
+    res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate specs" });
+  }
+});
+
 // API: AI Search
 app.post("/api/search", async (req, res) => {
   const { query, products } = req.body;

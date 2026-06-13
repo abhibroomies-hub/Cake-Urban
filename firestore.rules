@@ -116,6 +116,12 @@ service cloud.firestore {
       );
     }
 
+    function isValidCustomOrder(data) {
+      return data.contactName is string && data.contactName.size() > 0 && data.contactName.size() < 200 &&
+             data.contactEmail is string && data.contactEmail.size() > 0 && data.contactEmail.size() < 200 &&
+             data.status is string;
+    }
+
     // Users
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin() || (resource != null && resource.data.isLocalAccount == true);
@@ -124,6 +130,13 @@ service cloud.firestore {
       allow update: if (isOwner(userId) && isValidUser(incoming()) && 
                             (!existing().keys().has('role') || incoming().role == existing().role)) || 
                              (existing().isLocalAccount == true && incoming().isLocalAccount == true && incoming().role == 'customer');
+    }
+
+    // Custom Orders (Bespoke Inquiries)
+    match /custom_orders/{orderId} {
+      allow list, get: if isAdmin();
+      allow create: if isValidCustomOrder(incoming());
+      allow update, delete: if isAdmin();
     }
   }
 }

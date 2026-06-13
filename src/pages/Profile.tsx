@@ -1060,7 +1060,7 @@ export default function Profile() {
 
                   {/* QUICK TRIGGERS */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="block">
+                    <a href="https://wa.me/917318531953" target="_blank" rel="noreferrer" className="block">
                       <div className="bg-emerald-950/20 hover:bg-emerald-950/45 border-2 border-emerald-500/20 hover:border-emerald-500 p-6 rounded-3xl transition-all text-left flex items-start gap-4 h-full">
                         <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
                           <MessageSquare className="w-5 h-5" />
@@ -1072,7 +1072,7 @@ export default function Profile() {
                       </div>
                     </a>
 
-                    <a href="tel:+919876543210" className="block">
+                    <a href="tel:+917318531953" className="block">
                       <div className="bg-[#2D150F]/20 hover:bg-[#2D150F]/45 border border-white/10 hover:border-[#DFB15B]/40 p-6 rounded-3xl transition-all text-left flex items-start gap-4 h-full">
                         <div className="w-10 h-10 rounded-2xl bg-[#DFB15B]/10 text-[#DFB15B] flex items-center justify-center shrink-0">
                           <Phone className="w-5 h-5" />
@@ -1190,7 +1190,7 @@ export default function Profile() {
                     value={editPhoneNumber} 
                     onChange={(e) => setEditPhoneNumber(e.target.value)}
                     className="w-full h-11 px-4 rounded-xl border border-white/10 bg-[#2D150F]/50 text-white text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#DFB15B]"
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="e.g. +91 73185 31953"
                   />
                 </div>
 

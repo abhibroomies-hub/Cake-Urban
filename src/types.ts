@@ -61,6 +61,7 @@ export interface Order {
   id: string;
   userId?: string;
   guestEmail?: string;
+  phoneNumber?: string;
   items: CartItem[];
   total: number;
   status: 'new' | 'baking' | 'out-for-delivery' | 'delivered' | 'cancelled';

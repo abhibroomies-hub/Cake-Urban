@@ -272,20 +272,20 @@ export function Header() {
 
           {/* BRAND LOGO (Left on desktop, Centered on mobile) */}
           <div className="flex-1 lg:flex-none flex justify-center lg:justify-start">
-            <Link to="/" className="group flex items-center gap-3.5">
-              <div className="relative w-11 h-11 md:w-14 md:h-14 shrink-0 flex items-center justify-center drop-shadow-md rounded-xl overflow-hidden group-hover:scale-105 transition-transform duration-300 bg-[#2D150F] border border-[#DFB15B]/25 shadow-sm">
+            <Link to="/" className="group flex items-center gap-4">
+              <div className="relative w-12 h-12 md:w-16 md:h-16 shrink-0 flex items-center justify-center rounded-[18px] overflow-hidden group-hover:scale-105 transition-transform duration-300 bg-[#2D150F] border border-[#DFB15B]/25 shadow-md">
                 <img 
                   src="/favicon.png" 
                   alt="Cake Urban Logo" 
-                  className="w-full h-full object-cover scale-[1.95] translate-y-[-6%]" 
+                  className="w-full h-full object-cover" 
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <div className="flex flex-col text-left">
-                <h1 className="text-xl md:text-2xl xl:text-3xl font-display font-black leading-none tracking-tight text-white">
-                  Cake<span className="text-[#DFB15B]">Urban</span>
+              <div className="flex flex-col text-left justify-center">
+                <h1 className="text-2xl md:text-3.5xl font-display font-bold leading-none tracking-tight text-white select-none whitespace-nowrap">
+                  Cake<span className="text-[#DFB15B]">Urban</span><span className="text-[#DFB15B]">.</span>
                 </h1>
-                <p className="text-[7.5px] md:text-[10px] tracking-[2px] md:tracking-[3.5px] uppercase text-[#DFB15B] font-black mt-0.5">
+                <p className="text-[8px] md:text-[10px] tracking-[0.25em] md:tracking-[0.28em] uppercase text-[#DFB15B]/90 font-bold mt-1.5 select-none leading-none">
                   Artisan Bakery
                 </p>
               </div>
@@ -700,15 +700,17 @@ export function Header() {
               {/* Header inside Menu */}
               <div>
                 <div className="p-6 flex items-center justify-between border-b border-[#E8DDD7]/60 bg-[#F8F4F1]/40">
-                  <div className="flex items-center gap-2.5 text-left">
+                  <div className="flex items-center gap-3 text-left">
                     <img 
                       src="/favicon.png" 
                       alt="Cake" 
-                      className="w-10 h-10 object-cover scale-[1.7] bg-[#FAF7F5] border rounded-lg" 
+                      className="w-12 h-12 object-cover bg-[#FAF7F5] border border-[#DE9088]/20 rounded-xl shrink-0" 
                     />
                     <div>
-                      <h3 className="font-display font-black text-lg text-[#2D150F] tracking-tight">Cake<span className="text-[#DE9088]">Urban</span></h3>
-                      <p className="text-[8px] uppercase tracking-wider text-amber-600 font-bold leading-none">Artisan Ovens</p>
+                      <h3 className="font-display font-bold text-lg text-[#2D150F] tracking-tight leading-none">
+                        Cake<span className="text-[#DE9088]">Urban</span><span className="text-[#DE9088]">.</span>
+                      </h3>
+                      <p className="text-[7.5px] uppercase tracking-[0.2em] text-amber-700/80 font-bold mt-1 leading-none">Artisan Bakery</p>
                     </div>
                   </div>
                   <button 

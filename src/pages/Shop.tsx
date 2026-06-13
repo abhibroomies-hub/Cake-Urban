@@ -57,7 +57,7 @@ export default function Shop() {
   // Controls collapsible advanced filters drawer/panel on mobile/desktop
   const [isFiltersDrawerOpen, setIsFiltersDrawerOpen] = useState(false);
 
-  const categories = ['All', 'Cakes', 'Pastries', 'Cupcakes', 'Brownies', 'Desserts', 'Hampers', 'Custom Cakes'];
+  const categories = ['All', 'Cakes', 'Pastries', 'Cupcakes', 'Brownies', 'Desserts', 'Hampers', 'Custom Cakes', 'Breads'];
   const flavors = ['All', 'Chocolate', 'Vanilla', 'Red Velvet', 'Strawberry', 'Butterscotch', 'Blueberry', 'Mixed'];
   const occasions = ['All', 'Birthday', 'Anniversary', 'Wedding', 'Festival', 'Kids Special'];
   const sorts = ['Popularity', 'Price: Low to High', 'Price: High to Low', 'Newest'];
@@ -211,19 +211,19 @@ export default function Shop() {
       />
 
       {/* BOUTIQUE BANNER HEADER */}
-      <section className="bg-gradient-to-b from-white to-[#FAF7F5] border-b border-[#E8DDD7]/40 px-4 sm:px-8 py-10 sm:py-16 text-center relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-72 h-72 bg-[#DE9088]/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#2D150F]/5 rounded-full blur-2xl pointer-events-none" />
+      <section className="bg-[#26130F]/45 backdrop-blur-md border-b border-[#DFB15B]/15 px-4 sm:px-8 py-10 sm:py-16 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-72 h-72 bg-[#DFB15B]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#DE9088]/10 rounded-full blur-2xl pointer-events-none" />
         
         <div className="max-w-4xl mx-auto space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-2 bg-[#DE9088]/10 text-[#cc7a74] px-3.5 py-1.5 rounded-full text-[10px] font-black tracking-[0.25em] uppercase">
-            <Sparkle className="w-3.5 h-3.5 text-[#DE9088]" />
+          <div className="inline-flex items-center gap-2 bg-[#DFB15B]/10 text-[#DFB15B] border border-[#DFB15B]/20 px-3.5 py-1.5 rounded-full text-[10px] font-black tracking-[0.25em] uppercase">
+            <Sparkle className="w-3.5 h-3.5 text-[#DFB15B]" />
             <span>Premium Bakeries of Faridabad</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-[#2D150F] tracking-tight">
-            The Artisan <span className="italic font-serif font-light text-[#DE9088]">Collection</span>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-display font-black text-[#FFFDFB] tracking-tight">
+            The Artisan <span className="italic font-serif font-light text-[#DFB15B]">Collection</span>
           </h1>
-          <p className="text-[#3B1F17]/60 text-xs sm:text-base md:text-lg max-w-2xl mx-auto font-medium italic">
+          <p className="text-[#FFFDFB]/80 text-xs sm:text-base md:text-lg max-w-2xl mx-auto font-medium italic leading-relaxed">
             Each creation is baked with meticulous precision, pure premium dairy, chocolate truffles, and seasonal fresh toppings. Fully customizable with eggless settings.
           </p>
         </div>
@@ -233,9 +233,9 @@ export default function Shop() {
         
         {/* LUXURY INTERACTIVE TOP CATEGORY SELECTOR SLIDER */}
         <div className="mb-10">
-          <div className="flex items-center justify-between mb-4 border-b border-[#E8DDD7]/40 pb-3">
-            <h3 className="text-[10px] uppercase font-black tracking-[0.3em] text-[#2D150F]/45">Artisanal Branches</h3>
-            <span className="text-[9px] font-black uppercase text-[#DE9088] bg-[#DE9088]/10 px-2 py-0.5 rounded-md">100% Chef Managed</span>
+          <div className="flex items-center justify-between mb-4 border-b border-[#DFB15B]/20 pb-3">
+            <h3 className="text-[10px] uppercase font-black tracking-[0.3em] text-[#DFB15B]">Artisanal Branches</h3>
+            <span className="text-[9px] font-black uppercase text-[#DFB15B] bg-[#DFB15B]/10 px-2 py-0.5 rounded-md">100% Chef Managed</span>
           </div>
 
           <div className="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
@@ -251,11 +251,11 @@ export default function Shop() {
                   }}
                   className={`flex items-center gap-2.5 px-6 py-4 rounded-[24px] text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all duration-300 border float-left whitespace-nowrap ${
                     isActive
-                      ? 'bg-[#2D150F] text-white border-[#2D150F] shadow-lg scale-105'
-                      : 'bg-white text-[#2D150F]/70 border-[#E8DDD7] hover:bg-[#DE9088]/5 hover:border-[#DE9088] shadow-sm'
+                      ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B] shadow-lg scale-105'
+                      : 'bg-[#26130F]/80 text-[#FFFDFB]/80 border-[#DFB15B]/20 hover:bg-[#DFB15B]/10 hover:border-[#DFB15B] shadow-sm'
                   }`}
                 >
-                  <IconComponent className={`w-4 h-4 ${isActive ? 'text-[#DE9088]' : 'text-[#2D150F]/40'}`} />
+                  <IconComponent className={`w-4 h-4 ${isActive ? 'text-[#140603]' : 'text-[#FFFDFB]/40'}`} />
                   <span>{cat}</span>
                 </button>
               );
@@ -264,21 +264,21 @@ export default function Shop() {
         </div>
 
         {/* CONTROLS HEADER BAR */}
-        <div className="bg-white rounded-[28px] p-4 mb-8 border border-[#E8DDD7]/40 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="bg-[#26130F]/85 backdrop-blur-md border border-[#DFB15B]/20 rounded-[28px] p-4 mb-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full md:w-auto">
             {/* Live active filter counter */}
             <button
               onClick={() => setIsFiltersDrawerOpen(!isFiltersDrawerOpen)}
               className={`flex items-center justify-center gap-2 w-full md:w-auto h-12 px-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
                 isFiltersDrawerOpen || getActiveFilterCount() > 0
-                  ? 'bg-[#DE9088] text-white'
-                  : 'bg-[#2D150F]/5 text-[#2D150F] hover:bg-[#2D150F]/10'
+                  ? 'bg-[#DFB15B] text-[#140603]'
+                  : 'bg-[#FFFDFB]/5 text-[#FFFDFB]/80 hover:bg-[#FFFDFB]/10 border border-white/10'
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span>Advanced Filters</span>
               {getActiveFilterCount() > 0 && (
-                <span className="w-5 h-5 bg-[#2D150F] text-white text-[9px] rounded-full flex items-center justify-center font-black ml-1 shadow-sm">
+                <span className="w-5 h-5 bg-[#140603] text-[#DFB15B] border border-[#DFB15B]/20 text-[9px] rounded-full flex items-center justify-center font-black ml-1 shadow-sm">
                   {getActiveFilterCount()}
                 </span>
               )}
@@ -288,7 +288,7 @@ export default function Shop() {
             {getActiveFilterCount() > 0 && (
               <button
                 onClick={handleResetAllFilters}
-                className="flex items-center justify-center w-12 h-12 rounded-2xl bg-[#2D150F]/10 hover:bg-[#2D150F]/15 text-[#2D150F] transition-colors"
+                className="flex items-center justify-center w-12 h-12 rounded-2xl bg-[#FFFDFB]/10 hover:bg-[#FFFDFB]/15 text-white transition-colors"
                 title="Reset Filters"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -299,20 +299,20 @@ export default function Shop() {
           <div className="flex flex-row items-center justify-end gap-3 w-full md:w-auto border-t md:border-t-0 pt-3 md:pt-0">
             {/* Sort Dropdown */}
             <div className="relative flex-1 md:flex-initial">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase text-[#2D150F]/40 tracking-wider">Sort:</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase text-[#FFFDFB]/40 tracking-wider">Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full md:w-auto appearance-none bg-[#FAF7F5] border border-[#E8DDD7]/50 rounded-2xl pl-12 pr-10 py-3 text-[10px] font-black uppercase tracking-widest text-[#2D150F] outline-none shadow-sm cursor-pointer hover:border-[#DE9088] transition-colors"
+                className="w-full md:w-auto appearance-none bg-[#140603]/80 border border-[#DFB15B]/25 rounded-2xl pl-12 pr-10 py-3 text-[10px] font-black uppercase tracking-widest text-[#FFFDFB] outline-none shadow-sm cursor-pointer hover:border-[#DFB15B]/60 transition-colors"
               >
                 {sorts.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] text-[#2D150F]/45">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] text-[#FFFDFB]/60">
                 ▼
               </div>
             </div>
 
-            <div className="text-[10px] font-black uppercase tracking-[0.15em] text-[#2D150F]/45 bg-[#FAF7F5] border border-[#E8DDD7]/20 px-4 py-3 rounded-2xl h-11 flex items-center shrink-0">
+            <div className="text-[10px] font-black uppercase tracking-[0.15em] text-[#DFB15B] bg-[#DFB15B]/10 border border-[#DFB15B]/20 px-4 py-3 rounded-2xl h-11 flex items-center shrink-0">
               {products.length} Delicacies
             </div>
           </div>
@@ -328,19 +328,19 @@ export default function Shop() {
               transition={{ duration: 0.3 }}
               className="overflow-hidden mb-8"
             >
-              <div className="bg-white rounded-[32px] p-6 sm:p-8 border border-[#E8DDD7] shadow-[0_15px_45px_rgba(45,21,15,0.06)] grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+              <div className="bg-[#26130F]/90 backdrop-blur-md rounded-[32px] p-6 sm:p-8 border border-[#DFB15B]/20 shadow-[0_15px_45px_rgba(0,0,0,0.5)] grid grid-cols-1 md:grid-cols-4 gap-6 relative text-[#FFFDFB]">
                 
                 {/* Close Button absolute top-4 right-4 */}
                 <button
                   onClick={() => setIsFiltersDrawerOpen(false)}
-                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-[#FAF7F5] text-[#2D150F]/60 hover:text-[#2D150F] transition-colors"
+                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
 
                 {/* Dietary Section */}
                 <div className="space-y-3.5">
-                  <h4 className="text-[9px] uppercase tracking-[0.3em] font-black text-[#DE9088]">Dietary Path</h4>
+                  <h4 className="text-[9px] uppercase tracking-[0.3em] font-black text-[#DFB15B]">Dietary Path</h4>
                   <div className="flex flex-col gap-1.5">
                     {['All', 'Eggless', 'With Egg'].map((diet) => {
                       const isActive = dietFilter === diet;
@@ -350,8 +350,8 @@ export default function Shop() {
                           onClick={() => setDietFilter(diet)}
                           className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider text-left transition-all ${
                             isActive
-                              ? 'bg-[#2D150F] text-white'
-                              : 'bg-[#FAF7F5] text-[#2D150F]/70 hover:bg-[#DE9088]/10 hover:text-[#2D150F]'
+                              ? 'bg-[#DFB15B] text-[#140603]'
+                              : 'bg-[#140603]/80 text-[#FFFDFB]/80 border border-[#DFB15B]/15 hover:bg-[#DFB15B]/10 hover:border-[#DFB15B]/40'
                           }`}
                         >
                           <span>{diet}</span>
@@ -364,7 +364,7 @@ export default function Shop() {
 
                 {/* Flavours Section */}
                 <div className="space-y-3.5">
-                  <h4 className="text-[9px] uppercase tracking-[0.3em] font-black text-[#DE9088]">Gourmet Flavours</h4>
+                  <h4 className="text-[9px] uppercase tracking-[0.3em] font-black text-[#DFB15B]">Gourmet Flavours</h4>
                   <div className="grid grid-cols-2 gap-1.5 max-h-[160px] overflow-y-auto pr-1 no-scrollbar">
                     {flavors.map((flv) => {
                       const isActive = flavorFilter === flv;
@@ -374,8 +374,8 @@ export default function Shop() {
                           onClick={() => setFlavorFilter(flv)}
                           className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider text-left transition-all truncate ${
                             isActive
-                              ? 'bg-[#2D150F] text-white'
-                              : 'bg-[#FAF7F5] text-[#2D150F]/70 hover:bg-[#DE9088]/10'
+                              ? 'bg-[#DFB15B] text-[#140603]'
+                              : 'bg-[#140603]/80 text-[#FFFDFB]/80 border border-[#DFB15B]/15 hover:bg-[#DFB15B]/10'
                           }`}
                         >
                           {flv}
@@ -387,7 +387,7 @@ export default function Shop() {
 
                 {/* Occasion Section */}
                 <div className="space-y-3.5">
-                  <h4 className="text-[9px] uppercase tracking-[0.3em] font-black text-[#DE9088]">Festive Occasion</h4>
+                  <h4 className="text-[9px] uppercase tracking-[0.3em] font-black text-[#DFB15B]">Festive Occasion</h4>
                   <div className="grid grid-cols-2 gap-1.5 max-h-[160px] overflow-y-auto pr-1 no-scrollbar">
                     {occasions.map((occ) => {
                       const isActive = occasionFilter === occ;
@@ -397,8 +397,8 @@ export default function Shop() {
                           onClick={() => setOccasionFilter(occ)}
                           className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider text-left transition-all truncate ${
                             isActive
-                              ? 'bg-[#2D150F] text-white'
-                              : 'bg-[#FAF7F5] text-[#2D150F]/70 hover:bg-[#DE9088]/10'
+                              ? 'bg-[#DFB15B] text-[#140603]'
+                              : 'bg-[#140603]/80 text-[#FFFDFB]/80 border border-[#DFB15B]/15 hover:bg-[#DFB15B]/10'
                           }`}
                         >
                           {occ}
@@ -410,7 +410,7 @@ export default function Shop() {
 
                 {/* Price Section */}
                 <div className="space-y-3.5">
-                  <h4 className="text-[9px] uppercase tracking-[0.3em] font-black text-[#DE9088]">Price Enclave</h4>
+                  <h4 className="text-[9px] uppercase tracking-[0.3em] font-black text-[#DFB15B]">Price Enclave</h4>
                   <div className="flex flex-col gap-1.5">
                     {priceRanges.map((range) => {
                       const isActive = priceRange === range.label;
@@ -420,8 +420,8 @@ export default function Shop() {
                           onClick={() => setPriceRange(range.label)}
                           className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider text-left transition-all ${
                             isActive
-                              ? 'bg-[#DE9088] text-white'
-                              : 'bg-[#FAF7F5] text-[#2D150F]/70 hover:bg-[#DE9088]/10'
+                              ? 'bg-[#DFB15B] text-[#140603]'
+                              : 'bg-[#140603]/80 text-[#FFFDFB]/80 border border-[#DFB15B]/15 hover:bg-[#DFB15B]/10'
                           }`}
                         >
                           <span>{range.label}</span>
@@ -440,31 +440,31 @@ export default function Shop() {
         {/* ACTIVE FILTER PILLES CHIPS */}
         {getActiveFilterCount() > 0 && (
           <div className="flex flex-wrap items-center gap-2 mb-8">
-            <span className="text-[9px] font-black text-[#2D150F]/45 uppercase tracking-widest mr-1">Active Choices:</span>
+            <span className="text-[9px] font-black text-[#FFFDFB]/60 uppercase tracking-widest mr-1">Active Choices:</span>
             
             {dietFilter !== 'All' && (
-              <span className="inline-flex items-center gap-1.5 bg-[#DE9088]/15 text-[#cc7a74] px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 bg-[#DFB15B]/15 text-[#DFB15B] border border-[#DFB15B]/20 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider">
                 <span>{dietFilter}</span>
                 <X className="w-3 h-3 cursor-pointer" onClick={() => setDietFilter('All')} />
               </span>
             )}
 
             {flavorFilter !== 'All' && (
-              <span className="inline-flex items-center gap-1.5 bg-[#DE9088]/15 text-[#cc7a74] px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 bg-[#DFB15B]/15 text-[#DFB15B] border border-[#DFB15B]/20 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider">
                 <span>Flavour: {flavorFilter}</span>
                 <X className="w-3 h-3 cursor-pointer" onClick={() => setFlavorFilter('All')} />
               </span>
             )}
 
             {occasionFilter !== 'All' && (
-              <span className="inline-flex items-center gap-1.5 bg-[#DE9088]/15 text-[#cc7a74] px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 bg-[#DFB15B]/15 text-[#DFB15B] border border-[#DFB15B]/20 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider">
                 <span>Occasion: {occasionFilter}</span>
                 <X className="w-3 h-3 cursor-pointer" onClick={() => setOccasionFilter('All')} />
               </span>
             )}
 
             {priceRange !== 'All' && (
-              <span className="inline-flex items-center gap-1.5 bg-[#DE9088]/15 text-[#cc7a74] px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 bg-[#DFB15B]/15 text-[#DFB15B] border border-[#DFB15B]/20 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider">
                 <span>{priceRange}</span>
                 <X className="w-3 h-3 cursor-pointer" onClick={() => setPriceRange('All')} />
               </span>
@@ -472,7 +472,7 @@ export default function Shop() {
 
             <button
               onClick={handleResetAllFilters}
-              className="text-[9px] font-black uppercase text-[#DE9088] underline hover:text-[#2D150F] ml-2 transition-colors"
+              className="text-[9px] font-black uppercase text-[#DFB15B] hover:text-white underline ml-2 transition-colors"
             >
               Clear All Rules
             </button>
@@ -484,11 +484,11 @@ export default function Shop() {
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="space-y-4 p-4 bg-white rounded-[32px] border border-[#E8DDD7]/30 animate-pulse">
-                  <Skeleton className="aspect-square rounded-[24px] bg-[#FAF7F5]" />
+                <div key={i} className="space-y-4 p-4 bg-[#26130F]/85 border border-[#DFB15B]/15 rounded-[32px] animate-pulse">
+                  <Skeleton className="aspect-square rounded-[24px] bg-[#140603]" />
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-3/4 bg-[#FAF7F5] rounded-full" />
-                    <Skeleton className="h-3 w-1/2 bg-[#FAF7F5] rounded-full" />
+                    <Skeleton className="h-4 w-3/4 bg-[#140603] rounded-full" />
+                    <Skeleton className="h-3 w-1/2 bg-[#140603] rounded-full" />
                   </div>
                 </div>
               ))}
@@ -518,21 +518,21 @@ export default function Shop() {
             <motion.div 
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-[40px] border border-[#E8DDD7]/40 shadow-sm p-12 sm:p-20 text-center max-w-2xl mx-auto space-y-6"
+              className="bg-[#26130F]/85 border border-[#DFB15B]/20 rounded-[40px] shadow-lg p-12 sm:p-20 text-center max-w-2xl mx-auto space-y-6 text-[#FFFDFB]"
             >
-              <div className="w-20 h-20 bg-[#DE9088]/10 rounded-full flex items-center justify-center mx-auto text-[#DE9088]">
+              <div className="w-20 h-20 bg-[#DFB15B]/10 border border-[#DFB15B]/20 rounded-full flex items-center justify-center mx-auto text-[#DFB15B]">
                 <Smile className="w-10 h-10 animate-bounce" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-2xl font-serif font-black text-[#2D150F] italic">No Match Found In Our Boutique</h3>
-                <p className="text-xs sm:text-sm text-[#2D150F]/50 italic max-w-sm mx-auto leading-relaxed">
+                <h3 className="text-2xl font-serif font-black text-[#DFB15B] italic">No Match Found In Our Boutique</h3>
+                <p className="text-xs sm:text-sm text-[#FFFDFB]/60 italic max-w-sm mx-auto leading-relaxed">
                   We currently do not have matching "{activeCategory}" items loaded in the combination of filters selected.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 items-center justify-center pt-2">
                 <Button 
                   onClick={handleResetAllFilters} 
-                  className="w-full sm:w-auto h-12 rounded-xl bg-[#DE9088] text-white hover:bg-[#2D150F] text-[10px] font-black uppercase tracking-widest shadow-md transition-all flex items-center gap-2 justify-center"
+                  className="w-full sm:w-auto h-12 rounded-xl bg-[#DFB15B] text-[#140603] hover:bg-white text-[10px] font-black uppercase tracking-widest shadow-md transition-all flex items-center gap-2 justify-center"
                 >
                   <RotateCcw className="w-4 h-4" />
                   <span>Reset filters</span>
@@ -543,7 +543,7 @@ export default function Shop() {
                     setActiveCategory('All');
                     handleResetAllFilters();
                   }}
-                  className="w-full sm:w-auto h-12 rounded-xl border-[#E8DDD7] text-[#2D150F] hover:bg-[#FAF7F5] text-[10px] font-black uppercase tracking-widest"
+                  className="w-full sm:w-auto h-12 rounded-xl border-[#DFB15B]/30 text-[#FFFDFB] hover:bg-[#DFB15B]/10 text-[10px] font-black uppercase tracking-widest bg-transparent"
                 >
                   Default main catalog
                 </Button>

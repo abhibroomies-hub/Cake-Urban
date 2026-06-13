@@ -36,8 +36,8 @@ export function Footer() {
         
         {/* Branch 1: Brand & Bio */}
         <div className="col-span-2 lg:col-span-4 text-left space-y-5">
-          <h4 className="text-3xl font-display font-black tracking-tight text-white">
-            Cake<span className="text-[#DE9088] font-serif font-light italic">Urban</span>
+          <h4 className="text-3xl font-display font-bold tracking-tight text-white">
+            Cake<span className="text-[#DFB15B]">Urban</span><span className="text-[#DFB15B]">.</span>
           </h4>
           <p className="text-[#f3ddd6]/70 leading-relaxed text-xs sm:text-sm font-medium italic">
             Elite online bakery presenting Chef-curated regular cakes, instant high-quality single-slice treats, and spectacular custom celebration designs hand-catering Delhi, Noida, Gurgaon, and Faridabad.
@@ -134,6 +134,80 @@ export function Footer() {
               <Link to="/bakery-in-delhi" className="block hover:text-[#DE9088] transition">South Delhi (Saket, GK)</Link>
               <Link to="/birthday-cakes-delhi" className="block hover:text-[#DE9088] transition">West Delhi (Punjabi Bagh)</Link>
             </div>
+          </div>
+        </div>
+
+        {/* Specialized Cake Delivery Directory targeting Faridabad and NCR Keywords */}
+        <div className="border-t border-[#3B1F17]/30 pt-8 mt-8 text-left space-y-4">
+          <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#DFB15B] flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#DFB15B]" /> Premium Specialized Cakes & Hand-Delivery in Faridabad
+          </h5>
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-[10px] font-medium text-[#f3ddd6]/60">
+            <Link to="/online-cake-delivery-in-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Online Cake Delivery in Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/best-cake-shop-in-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold text-[#DE9088]">Best Cake Shop in Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/designer-cakes-in-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Designer Cakes in Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/customized-cakes-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold text-amber-100">Customized Cakes Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/midnight-cake-delivery-in-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Midnight Cake Delivery in Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/eggless-cake-delivery-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold">Eggless Cake Delivery Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/birthday-cake-in-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Birthday Cake in Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/cake-delivery-in-faridabad-sector-15" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-bold text-[#DE9088]">Cake Delivery in Faridabad Sector 15</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/best-bakery-in-faridabad-sector-14" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Best Bakery in Faridabad Sector 14</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/cake-shops-in-nit-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Cake Shops in NIT Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/greenfield-enclave-cake-delivery" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold text-amber-200">Greenfield Enclave Cake Delivery</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/anniversary-cake-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Anniversary Cake Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/bento-cake-in-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-bold text-[#DE9088]">Bento Cake in Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/red-velvet-cake-price-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Red Velvet Cake Price Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/chocolate-truffle-cake-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold">Chocolate Truffle Cake Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/photo-print-cake-in-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Photo Print Cake in Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/pinata-cake-with-hammer-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-bold text-[#DE9088]">Pinata Cake with Hammer Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/2-tier-wedding-cake-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">2 Tier Wedding Cake Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/kids-birthday-cake-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Kids Birthday Cake Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/customized-theme-cakes-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold text-[#DFB15B]">Customized Theme Cakes Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/home-delivery-cakes-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Home Delivery Cakes Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/bakery-near-sector-21-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold">Bakery near Sector 21 Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/live-cake-studio-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-bold text-[#DFB15B]">Live Cake Studio Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/artisan-bakery-in-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold">Artisan Bakery in Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/premium-chocolate-cakes-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Premium Chocolate Cakes Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/pull-me-up-cake-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-bold text-[#DE9088]">Pull Me Up Cake Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/cheap-and-best-cake-shop-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Cheap and Best Cake Shop Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/urgent-cake-delivery-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-bold text-amber-200">Urgent Cake Delivery Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/engagement-cake-design-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Engagement Cake Design Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/first-birthday-cake-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold">First Birthday Cake Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/sugar-free-cake-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-bold text-[#DE9088]">Sugar Free Cake Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/cup-cakes-delivery-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition">Cup Cakes Delivery Faridabad</Link>
+            <span className="text-white/15">|</span>
+            <Link to="/freshly-baked-cakes-faridabad" className="hover:text-[#DE9088] underline underline-offset-2 decoration-[#DE9088]/30 transition font-semibold">Freshly Baked Cakes Faridabad</Link>
           </div>
         </div>
       </div>

@@ -75,6 +75,25 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["productId", "userId", "rating", "comment", "createdAt"]
+    },
+    "CustomOrder": {
+      "title": "Custom Order Inquiry",
+      "description": "A customized cake design inquiry requested by a customer",
+      "type": "object",
+      "properties": {
+        "flavor": { "type": "string" },
+        "shape": { "type": "string" },
+        "tiers": { "type": "string" },
+        "icingColor": { "type": "string" },
+        "cakeMessage": { "type": "string" },
+        "referenceImages": { "type": "array", "items": { "type": "string" } },
+        "contactName": { "type": "string" },
+        "contactEmail": { "type": "string" },
+        "eventDate": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["contactName", "contactEmail", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -97,6 +116,10 @@
     "/reviews/{reviewId}": {
       "schema": "Review",
       "description": "Product reviews"
+    },
+    "/custom_orders/{orderId}": {
+      "schema": "CustomOrder",
+      "description": "Store for bespoke user interactive inquiries"
     }
   }
 }

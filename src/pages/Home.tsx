@@ -79,11 +79,8 @@ export default function Home() {
   const [spotlightIdx, setSpotlightIdx] = useState(0);
   const currentSpotlight = HERO_SHOWCASED_CONFECTIONS[spotlightIdx];
 
-  // 3D Parallax Mouse Tracking states
-  const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
-
-  // Interactive Premium Mouse Star Dust Tracking Trail
-  const [trailDots, setTrailDots] = useState<{ id: number; x: number; y: number; size: number }[]>([]);
+  // 3D Parallax Mouse Tracking wrapper ref
+  const heroSectionRef = useRef<HTMLDivElement>(null);
 
   const { setSearchOpen } = useUI();
   const navigate = useNavigate();
@@ -94,28 +91,6 @@ export default function Home() {
       setSpotlightIdx(prev => (prev + 1) % HERO_SHOWCASED_CONFECTIONS.length);
     }, 5500);
     return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    let counter = 0;
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (window.innerWidth < 768) return; // Disable on small devices for battery savings
-      if (Math.random() > 0.45) return; // Sparkle frequency filter
-
-      const newDot = {
-        id: counter++,
-        x: e.clientX,
-        y: e.clientY + window.scrollY,
-        size: Math.random() * 8 + 5
-      };
-
-      setTrailDots(prev => [...prev.slice(-14), newDot]);
-    };
-
-    window.addEventListener('mousemove', handleGlobalMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleGlobalMouseMove);
-    };
   }, []);
 
   useEffect(() => {
@@ -146,17 +121,26 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  // Parallax Handler
+  // Parallax Handler using highly performant CSS variables to completely bypass React re-renders during mouse move!
   const handleHeroMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!heroSectionRef.current) return;
     const { clientX, clientY, currentTarget } = e;
     const { left, top, width, height } = currentTarget.getBoundingClientRect();
     const x = (clientX - left) / width - 0.5; // range: -0.5 to 0.5
     const y = (clientY - top) / height - 0.5;
-    setMouseCoords({ x, y });
+    
+    heroSectionRef.current.style.setProperty('--hero-mouse-x', `${x}`);
+    heroSectionRef.current.style.setProperty('--hero-mouse-y', `${y}`);
+    heroSectionRef.current.style.setProperty('--hero-rotate-x', `${y * -10}deg`);
+    heroSectionRef.current.style.setProperty('--hero-rotate-y', `${x * 10}deg`);
   };
 
   const handleHeroMouseLeave = () => {
-    setMouseCoords({ x: 0, y: 0 });
+    if (!heroSectionRef.current) return;
+    heroSectionRef.current.style.setProperty('--hero-mouse-x', '0');
+    heroSectionRef.current.style.setProperty('--hero-mouse-y', '0');
+    heroSectionRef.current.style.setProperty('--hero-rotate-x', '0deg');
+    heroSectionRef.current.style.setProperty('--hero-rotate-y', '0deg');
   };
 
   const categories = [
@@ -191,7 +175,7 @@ export default function Home() {
             "image": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1200&auto=format&fit=crop",
             "@id": "https://www.cakeurban.com/#bakery",
             "url": "https://www.cakeurban.com",
-            "telephone": "+919876543210",
+            "telephone": "+917318531953",
             "priceRange": "₹₹",
             "servesCuisine": "100% pure eggless customized premium designer cakes",
             "address": {
@@ -238,30 +222,9 @@ export default function Home() {
         ]}
       />
 
-      {/* Cursor Sparkling Sparks Trail representation */}
-      <AnimatePresence>
-        {trailDots.map(dot => (
-          <motion.div
-            key={dot.id}
-            initial={{ opacity: 0.9, scale: 1, rotate: 0 }}
-            animate={{ opacity: 0, scale: 0.2, rotate: 180, y: "-15px" }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="absolute pointer-events-none z-[9999] select-none text-[#DFB15B]"
-            style={{
-              left: dot.x - dot.size / 2,
-              top: dot.y - dot.size / 2,
-              width: dot.size,
-              height: dot.size,
-            }}
-          >
-            <Sparkles className="w-full h-full fill-current" />
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
       {/* APPLE-STYLE INTERACTIVE HOVER PARALLAX HERO SECTION - PERSISTENT SPLIT GRID IN MOBILE AS REQUESTED */}
       <section 
+        ref={heroSectionRef}
         onMouseMove={handleHeroMouseMove}
         onMouseLeave={handleHeroMouseLeave}
         className={`relative px-3 sm:px-6 lg:px-8 pt-8 sm:pt-24 pb-16 overflow-hidden bg-gradient-to-b ${currentSpotlight.bgColor} transition-all duration-1000 border-b-2 border-[#DFB15B]/20`}
@@ -270,11 +233,11 @@ export default function Home() {
         <div className="absolute top-1/4 right-[3%] w-72 sm:w-96 h-72 sm:h-96 bg-[#DFB15B]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
         <div className="absolute -bottom-10 left-[5%] w-60 sm:w-80 h-60 sm:h-80 bg-stone-900/40 rounded-full blur-2xl pointer-events-none" />
 
-        {/* Scattered 3D floating parallax micro elements */}
-        <motion.div 
-          animate={{
-            x: mouseCoords.x * -35,
-            y: mouseCoords.y * -35,
+        {/* Scattered 3D floating parallax micro elements utilizing CSS performance variables */}
+        <div 
+          style={{
+            transform: 'translate(calc(var(--hero-mouse-x, 0) * -35px), calc(var(--hero-mouse-y, 0) * -35px))',
+            transition: 'transform 0.1s ease-out'
           }}
           className="absolute inset-0 pointer-events-none z-10 hidden md:block"
         >
@@ -285,7 +248,7 @@ export default function Home() {
             <Sparkle className="w-4 h-4 text-yellow-300 fill-yellow-300" />
           </div>
           <div className="absolute top-[75%] left-[88%] w-5 h-5 bg-[#DE9088]/20 rounded-full" />
-        </motion.div>
+        </div>
 
         {/* ALWAYS 2-COLUMN SPLIT GRID LAYOUT (cols-2 is forced on mobile to address "ek grade mein do hone chahie na ... phone upar aur CV prakar ki device se bhi upar") */}
         <div className="max-w-7xl mx-auto grid grid-cols-2 gap-3 sm:gap-16 items-center px-1 sm:px-4">
@@ -395,17 +358,15 @@ export default function Home() {
             {/* Glowing spot pedestal */}
             <div className="absolute w-[110px] xs:w-[140px] sm:w-[380px] h-[110px] xs:h-[140px] sm:h-[380px] rounded-full bg-gradient-to-tr from-[#DFB15B]/10 to-transparent transition-colors duration-1000 z-0" />
 
-            {/* Multi-layered Flying Pedestal with Spring Mouse Coordinates */}
-            <motion.div
-              animate={{
-                x: mouseCoords.x * 25,
-                y: mouseCoords.y * 25,
-                rotateX: mouseCoords.y * -10,
-                rotateY: mouseCoords.x * 10,
+            {/* Multi-layered Flying Pedestal with highly performant CSS Coordinates */}
+            <div
+              style={{
+                transformStyle: "preserve-3d",
+                perspective: 1000,
+                transform: 'translate(calc(var(--hero-mouse-x, 0) * 25px), calc(var(--hero-mouse-y, 0) * 25px)) rotateX(var(--hero-rotate-x, 0deg)) rotateY(var(--hero-rotate-y, 0deg))',
+                transition: 'transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)'
               }}
-              style={{ transformStyle: "preserve-3d", perspective: 1000 }}
-              transition={{ type: "spring", stiffness: 150, damping: 18 }}
-              className="relative p-1.5 sm:p-3 bg-white/90 backdrop-blur-md rounded-[22px] sm:rounded-[60px] shadow-2xl border border-white/20 w-11/12 max-w-[150px] xs:max-w-[200px] sm:max-w-[420px] aspect-square flex items-center justify-center z-10"
+              className="relative p-1.5 sm:p-3 bg-[#26130F]/90 backdrop-blur-md rounded-[22px] sm:rounded-[60px] shadow-2xl border border-[#DFB15B]/25 w-11/12 max-w-[150px] xs:max-w-[200px] sm:max-w-[420px] aspect-square flex items-center justify-center z-10"
             >
               {/* Flying Cake Image Frame */}
               <div className="relative w-full h-full rounded-[14px] sm:rounded-[50px] overflow-hidden drop-shadow-2xl">
@@ -443,7 +404,7 @@ export default function Home() {
                 <span className="text-[5px] sm:text-base font-black text-[#DFB15B] leading-none mb-0.5">100%</span>
                 <span className="text-[3px] sm:text-[9px] font-bold uppercase tracking-wider leading-tight">Eggless<br/>Pure</span>
               </motion.div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -827,10 +788,9 @@ export default function Home() {
                 link: "/custom-cakes-in-gurgaon"
               }
             ].map((node, idx) => (
-              <motion.div
+              <div
                 key={idx}
-                whileHover={{ y: -6 }}
-                className="bg-[#26130F]/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 border border-[#DFB15B]/25 shadow-lg flex flex-col justify-between hover:shadow-2xl hover:border-[#DFB15B]/80 hover:shadow-[0_20px_45px_rgba(223,177,91,0.15)] transition-all duration-300 text-left text-white"
+                className="bg-[#26130F]/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 border border-[#DFB15B]/25 shadow-lg flex flex-col justify-between hover:shadow-2xl hover:border-[#DFB15B]/80 hover:shadow-[0_20px_45px_rgba(223,177,91,0.15)] hover:-translate-y-1.5 transform-gpu transition-all duration-300 text-left text-white"
               >
                 <div className="space-y-3">
                   <div className="w-10 h-10 rounded-2xl bg-[#DFB15B]/15 text-[#DFB15B] flex items-center justify-center">
@@ -843,7 +803,7 @@ export default function Home() {
                   <span>Explore Hub</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
-              </motion.div>
+              </div>
             ))}
           </div>
 
@@ -899,7 +859,7 @@ export default function Home() {
             </div>
 
             <div className="pt-6">
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer">
+              <a href="https://wa.me/917318531953" target="_blank" rel="noreferrer">
                 <Button className="h-14 px-8 rounded-2xl bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-black font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:opacity-90">
                   <span>Inquire with Chief Baker on WhatsApp</span>
                   <ArrowRight className="w-4 h-4 text-black" />
