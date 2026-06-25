@@ -592,28 +592,28 @@ export default function Home() {
             <h3 className="text-2xl sm:text-4xl font-display font-black text-white">Why Cake Urban Faridabad?</h3>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8 max-w-7xl mx-auto">
             {/* CARD 1: THE CAKE ARTISANRY */}
             <motion.div 
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] sm:rounded-[40px] p-4 sm:p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
             >
               <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
-                  <Cake className="w-8 h-8" />
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <Cake className="w-5 h-5 sm:w-8 sm:h-8" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">100% Chef Curated</h4>
-                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
+                <div className="space-y-1.5 sm:space-y-3">
+                  <h4 className="text-[13px] sm:text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors leading-tight">100% Chef Curated</h4>
+                  <p className="text-[9px] sm:text-xs text-white/80 leading-snug sm:leading-relaxed font-semibold italic">
                     Every frosting stroke is perfected. Chef-guided, real chocolate truffles, fresh strawberries, and luxury grade dairy.
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Pure Chocolate & Fruit</span>
+              <div className="pt-3 sm:pt-8 border-t border-white/10 mt-3 sm:mt-8 flex items-center justify-between">
+                <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-[#DFB15B] leading-none">Pure Chocolate</span>
                 <Sparkles className="w-4 h-4 text-[#DE9088] animate-pulse" />
               </div>
             </motion.div>
@@ -624,21 +624,21 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] sm:rounded-[40px] p-4 sm:p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
             >
               <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
-                  <Clock className="w-8 h-8" />
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <Clock className="w-5 h-5 sm:w-8 sm:h-8" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Midnight Surprise Slot</h4>
-                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
+                <div className="space-y-1.5 sm:space-y-3">
+                  <h4 className="text-[13px] sm:text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors leading-tight">Midnight Delivery</h4>
+                  <p className="text-[9px] sm:text-xs text-white/80 leading-snug sm:leading-relaxed font-semibold italic">
                     Delight those who matter most exactly when they turn a year older. Elite slot operations from 11:30 PM to midnight.
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Midnight Enclaves</span>
+              <div className="pt-3 sm:pt-8 border-t border-white/10 mt-3 sm:mt-8 flex items-center justify-between">
+                <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-[#DFB15B] leading-none">Midnight Hub</span>
                 <Truck className="w-4 h-4 text-[#DE9088] animate-bounce" />
               </div>
             </motion.div>
@@ -649,21 +649,21 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] sm:rounded-[40px] p-4 sm:p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
             >
               <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
-                  <ChefHat className="w-8 h-8" />
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <ChefHat className="w-5 h-5 sm:w-8 sm:h-8" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Creative Canvas Studio</h4>
-                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
+                <div className="space-y-1.5 sm:space-y-3">
+                  <h4 className="text-[13px] sm:text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors leading-tight">Creative Canvas</h4>
+                  <p className="text-[9px] sm:text-xs text-white/80 leading-snug sm:leading-relaxed font-semibold italic">
                     Have a digital reference? We accept reference designs and color swatches to paint custom buttercream masterworks.
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Customizable Weights</span>
+              <div className="pt-3 sm:pt-8 border-t border-white/10 mt-3 sm:mt-8 flex items-center justify-between">
+                <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-[#DFB15B] leading-none">Custom Size</span>
                 <ChevronRight className="w-4 h-4 text-[#DE9088] group-hover:translate-x-1 transition-transform" />
               </div>
             </motion.div>
@@ -674,21 +674,21 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
-              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] sm:rounded-[40px] p-4 sm:p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
             >
               <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
-                  <Gift className="w-8 h-8" />
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-[14px] sm:rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <Gift className="w-5 h-5 sm:w-8 sm:h-8" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Artisanal Gifting Hampers</h4>
-                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
+                <div className="space-y-1.5 sm:space-y-3">
+                  <h4 className="text-[13px] sm:text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors leading-tight">Luxury Hampers</h4>
+                  <p className="text-[9px] sm:text-xs text-white/80 leading-snug sm:leading-relaxed font-semibold italic">
                     Deliver handcrafted chocolate crates, cookie trays, and custom balloons. Beautifully wrapped with luxury satin bows and personalized parchment.
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Bespoke Box Curations</span>
+              <div className="pt-3 sm:pt-8 border-t border-white/10 mt-3 sm:mt-8 flex items-center justify-between">
+                <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-[#DFB15B] leading-none">Bespoke Boxes</span>
                 <Sparkle className="w-4 h-4 text-[#DE9088] animate-spin" style={{ animationDuration: '3s' }} />
               </div>
             </motion.div>
