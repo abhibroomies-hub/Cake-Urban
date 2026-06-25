@@ -351,8 +351,8 @@ export default function Checkout() {
                     <Truck className="w-5 h-5 md:w-6 md:h-6 text-[#D89C95]" strokeWidth={1} /> Selected Gallery
                 </h3>
                 <div className="space-y-6 md:space-y-8">
-                    {items.map(item => (
-                        <div key={`${item.id}-${item.selectedWeight}`} className="flex justify-between items-start gap-4">
+                    {items.map((item, index) => (
+                        <div key={`${item.id}-${item.selectedWeight || ''}-${item.selectedFlavor || ''}-${item.eggless ? 'eggless' : 'regular'}-${item.cakeMessage || ''}-${index}`} className="flex justify-between items-start gap-4">
                             <div className="space-y-1">
                                 <p className="text-[#3B1F17] font-serif font-bold italic text-base md:text-lg leading-tight">{item.name}</p>
                                 <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[#3B1F17]/50">{item.quantity} x {item.selectedWeight}kg {item.eggless ? '• Eggless' : ''}</p>

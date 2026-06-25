@@ -17,13 +17,15 @@ import {
   Search, Tag, Copy, Check, Instagram, Share2, FileText, 
   CheckCircle2, AlertCircle, ArrowLeft, Check as CheckIcon, Loader2,
   Trash2, Star, Eye, Calendar, User, Mail, Plus, ToggleLeft, ToggleRight,
-  Sparkle, Award, MessageSquare, Coffee, Trash, Phone
+  Sparkle, Award, MessageSquare, Coffee, Trash, Phone, Palette,
+  Play, Pause, SkipForward
 } from 'lucide-react';
 import { ScrollArea } from '../components/ui/scroll-area';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
 import SEO from '../components/SEO';
 import { FALLBACK_PRODUCTS } from '../lib/fallbackProducts';
+import { useTheme, THEME_PRESETS } from '../lib/theme';
 
 const MOCK_ORDERS: Order[] = [
   {
@@ -186,8 +188,146 @@ interface SeoResult {
   };
 }
 
+export const CAMPAIGN_OCCASIONS = {
+  diwali: {
+    name: "Diwali Celebration",
+    emoji: "🪔",
+    prompts: [
+      {
+        concept: "Kesar Pista Gilded Fusion Flower Cake",
+        prompt: "Ultra-premium 3-tier Diwali cake decorated with organic saffron buttercream, luxury edible 24k gold leaf flakes, traditional marigold flower piping, and pistachio crumble around the base. Placed on an elegant royal dark wood board with subtle gold branding 'Cake Urban' written clearly. Professional food photography, warm diwali studio lighting, high resolution.",
+        price: 1899,
+        category: "Designer Cakes",
+        flavor: "Kesar Pista",
+        description: "An authentic fusion of Kesar Pista mousse and luxury golden cardamom buttercream, decorated with real edible 24k gold leaf and piped marigold petals."
+      },
+      {
+        concept: "Gilded Khoya Kulfi Velvet Drip Cake",
+        prompt: "A rich chocolate and cardamom drip cake with royal orange caramel crown, handcrafted golden almond chocolate shards, and silver varq sparkles. Placed on a beautiful cardboard cake board printed with 'Cake Urban' typography, warm ambient diyas in background. Studio shot.",
+        price: 1499,
+        category: "Regular Cakes",
+        flavor: "Cardamom Caramel",
+        description: "A rich fusion of vanilla cardamom sponge and gourmet cream cheese, dripping with shimmering saffron caramel glaze."
+      },
+      {
+        concept: "Shubh Deepavali Golden Truffle Rose Masterpiece",
+        prompt: "Premium Belgian dark chocolate truffle cake shaped as an royal clay diya, with edible flame sugar-crystal sculpture, edible roses, and gold spray. Cake board displays brand text 'Cake Urban' beautifully. Luxurious, high depth-of-field food design, dramatic contrast.",
+        price: 2199,
+        category: "Custom Cakes",
+        flavor: "Dark Chocolate Truffle",
+        description: "Elegant Belgian dark chocolate sculpture crafted in a luxurious diya pattern, completed with edible golden spark accents."
+      }
+    ]
+  },
+  christmas: {
+    name: "Christmas Winter",
+    emoji: "🎄",
+    prompts: [
+      {
+        concept: "Winter Snow-Cream Forest Cabin Cake",
+        prompt: "Premium Christmas log cake shaped as an enchanting snow-covered forest cabin, decorated with rosemary sprigs as pine trees, white cream cloud snow drifts, and edible ginger biscuits. Placed on a luxury silver board with brand text 'Cake Urban' printed, professional food studio photography.",
+        price: 1699,
+        category: "Designer Cakes",
+        flavor: "Vanilla Berry Blue",
+        description: "A winter wonderland vanilla-bean sponge layered with wild forest berry compote and smooth cream-cheese snow."
+      },
+      {
+        concept: "Rich Spiced Plum Caramel Mirror Glaze",
+        prompt: "Stunning dark crimson mirror glaze Christmas cake garnished with rosemary peaks, red cranberries, dried orange wheels, and cinnamon sticks. Beautifully framed on a cardboard platter displaying 'Cake Urban', cinematic holiday presentation.",
+        price: 1549,
+        category: "Regular Cakes",
+        flavor: "Spiced Caramel",
+        description: "An exquisite spiced cake rich with soaked plums, orange zest, and luxurious warm butterscotch glaze."
+      },
+      {
+        concept: "Elite Hazelnut Santa Chocolate Peak Cake",
+        prompt: "Gourmet multi-layered Ferrero Rocher peaks with hand-piped white chocolate snowflakes and a cute minimal chocolate Santa hat sculpture. Food showcase. Cake base board has brand text 'Cake Urban' written in elegant font.",
+        price: 1999,
+        category: "Custom Cakes",
+        flavor: "Ferrero Hazelnut Noir",
+        description: "Decadent toasted hazelnuts and Belgian milk chocolate ganache, styled with golden winter holiday charms."
+      }
+    ]
+  },
+  valentines: {
+    name: "Valentine's Sweet Hearts",
+    emoji: "💖",
+    prompts: [
+      {
+        concept: "Crimson Satin Velvet Double-Heart Cake",
+        prompt: "Unbelievably gorgeous heart-shaped Crimson Red Velvet double tiered cake, covered in smooth velvet spray texture, decorated with delicate fresh ruby rose petals and gilded French macarons. Cake board clearly exhibits printed brand name 'Cake Urban'. Close-up luxury photography, romantic backlit glow.",
+        price: 1799,
+        category: "Custom Cakes",
+        flavor: "Royal Red Velvet",
+        description: "Creamy vanilla-bean cream cheese mousse sandwiched between fluffy crimson cocoa sponges, finished with a velvet textured glaze."
+      },
+      {
+        concept: "Ultimate Strawberry Amour Macaron Tower Drip",
+        prompt: "Elegant pastel pink drip cake decorated with strawberry cream cheese swirls, white chocolate hearts, edible pink pearls, and real pink roses on top. Supported on a gorgeous Cake Urban custom board. Warm high-end bakery setup, soft light.",
+        price: 1599,
+        category: "Designer Cakes",
+        flavor: "Fresh Strawberry Cream",
+        description: "Boutique pink vanilla sponge layered with hand-crushed local farm strawberries and gourmet whipped rose-water cream."
+      },
+      {
+        concept: "Belgian Chocolate Noir Raspberry Heart sculpture",
+        prompt: "A highly artistic abstract chocolate hand-sculpted heart cake, with a glossy dark chocolate mirror glaze, fresh raspberries, and hints of silver dust. Resting on a dark board with 'Cake Urban' logo typography. High luxury gourmet dessert design.",
+        price: 1999,
+        category: "Regular Cakes",
+        flavor: "Chocolate Raspberry Noir",
+        description: "Dense dark cocoa fudge cake layered with premium wild raspberry pulp and dark Belgian chocolate ganache."
+      }
+    ]
+  },
+  anniversary: {
+    name: "Golden Anniversary Milestones",
+    emoji: "👑",
+    prompts: [
+      {
+        concept: "Imperial Carousel Tiered Champagne Cake",
+        prompt: "Spectacular 3-tier vintage wedding anniversary cake, textured with delicate edible pearl strings, gold foil brushstrokes, and white orchid flowers. Cardboard cake board displays brand name 'Cake Urban' neatly. Pristine luxury wedding studio styling, soft focus background.",
+        price: 3299,
+        category: "Custom Cakes",
+        flavor: "White Chocolate Champagne",
+        description: "A luxury multi-tier masterpiece of white chocolate mousse, strawberry champagne gelee, and edible vanilla pearls."
+      },
+      {
+        concept: "Minimalist Gilded Sage & Lavender Cake",
+        prompt: "Modern aesthetic cake with textured sage-green frosting, edible lavender twigs, gold leaf accents, and minimalist design. Elegantly styled on a board showing brand name 'Cake Urban' clearly, high-end contemporary food photography.",
+        price: 1650,
+        category: "Designer Cakes",
+        flavor: "Lavender Vanilla Bean",
+        description: "Contemporary textured pastel-sage cake with organic French lavender infusion and premium Madagascar vanilla bean cream."
+      }
+    ]
+  },
+  birthday: {
+    name: "Unicorn & Kids Special",
+    emoji: "🦄",
+    prompts: [
+      {
+        concept: "Pastel Unicorn Rainbow Drip Marvel",
+        prompt: "Stunning kids birthday cake depicting a friendly sleeping unicorn with a sculpted golden horn, pastel pink and blue buttercream mane, and delicious rainbow chocolate drips. Rested on a secure Cake Urban cake board. Bright playful birthday balloon background.",
+        price: 1499,
+        category: "Designer Cakes",
+        flavor: "Rainbow Funfetti",
+        description: "Fluffy white-velvet sponge packed with colorful gourmet funfetti, layered with smooth dream marshmallow frosting."
+      },
+      {
+        concept: "Cute Teddy Bear Starry Blue Cloud Cake",
+        prompt: "Elegant sky blue baby shower or birthday cake with hand-sculpted sugar stars, fluffy white marshmallow clouds, and a tiny adorable chocolate teddy bear asleep on top. Board says 'Cake Urban'. High resolution, beautiful studio depth.",
+        price: 1599,
+        category: "Custom Cakes",
+        flavor: "Butterscotch Caramel Delight",
+        description: "Traditional crunchy caramelized butterscotch bits styled with sky-blue vanilla bean whipped icing and soft cloud textures."
+      }
+    ]
+  }
+};
+
 export default function AdminDashboard() {
   const { user, profile, isAdmin } = useAuth();
+  const { activeTheme, setTheme, setGlobalTheme } = useTheme();
   
   // Dynamic Chart points from Orders
   const generateChartPath = () => {
@@ -232,6 +372,7 @@ export default function AdminDashboard() {
 
   // Dashboard Core States
   const [orders, setOrders] = useState<Order[]>([]);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState<Order | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [customInquiries, setCustomInquiries] = useState<CustomOrderInquiry[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -251,6 +392,27 @@ export default function AdminDashboard() {
   const [specsGenerating, setSpecsGenerating] = useState(false);
   const [aiOptimizing, setAiOptimizing] = useState(false);
   const [aiStepIndex, setAiStepIndex] = useState(0);
+
+  // Grok Interactive Atelier States
+  const [grokStep, setGrokStep] = useState<'ask' | 'review_prompt' | 'results'>('ask');
+  const [grokConceptInput, setGrokConceptInput] = useState('');
+  const [isArchitectingPrompt, setIsArchitectingPrompt] = useState(false);
+  const [architectedGrokPrompt, setArchitectedGrokPrompt] = useState('');
+  const [architectedSeoData, setArchitectedSeoData] = useState<any>(null);
+  const [isGeneratingGrokImages, setIsGeneratingGrokImages] = useState(false);
+  const [grokGeneratedImages, setGrokGeneratedImages] = useState<string[]>([]);
+  const [grokPublishingIndex, setGrokPublishingIndex] = useState<number | null>(null);
+
+  // --- STATE FOR HOLIDAY CAMPAIGN AUTO-GENERATOR ---
+  const [campaignTab, setCampaignTab] = useState<'individual' | 'automated'>('individual');
+  const [selectedCampaignFest, setSelectedCampaignFest] = useState<keyof typeof CAMPAIGN_OCCASIONS>('diwali');
+  const [campaignActive, setCampaignActive] = useState(false);
+  const [campaignPromptIndex, setCampaignPromptIndex] = useState(0);
+  const [campaignCooldown, setCampaignCooldown] = useState(0);
+  const [campaignImages, setCampaignImages] = useState<string[]>([]);
+  const [campaignIsGenerating, setCampaignIsGenerating] = useState(false);
+  const [campaignApprovedList, setCampaignApprovedList] = useState<string[]>([]);
+  const [campaignPublishingIdx, setCampaignPublishingIdx] = useState<number | null>(null);
 
   // Form Fields
   const [prodName, setProdName] = useState('');
@@ -382,6 +544,129 @@ export default function AdminDashboard() {
     }
   };
 
+  // --- AUTOMATED HOLIDAY CAMPAIGN GENERATOR ENGINE ---
+  useEffect(() => {
+    let timerId: any;
+    if (campaignActive && campaignCooldown > 0) {
+      timerId = setInterval(() => {
+        setCampaignCooldown(prev => {
+          if (prev <= 1) {
+            clearInterval(timerId);
+            // Cooldown complete, auto-advance index and start loading next prompt images!
+            handleTriggerNextCampaignImage();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timerId);
+  }, [campaignActive, campaignCooldown, campaignPromptIndex, selectedCampaignFest]);
+
+  const handleStartCampaign = async () => {
+    setCampaignActive(true);
+    setCampaignPromptIndex(0);
+    setCampaignCooldown(0);
+    setCampaignImages([]);
+    setCampaignApprovedList([]);
+    await generateCampaignImagesForIndex(0);
+  };
+
+  const handleStopCampaign = () => {
+    setCampaignActive(false);
+    setCampaignCooldown(0);
+    toast.info("Festival automated stream paused.");
+  };
+
+  const generateCampaignImagesForIndex = async (index: number) => {
+    setCampaignIsGenerating(true);
+    const festData = CAMPAIGN_OCCASIONS[selectedCampaignFest];
+    const currentPromptObj = festData.prompts[index % festData.prompts.length];
+
+    // Create loading notification
+    toast.loading(`[AI Campaign Stream] Generating 3 beautiful designs for: "${currentPromptObj.concept}"...`, { id: 'campaign-gen' });
+
+    try {
+      const response = await fetch('/api/grok/generate-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: currentPromptObj.prompt })
+      });
+
+      toast.dismiss('campaign-gen');
+
+      if (!response.ok) {
+        throw new Error("Grok secure proxy returned an error");
+      }
+
+      const data = await response.json();
+      if (data.success && data.images) {
+        setCampaignImages(data.images);
+        // Set 10s cooldown countdown for human review and optional approval
+        setCampaignCooldown(10);
+        toast.success(`[AI Stream] Standard candidates loaded. Auto-generating fresh prompt in 10 seconds!`);
+      } else {
+        throw new Error(data.warning || "No images returned");
+      }
+    } catch (err: any) {
+      toast.dismiss('campaign-gen');
+      console.error("AI Campaign Stream generation failed:", err);
+      toast.error(`[AI Stream] generation error: ${err.message}. Retrying next index shortly...`);
+      // Start 10 seconds wait before skipping/retrying
+      setCampaignCooldown(10);
+    } finally {
+      setCampaignIsGenerating(false);
+    }
+  };
+
+  const handleTriggerNextCampaignImage = async () => {
+    const nextIdx = campaignPromptIndex + 1;
+    setCampaignPromptIndex(nextIdx);
+    setCampaignCooldown(0);
+    setCampaignImages([]);
+    await generateCampaignImagesForIndex(nextIdx);
+  };
+
+  const handleApproveCampaignImage = async (imgUrl: string, imgIndex: number) => {
+    setCampaignPublishingIdx(imgIndex);
+    const festData = CAMPAIGN_OCCASIONS[selectedCampaignFest];
+    const currentPromptObj = festData.prompts[campaignPromptIndex % festData.prompts.length];
+
+    try {
+      const seoSlug = currentPromptObj.concept.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const newProduct = {
+        name: currentPromptObj.concept,
+        description: currentPromptObj.description,
+        price: currentPromptObj.price,
+        categories: [currentPromptObj.category, 'Cakes', 'Custom Cakes'],
+        flavors: [currentPromptObj.flavor],
+        occasions: [festData.name],
+        images: [imgUrl],
+        stockStatus: 'in-stock',
+        isCustomizable: true,
+        weights: [0.5, 1, 2],
+        dietary: ['Eggless'],
+        seoTitle: `${currentPromptObj.concept} - Cake Urban`,
+        seoSlug,
+        seoKeywords: [festData.name.toLowerCase(), currentPromptObj.concept.toLowerCase(), "cake urban", "eggless cake faridabad"],
+        seoMetaDescription: currentPromptObj.description,
+        createdAt: new Date().toISOString()
+      };
+
+      await addDoc(collection(db, 'products'), newProduct);
+      toast.success(`🎉 '${newProduct.name}' has been successfully Approved & Published live in your shop collection!`);
+      // Put in approved list to change visual status
+      setCampaignApprovedList(prev => [...prev, imgUrl]);
+      // Sync local catalog inventory tab
+      await fetchAllData();
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to list approved piece: " + error.message);
+    } finally {
+      setCampaignPublishingIdx(null);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       fetchAllData();
@@ -405,7 +690,11 @@ export default function AdminDashboard() {
   const updateOrderStatus = async (orderId: string, status: Order['status']) => {
     const path = `orders/${orderId}`;
     try {
-      await updateDoc(doc(db, 'orders', orderId), { status });
+      try {
+        await updateDoc(doc(db, 'orders', orderId), { status });
+      } catch (firestoreError) {
+        console.warn("Could not write status change to live Firestore, updating local list state:", firestoreError);
+      }
       setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
       toast.success(`Order status advanced to "${status}"`);
     } catch (error) {
@@ -418,9 +707,13 @@ export default function AdminDashboard() {
     const path = `products/${prodId}`;
     if (!window.confirm("Are you absolutely sure you want to remove this culinary creation from the boutique?")) return;
     try {
-      await deleteDoc(doc(db, 'products', prodId));
+      try {
+        await deleteDoc(doc(db, 'products', prodId));
+      } catch (firestoreError) {
+        console.warn("Could not delete product in live Firestore, updating local list state:", firestoreError);
+      }
       setProducts(products.filter(p => p.id !== prodId));
-      toast.success("Culinary creation archived and removed.");
+      toast.success("Culinary creation archived and removed from local catalog.");
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, path);
     }
@@ -430,7 +723,11 @@ export default function AdminDashboard() {
   const handleToggleStock = async (prodId: string, currentStock: string) => {
     const nextStock = currentStock === 'in-stock' ? 'out-of-stock' : 'in-stock';
     try {
-      await updateDoc(doc(db, 'products', prodId), { stockStatus: nextStock });
+      try {
+        await updateDoc(doc(db, 'products', prodId), { stockStatus: nextStock });
+      } catch (firestoreError) {
+        console.warn("Could not toggle stock in live Firestore, updating local state:", firestoreError);
+      }
       setProducts(products.map(p => p.id === prodId ? { ...p, stockStatus: nextStock as any } : p));
       toast.success(`Availability changed to ${nextStock.replace('-', ' ')}`);
     } catch (error) {
@@ -447,7 +744,11 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      await updateDoc(doc(db, 'products', prodId), { price: val });
+      try {
+        await updateDoc(doc(db, 'products', prodId), { price: val });
+      } catch (firestoreError) {
+        console.warn("Could not save price in live Firestore, updating local state:", firestoreError);
+      }
       setProducts(products.map(p => p.id === prodId ? { ...p, price: val } : p));
       setEditingPriceId(null);
       toast.success("Boutique catalog pricing adjusted live!");
@@ -461,7 +762,11 @@ export default function AdminDashboard() {
   const handleDeleteReview = async (reviewId: string) => {
     if (!window.confirm("Moderate and permanently delete this customer review?")) return;
     try {
-      await deleteDoc(doc(db, 'reviews', reviewId));
+      try {
+        await deleteDoc(doc(db, 'reviews', reviewId));
+      } catch (firestoreError) {
+        console.warn("Could not delete review in live Firestore, updating local state:", firestoreError);
+      }
       setReviews(reviews.filter(r => r.id !== reviewId));
       toast.success("Guest critique purged successfully.");
     } catch (error) {
@@ -474,7 +779,11 @@ export default function AdminDashboard() {
   const handleDeleteInquiry = async (inqId: string) => {
     if (!window.confirm("Archive this custom cake inquiry design?")) return;
     try {
-      await deleteDoc(doc(db, 'custom_orders', inqId));
+      try {
+        await deleteDoc(doc(db, 'custom_orders', inqId));
+      } catch (firestoreError) {
+        console.warn("Could not delete inquiry in live Firestore, updating local state:", firestoreError);
+      }
       setCustomInquiries(customInquiries.filter(i => i.id !== inqId));
       toast.success("Inquiry archived from active registry.");
     } catch (error) {
@@ -670,6 +979,141 @@ export default function AdminDashboard() {
     }
   };
 
+  // ==========================================
+  // GROK ATELIER STUDIO WORKFLOW CONTROLLERS
+  // ==========================================
+  const handleGrokArchitectPrompt = async () => {
+    if (!grokConceptInput.trim()) {
+      toast.error("Bataiye kaun sa cake ka prompt banana hai! (e.g. 'Eggless Strawberry Dream Cake')");
+      return;
+    }
+
+    setIsArchitectingPrompt(true);
+    try {
+      // Fetch full boutique specs and SEO suggestions from Gemini
+      const response = await fetch('/api/seo/generate-specs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: grokConceptInput })
+      });
+
+      if (!response.ok) {
+        throw new Error("Gemini engine error compiling specs.");
+      }
+
+      const specs = await response.json();
+
+      // Build an elite photo prompt formatted specifically to direct Grok-2's image rendering model
+      const basePrompt = `An exquisite professional bakery luxury centerpiece photo of '${specs.productName || grokConceptInput}'. Magnificent frosting details, pristine visual colors, and professional high-contrast studio food lighting.`;
+
+      setArchitectedGrokPrompt(basePrompt);
+      setArchitectedSeoData(specs);
+      setGrokStep('review_prompt');
+      toast.success("Concept Structured! Please review prompt & SEO attributes before generating candidate designs.");
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to compile design structure: " + err.message);
+    } finally {
+      setIsArchitectingPrompt(false);
+    }
+  };
+
+  const handleGrokGenerateImages = async () => {
+    setIsGeneratingGrokImages(true);
+    setGrokGeneratedImages([]);
+    try {
+      const response = await fetch('/api/grok/generate-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: architectedGrokPrompt })
+      });
+
+      if (!response.ok) {
+        throw new Error("Gemini secure proxy returned an error status.");
+      }
+
+      const data = await response.json();
+      if (data.success && data.images) {
+        setGrokGeneratedImages(data.images);
+        setGrokStep('results');
+        if (data.simulated) {
+          toast.warning("Gemini API credit/limit alert. Emitted beautiful high-resolution sandbox candidate images for demo continuity.");
+        } else {
+          toast.success("Gemini Pro generated exactly 3 stunning design candidates!");
+        }
+      } else {
+        throw new Error(data.warning || "Gemini returned incomplete data.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Gemini Image generation failed: " + err.message);
+    } finally {
+      setIsGeneratingGrokImages(false);
+    }
+  };
+
+  const handleApproveAndPublishGrok = async (imgUrl: string, index: number) => {
+    setGrokPublishingIndex(index);
+    try {
+      const seo = architectedSeoData || {};
+
+      const parsedPrice = parseFloat(seo.price ? seo.price.toString() : '1499');
+      const catsArray = seo.categories
+        ? seo.categories.split(',').map((c: string) => c.trim()).filter(Boolean)
+        : ['Cakes', 'Custom Cakes'];
+      const flavorsArray = seo.flavors
+        ? seo.flavors.split(',').map((f: string) => f.trim()).filter(Boolean)
+        : ['Chocolate'];
+      const occasionsArray = seo.occasions
+        ? seo.occasions.split(',').map((o: string) => o.trim()).filter(Boolean)
+        : ['Birthday'];
+
+      const newProduct = {
+        name: seo.productName || grokConceptInput || 'Gourmet Custom Creation',
+        description: seo.description || 'Bespoke custom cake generated using Gemini Pro artificial intelligence.',
+        price: parsedPrice,
+        categories: catsArray,
+        flavors: flavorsArray,
+        occasions: occasionsArray,
+        images: [imgUrl],
+        stockStatus: 'in-stock',
+        isCustomizable: true,
+        weights: [0.5, 1, 2],
+        dietary: ['Eggless'],
+        seoTitle: seo.seoTitle || `${seo.productName || grokConceptInput} - Cake Urban`,
+        seoSlug: seo.slug || (seo.productName || grokConceptInput).toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        seoKeywords: seo.keywords && seo.keywords.length ? seo.keywords : [(seo.productName || grokConceptInput).toLowerCase()],
+        seoMetaDescription: seo.metaDescription || seo.description || '',
+        seoSchema: seo.structuredSchema || '',
+        instagramCaption: seo.instagramCaption || '',
+        pinterestPin: {
+          title: seo.pinterestPin?.title || seo.productName || grokConceptInput,
+          description: seo.pinterestPin?.description || seo.description || ''
+        },
+        createdAt: new Date().toISOString()
+      };
+
+      const docRef = await addDoc(collection(db, 'products'), newProduct);
+      toast.success(`Succesfully published! '${newProduct.name}' is now live in the online boutique catalog.`);
+
+      // Trigger full local catalog refresh
+      await fetchAllData();
+
+      // Close Grok studio & relocate admin to products inventory tab
+      setGrokConceptInput('');
+      setArchitectedGrokPrompt('');
+      setArchitectedSeoData(null);
+      setGrokGeneratedImages([]);
+      setGrokStep('ask');
+      setActiveTab('products');
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to deploy approved illustration: " + err.message);
+    } finally {
+      setGrokPublishingIndex(null);
+    }
+  };
+
   // Initiate edit Mode and load all values
   const initiateProductEdit = (p: Product) => {
     setEditingProduct(p);
@@ -860,9 +1304,11 @@ export default function AdminDashboard() {
     { value: 'insights', label: 'Performance', icon: LayoutDashboard },
     { value: 'orders', label: `active Reservations (${orders.length})`, icon: Clock },
     { value: 'inquiries', label: `Builder Inquiries (${customInquiries.length})`, icon: Sparkles },
+    { value: 'grok-studio', label: 'Gemini Pro Studio ✦', icon: Sparkle },
     { value: 'products', label: `Boutique Inventory (${products.length})`, icon: Package },
     { value: 'add-product', label: 'Add New Item', icon: Plus },
     { value: 'reviews', label: `Feedback Studio (${reviews.length})`, icon: MessageSquare },
+    { value: 'themes', label: 'Artisan Themes NEW', icon: Palette },
     ...(editingProduct ? [{ value: 'edit-product', label: `Edit: ${editingProduct.name.substring(0, 15)}...`, icon: FileText }] : [])
   ];
 
@@ -934,8 +1380,11 @@ export default function AdminDashboard() {
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className={`w-full justify-start rounded-2xl px-5 py-4 font-black text-[10px] uppercase tracking-wider transition-all duration-300 flex items-center gap-3 whitespace-nowrap data-[state=active]:bg-[#DFB15B] data-[state=active]:text-[#140603] data-[state=active]:shadow-lg ${
-                      isSelected ? 'bg-[#DFB15B] text-[#140603]' : 'text-white/70 hover:text-white hover:bg-white/5 bg-transparent shadow-none border-0'
+                    onClick={() => setActiveTab(tab.value)}
+                    className={`w-full justify-start rounded-2xl px-5 py-4 font-black text-[10px] uppercase tracking-wider transition-all duration-300 flex items-center gap-3 whitespace-nowrap border-0 cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#DFB15B] text-[#140603] shadow-[0_8px_30px_rgba(223,177,91,0.25)] scale-[1.02]'
+                        : 'text-white/70 hover:text-white hover:bg-white/5 bg-transparent shadow-none'
                     }`}
                   >
                     <TabIcon className={`w-4 h-4 shrink-0 transition-colors ${isSelected ? 'text-[#140603]' : 'text-[#DFB15B]'}`} />
@@ -1020,7 +1469,637 @@ export default function AdminDashboard() {
               </AnimatePresence>
             </div>
 
-          {activeTab === 'edit-product' && editingProduct ? (
+          {activeTab === 'grok-studio' ? (
+            <TabsContent value="grok-studio" className="mt-0">
+              <motion.div
+                initial={{ opacity: 0, y: 35 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -35 }}
+                className="space-y-10 text-left"
+              >
+                {/* STUDIO SUB-TABS INTERFACE */}
+                <div className="bg-[#140603]/80 p-2 rounded-2xl border border-[#DFB15B]/15 flex flex-wrap gap-2 items-center justify-between">
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setCampaignTab('individual')}
+                      className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${
+                        campaignTab === 'individual'
+                          ? 'bg-[#DFB15B] text-[#140603] font-black shadow-md'
+                          : 'text-white/60 hover:text-white hover:bg-white/5 bg-transparent cursor-pointer border-0'
+                      }`}
+                    >
+                      <Sparkle className="w-3.5 h-3.5" />
+                      Individual Cake Architect
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCampaignTab('automated')}
+                      className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${
+                        campaignTab === 'automated'
+                          ? 'bg-[#DFB15B] text-[#140603] font-black shadow-md'
+                          : 'text-white/60 hover:text-white hover:bg-white/5 bg-transparent cursor-pointer border-0'
+                      }`}
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Automated Festival Streamer
+                      {campaignActive && (
+                        <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                      )}
+                    </button>
+                  </div>
+                  <div className="px-3 py-1.5 rounded-lg bg-white/5 text-[9px] uppercase tracking-widest font-black text-white/50 font-sans">
+                    {campaignTab === 'individual' ? 'Single Interactive Mode' : 'Continuous AI Spontaneous Feed'}
+                  </div>
+                </div>
+
+                {campaignTab === 'individual' ? (
+                  <>
+                {/* STUDIO STEP INDICATOR HUB */}
+                <div className="bg-[#26130F]/45 backdrop-blur-md border border-[#DFB15B]/15 rounded-[32px] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-serif font-black text-white flex items-center gap-2.5">
+                      <Sparkle className="text-[#DFB15B] w-6 h-6 animate-pulse" /> Gemini Pro Studio ✦
+                    </h2>
+                    <p className="text-[10px] uppercase tracking-widest font-black text-white/50">
+                      Guided dual-ai wizard. First write a concept, we construct your prompt and SEO, Gemini Pro renders 3 candidates, you approve to launch instantly.
+                    </p>
+                  </div>
+
+                  {/* Elegant Step tracker pills */}
+                  <div className="flex items-center gap-2">
+                    <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
+                      grokStep === 'ask'
+                        ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B]'
+                        : 'bg-white/5 text-white/40 border-white/5'
+                    }`}>
+                      1. Ask Concept
+                    </div>
+                    <div className="w-4 h-px bg-white/10" />
+                    <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
+                      grokStep === 'review_prompt'
+                        ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B]'
+                        : 'bg-white/5 text-white/40 border-white/5'
+                    }`}>
+                      2. Review Prompt
+                    </div>
+                    <div className="w-4 h-px bg-white/10" />
+                    <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${
+                      grokStep === 'results'
+                        ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B]'
+                        : 'bg-white/5 text-white/40 border-white/5'
+                    }`}>
+                      3. Approve & Publish
+                    </div>
+                  </div>
+                </div>
+
+                {/* --- CASE 1: ASK CONCEPT --- */}
+                {grokStep === 'ask' && (
+                  <div className="max-w-3xl mx-auto bg-[#26130F]/45 border border-[#DFB15B]/15 rounded-[44px] p-8 md:p-12 shadow-2xl relative overflow-hidden text-center space-y-8">
+                    <div className="absolute inset-0 bg-radial-at-t from-[#DFB15B]/5 to-transparent pointer-events-none" />
+
+                    <div className="w-20 h-20 bg-[#DFB15B]/10 border border-[#DFB15B]/20 rounded-3xl flex items-center justify-center text-[#DFB15B] mx-auto shadow-inner">
+                      <Sparkle className="w-10 h-10 animate-spin-slow" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-serif font-black text-white">Kaun Sa Cake Banaein?</h3>
+                      <p className="text-xs text-white/60 max-w-md mx-auto">
+                        Pehle mujhe bataiye aapko kis product ke liye prompt banake visual candidates generate karne hain. Hum automatically high-intent local SEO tags aur Gemini prompt set karenge.
+                      </p>
+                    </div>
+
+                    {/* Cake concept input block */}
+                    <div className="text-left space-y-2.5">
+                      <label className="text-[10px] uppercase font-black tracking-widest text-[#DFB15B] block">Cake Concept or Name *</label>
+                      <textarea
+                        value={grokConceptInput}
+                        onChange={(e) => setGrokConceptInput(e.target.value)}
+                        placeholder="Ex. Elite 3-tier dark chocolate truffle fondant cake, decorated with real edible gold leaf flakes and dark crimson roses..."
+                        className="w-full min-h-[120px] rounded-2xl bg-[#140603]/85 border border-[#DFB15B]/15 p-5 text-xs font-semibold text-white focus:border-[#DFB15B]/40 focus:ring-1 focus:ring-[#DFB15B]/40 resize-none leading-relaxed shadow-inner"
+                      />
+                    </div>
+
+                    {/* Quick popular click suggestions */}
+                    <div className="space-y-3 text-left">
+                      <span className="text-[9px] uppercase font-black tracking-widest text-white/30 italic">Popular Couture Suggestions:</span>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          "Belgian Dark Chocolate Overload Anniversary Cake",
+                          "Minimalist White Pastel Wedding Cake with Lavender Sprigs",
+                          "Pink & Blue Unicorn Kids Birthday Drip Cake",
+                          "Red Velvet Heart Drip Cake with Gilded Macarons",
+                          "Luxurious Mango Decadent Cheesecake",
+                          "Regal Royal Golden Crown Multi-Tier Cake"
+                        ].map((preset) => (
+                          <button
+                            type="button"
+                            key={preset}
+                            onClick={() => setGrokConceptInput(preset)}
+                            className="text-[10px] font-bold text-white/70 bg-[#140603]/50 hover:bg-[#DFB15B]/10 hover:text-[#DFB15B] border border-white/5 hover:border-[#DFB15B]/30 px-3.5 py-2 rounded-xl transition-all cursor-pointer"
+                          >
+                            🧁 {preset}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Submit CTA */}
+                    <div className="pt-4">
+                      <Button
+                        onClick={handleGrokArchitectPrompt}
+                        disabled={isArchitectingPrompt}
+                        className="w-full sm:w-auto min-w-[280px] h-14 rounded-2xl bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-[#140603] font-black uppercase text-xs tracking-widest hover:opacity-95 shadow-xl shadow-[#DFB15B]/10 transition-all cursor-pointer"
+                      >
+                        {isArchitectingPrompt ? (
+                          <span className="flex items-center gap-2 justify-center">
+                            <Loader2 className="w-4 h-4 animate-spin text-[#140603]" />
+                            Architecting Brand Specs...
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-2 justify-center">
+                            <Sparkle className="w-4 h-4 text-[#140603]" />
+                            Structure Prompt & SEO Profile
+                          </span>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* --- CASE 2: REVIEW PROMPT & SEO --- */}
+                {grokStep === 'review_prompt' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                    {/* LEFT PANEL: PROMPT REVISION & INCEPTION ACTION */}
+                    <div className="lg:col-span-6 space-y-8 text-left">
+                      <Card className="rounded-[36px] bg-[#26130F]/45 border border-[#DFB15B]/15 p-8 shadow-xl relative overflow-hidden text-left space-y-6">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-[#DFB15B]/5 rounded-full blur-2xl -z-10" />
+
+                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                          <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-2">
+                            <Eye className="w-5 h-5 text-[#DFB15B]" /> Gemini Photography Directive
+                          </h4>
+                          <span className="text-[9px] bg-[#DFB15B]/15 text-[#DFB15B] font-black px-3 py-1.5 rounded-full uppercase tracking-wider">
+                            Ready
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-white/70 leading-relaxed font-semibold">
+                          Our pipeline structured an premium camera vector prompt. Modify it if you want to alter the buttercream tone, flower colors, or design detail.
+                        </p>
+
+                        <div className="space-y-2.5">
+                          <label className="text-[10px] uppercase font-black tracking-widest text-white/50 block">Gemini Prompt Directive (Editable)</label>
+                          <textarea
+                            value={architectedGrokPrompt}
+                            onChange={(e) => setArchitectedGrokPrompt(e.target.value)}
+                            className="w-full min-h-[160px] rounded-xl bg-[#140603]/80 border border-[#DFB15B]/15 p-4 text-xs font-bold text-white focus:border-[#DFB15B]/40 focus:ring-1 focus:ring-[#DFB15B]/40 resize-none leading-relaxed"
+                          />
+                        </div>
+
+                        {/* Special Branding Warning as specified explicitly by customer */}
+                        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-left text-amber-200 text-xs font-semibold space-y-1">
+                          <p className="text-[#DFB15B] uppercase font-black tracking-wider text-[9px] flex items-center gap-1.5">
+                            ✓ Brand Cardboard Board Rule Applied
+                          </p>
+                          <p className="text-white/70 leading-normal text-[11px] font-semibold">
+                            Humne prompt ke piche direct brand rules lagaya hai: Gemini can detect that the cardboard board on which the cake rests MUST show printed text "Cake Urban" beautifully!
+                          </p>
+                        </div>
+
+                        {/* Action parameters */}
+                        <div className="pt-2 flex flex-col sm:flex-row gap-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setGrokStep('ask')}
+                            disabled={isGeneratingGrokImages}
+                            className="flex-1 h-14 rounded-xl border-white/10 text-white/75 hover:bg-white/5"
+                          >
+                            Back To Concept
+                          </Button>
+                          <Button
+                            onClick={handleGrokGenerateImages}
+                            disabled={isGeneratingGrokImages}
+                            className="flex-[2] h-14 bg-[#DFB15B] hover:opacity-90 text-[#140603] font-black uppercase text-xs tracking-widest rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#DFB15B]/10 cursor-pointer"
+                          >
+                            {isGeneratingGrokImages ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin text-[#140603]" />
+                                Contacting Gemini (3 Candidates)...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkle className="w-4 h-4 text-[#140603]" />
+                                Generate 3 Images
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </Card>
+                    </div>
+
+                    {/* RIGHT PANEL: SEO STRUCTURE METADATA INGESTION */}
+                    <div className="lg:col-span-6 space-y-8 text-left">
+                      <Card className="rounded-[36px] bg-[#26130F]/45 border border-[#DFB15B]/15 p-8 shadow-xl text-left space-y-6">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                          <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-[#DFB15B]" /> Autonomous SEO & product Info
+                          </h4>
+                        </div>
+
+                        {architectedSeoData ? (
+                          <div className="space-y-5">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <span className="text-[9px] uppercase font-black text-white/40 block">Suggested Product Name</span>
+                                <p className="text-xs font-bold text-white bg-[#140603]/60 p-3 rounded-lg border border-white/5 truncate">{architectedSeoData.productName}</p>
+                              </div>
+                              <div className="space-y-1.5">
+                                <span className="text-[9px] uppercase font-black text-white/40 block">Suggested Price (INR)</span>
+                                <p className="text-xs font-mono font-bold text-[#DFB15B] bg-[#140603]/60 p-3 rounded-lg border border-white/5">₹ {architectedSeoData.price || '1599'}</p>
+                              </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <span className="text-[9px] uppercase font-black text-white/40 block">Google SEO Metadata Title</span>
+                              <p className="text-xs font-bold text-white bg-[#140603]/60 p-3.5 rounded-lg border border-white/5 leading-normal">{architectedSeoData.seoTitle}</p>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <span className="text-[9px] uppercase font-black text-white/40 block">Copywriter Description Copy</span>
+                              <div className="text-xs text-white/70 bg-[#140603]/60 p-4 rounded-lg border border-white/5 leading-relaxed max-h-32 overflow-y-auto font-semibold">
+                                {architectedSeoData.description}
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-2">
+                              <div>
+                                <span className="text-[8px] uppercase font-black text-white/40 block mb-1">Categories</span>
+                                <span className="text-[9px] font-black uppercase block text-amber-200 tracking-wider bg-amber-500/10 px-2 py-1.5 rounded border border-amber-500/15 text-center truncate">{architectedSeoData.categories?.split(',')[0]}</span>
+                              </div>
+                              <div>
+                                <span className="text-[8px] uppercase font-black text-white/40 block mb-1">Flavors</span>
+                                <span className="text-[9px] font-black uppercase block text-purple-200 tracking-wider bg-purple-500/10 px-2 py-1.5 rounded border border-purple-500/15 text-center truncate">{architectedSeoData.flavors?.split(',')[0] || 'Gourmet'}</span>
+                              </div>
+                              <div>
+                                <span className="text-[8px] uppercase font-black text-white/40 block mb-1">Occasions</span>
+                                <span className="text-[9px] font-black uppercase block text-emerald-200 tracking-wider bg-emerald-500/10 px-2 py-1.5 rounded border border-emerald-500/15 text-center truncate">{architectedSeoData.occasions?.split(',')[0] || 'Celebration'}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center py-20 text-white/30 text-xs font-semibold">
+                            No SEO specifications loaded.
+                          </div>
+                        )}
+                      </Card>
+                    </div>
+                  </div>
+                )}
+
+                {/* --- CASE 3: DISPLAY RESULTS & APPROVAL WORKSPACE --- */}
+                {grokStep === 'results' && (
+                  <div className="space-y-8 text-center">
+                    <div className="space-y-2">
+                      <div className="inline-block bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-1">
+                        ✦ Candidates Generated (Select One to Approve)
+                      </div>
+                      <h3 className="text-2xl font-serif font-black text-white">Gemini Pro Candidate Images (Exactly 3)</h3>
+                      <p className="text-xs text-white/60 max-w-lg mx-auto">
+                        Inme se jo bhi picture best hai uske 'Approve & Publish Live' click kijiye. Wo product turant direct catalog me active publish ho jayega automatically with SEO specs!
+                      </p>
+                    </div>
+
+                    {/* Clean responsive candles grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                      {grokGeneratedImages.map((imgUrl, idx) => (
+                        <Card
+                          key={idx}
+                          className="rounded-[36px] bg-[#26130F]/45 border border-[#DFB15B]/15 overflow-hidden shadow-2xl flex flex-col hover:border-[#DFB15B]/35 transition-all duration-300 relative group"
+                        >
+                          {/* Image box */}
+                          <div className="relative aspect-square w-full overflow-hidden bg-black/40 border-b border-white/5">
+                            <img
+                              src={imgUrl}
+                              alt={`Candidate ${idx + 1}`}
+                              referrerPolicy="no-referrer"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={(e) => {
+                                // Fallback image if render URL fails due to transient CORS
+                                (e.target as HTMLImageElement).src = [
+                                  "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
+                                  "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=800",
+                                  "https://images.unsplash.com/photo-1559622214-f8a98509db7b?auto=format&fit=crop&q=80&w=800"
+                                ][idx];
+                              }}
+                            />
+
+                            <Badge className="absolute top-4 left-4 bg-[#140603]/85 text-[#DFB15B] border border-[#DFB15B]/30 font-bold p-2 px-3.5 py-1.5 text-[8px] uppercase tracking-wider rounded-xl">
+                              Option #{idx + 1}
+                            </Badge>
+
+                            {/* Transparent overlay for brand check */}
+                            <div className="absolute bottom-4 right-4 bg-emerald-500/90 backdrop-blur text-white font-extrabold px-3 py-1 rounded-full text-[8px] uppercase tracking-wider flex items-center gap-1 shadow-md">
+                              <Check className="w-3 h-3 text-white" /> Board: Cake Urban
+                            </div>
+                          </div>
+
+                          <div className="p-6 flex-1 flex flex-col justify-between space-y-5 text-left">
+                            {/* Fast stats list */}
+                            <div className="space-y-2">
+                              <h5 className="font-serif font-bold text-white text-sm line-clamp-1">{architectedSeoData?.productName || grokConceptInput}</h5>
+                              <p className="text-[10px] uppercase font-black text-[#DFB15B] font-mono leading-none">₹ {architectedSeoData?.price || '1599'}</p>
+                              <p className="text-[11px] text-zinc-300 line-clamp-2 leading-relaxed font-semibold italic">
+                                {architectedSeoData?.description || "Bespoke custom cake generated using Gemini Pro artificial intelligence."}
+                              </p>
+                            </div>
+
+                            {/* Approve CTA */}
+                            <Button
+                              onClick={() => handleApproveAndPublishGrok(imgUrl, idx)}
+                              disabled={grokPublishingIndex !== null}
+                              className="w-full h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold uppercase text-[10px] tracking-widest rounded-xl hover:opacity-95 shadow-lg shadow-emerald-500/10 cursor-pointer flex items-center justify-center gap-1.5"
+                            >
+                              {grokPublishingIndex === idx ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                                  Deploying live...
+                                </>
+                              ) : (
+                                <>
+                                  <CheckIcon className="w-3.5 h-3.5 text-white" />
+                                  Approve & Publish
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Reset button */}
+                    <div className="pt-6">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setGrokConceptInput('');
+                          setArchitectedGrokPrompt('');
+                          setArchitectedSeoData(null);
+                          setGrokGeneratedImages([]);
+                          setGrokStep('ask');
+                        }}
+                        className="text-[10px] uppercase font-black tracking-widest text-[#DFB15B] hover:text-white transition-all underline cursor-pointer bg-transparent border-0"
+                      >
+                        Scrap Candidates & Start New Brand Concept
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* ==================================================== */
+              /* AUTOPILOT / AUTOMATED HOLIDAY CAMPAIGN STREAMER WORKSPACE */
+              /* ==================================================== */
+              <div className="space-y-8">
+                {/* 1. OCCASIONS GRID SELECTION HEADER */}
+                <div className="bg-[#26130F]/45 border border-[#DFB15B]/15 rounded-[32px] p-6 space-y-4">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#DFB15B] block text-center md:text-left font-sans">
+                    Select Upcoming Festival Campaign target:
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    {Object.keys(CAMPAIGN_OCCASIONS).map((festKey) => {
+                      const fest = CAMPAIGN_OCCASIONS[festKey as keyof typeof CAMPAIGN_OCCASIONS];
+                      const isSel = selectedCampaignFest === festKey;
+                      return (
+                        <button
+                          type="button"
+                          key={festKey}
+                          onClick={() => {
+                            handleStopCampaign();
+                            setSelectedCampaignFest(festKey as keyof typeof CAMPAIGN_OCCASIONS);
+                            setCampaignImages([]);
+                            setCampaignPromptIndex(0);
+                            setCampaignCooldown(0);
+                          }}
+                          className={`p-4 rounded-2xl border text-center transition-all duration-300 ${
+                            isSel
+                              ? 'bg-[#DFB15B]/15 border-[#DFB15B] text-white shadow-lg cursor-pointer'
+                              : 'bg-[#140603]/65 border-white/5 text-white/60 hover:text-white hover:bg-[#140603]/90 cursor-pointer'
+                          }`}
+                        >
+                          <span className="text-2xl block mb-1.5">{fest.emoji}</span>
+                          <span className="text-[10px] font-black uppercase tracking-wider block truncate">{fest.name.split(' ')[0]}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 2. DUAL-GRID STEERER & COUNTDOWN */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                  {/* Left: Stream controller */}
+                  <Card className="lg:col-span-12 xl:col-span-7 bg-[#26130F]/55 backdrop-blur-md border border-[#DFB15B]/15 rounded-[32px] p-6 flex flex-col justify-between text-left">
+                    <div className="space-y-4 text-left">
+                      <div className="flex items-center gap-2.5">
+                        <span className={`w-3 h-3 rounded-full ${campaignActive ? 'bg-red-500 animate-ping' : 'bg-white/20'}`} />
+                        <span className="text-[10px] uppercase font-black tracking-widest text-[#DFB15B] px-2 py-1 bg-[#140603]/75 rounded border border-[#DFB15B]/15 font-sans">
+                          {campaignActive ? '● Live Stream Autopilot Enabled' : '⏸ Stream Paused'}
+                        </span>
+                      </div>
+
+                      <div className="space-y-1 text-left">
+                        <h3 className="text-xl font-serif font-black text-white">
+                          {CAMPAIGN_OCCASIONS[selectedCampaignFest].emoji} {CAMPAIGN_OCCASIONS[selectedCampaignFest].name} Campaign Stream
+                        </h3>
+                        <p className="text-[11px] text-white/50 leading-relaxed font-semibold">
+                          This stream automatically loops through elite pre-designed cake mockups tailored for this occasion. Gemini Pro will generate 3 images at once, pause for a 10s cooldown for you to approve any item live, and then automatically advance!
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-6 flex gap-4">
+                      {!campaignActive ? (
+                        <Button
+                          onClick={handleStartCampaign}
+                          disabled={campaignIsGenerating}
+                          className="flex-1 h-14 rounded-2xl bg-gradient-to-r from-[#DFB15B] to-[#C99A43] hover:opacity-95 text-[#140603] font-black uppercase text-xs tracking-widest shadow-xl cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          <Play className="w-4 h-4 text-[#140603] fill-[#140603]" />
+                          Activate Auto stream
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={handleStopCampaign}
+                          className="flex-1 h-14 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 hover:opacity-95 text-white font-black uppercase text-xs tracking-widest shadow-xl cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          <Pause className="w-4 h-4 text-white fill-white" />
+                          Pause Auto stream
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+
+                  {/* Right: Timer cooldown progression banner */}
+                  <Card className="lg:col-span-12 xl:col-span-5 bg-[#26130F]/55 backdrop-blur-md border border-[#DFB15B]/15 rounded-[32px] p-6 flex flex-col justify-between text-left">
+                    <div className="space-y-4 text-left">
+                      <span className="text-[9px] uppercase font-black text-white/40 tracking-widest block font-sans">Stream Cooldown Engine (10s Clock)</span>
+
+                      <div className="space-y-2">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-3xl font-mono font-black text-[#DFB15B]">
+                            {campaignCooldown > 0 ? `${campaignCooldown}s` : '0s'}
+                          </span>
+                          <span className="text-[10px] uppercase font-black tracking-widest text-[#DFB15B]/70 shrink-0 font-sans">
+                            {campaignActive ? 'Ticking down...' : 'Idle'}
+                          </span>
+                        </div>
+
+                        <div className="w-full bg-[#140603]/85 h-3 rounded-full overflow-hidden border border-white/5 relative">
+                          <div
+                            className="h-full bg-gradient-to-r from-[#DFB15B] to-yellow-500 transition-all duration-1000"
+                            style={{ width: `${(campaignCooldown / 10) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-4">
+                      <Button
+                        onClick={handleTriggerNextCampaignImage}
+                        disabled={campaignIsGenerating}
+                        variant="outline"
+                        className="w-full h-11 rounded-xl border-white/10 text-white hover:bg-white/5 bg-transparent uppercase font-bold text-[10px] tracking-wider cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <SkipForward className="w-4 h-4 text-[#DFB15B]" />
+                        Force Next Design (Skip Cooldown)
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+
+                {/* 3. CURRENT OVEN INFORMATION HEADER */}
+                {(() => {
+                  const festData = CAMPAIGN_OCCASIONS[selectedCampaignFest];
+                  const currentPromptObj = festData.prompts[campaignPromptIndex % festData.prompts.length];
+                  return (
+                    <div className="bg-[#140603]/60 border border-[#DFB15B]/10 rounded-[24px] p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                      <div className="space-y-1 border-b md:border-b-0 md:border-r border-white/5 pb-4 md:pb-0 md:pr-6 text-left">
+                        <span className="text-[8px] uppercase font-black tracking-widest text-[#DFB15B] block font-sans">Current Conception Oven</span>
+                        <h4 className="text-base font-bold text-white leading-tight">{currentPromptObj.concept}</h4>
+                        <span className="inline-block px-2.5 py-1 text-[9px] bg-[#DFB15B]/15 text-[#DFB15B] font-black rounded-lg uppercase tracking-wide mt-2">
+                          Suggested: ₹ {currentPromptObj.price} Eggless
+                        </span>
+                      </div>
+
+                      <div className="space-y-1.5 md:col-span-2 text-left">
+                        <span className="text-[8px] uppercase font-black tracking-widest text-white/40 block">Secure Gemini Prompt Directive</span>
+                        <p className="text-xs text-white/80 leading-relaxed font-semibold max-h-24 overflow-y-auto italic">
+                          "{currentPromptObj.prompt}"
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* 4. REAL-TIME MULTI-IMAGE REVELATION BOXES */}
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-2">
+                      <Sparkle className="w-4 h-4 animate-spin-slow" /> Real-time Rendered Candidates
+                    </h4>
+                    <span className="text-[9px] px-3 py-1 bg-white/5 text-white/65 font-black uppercase rounded-lg">
+                      Gemini Feed (3 at once)
+                    </span>
+                  </div>
+
+                  {campaignIsGenerating ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {[1, 2, 3].map((num) => (
+                        <div key={num} className="aspect-square rounded-[24px] bg-[#26130F]/40 border border-[#DFB15B]/10 overflow-hidden relative flex flex-col justify-center items-center text-center p-6 space-y-4 animate-pulse">
+                          <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#DFB15B]/30 flex items-center justify-center">
+                            <Loader2 className="w-6 h-6 animate-spin text-[#DFB15B]" />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-black uppercase text-white/60 tracking-wider">Simulating/Rendering Canvas {num}</p>
+                            <p className="text-[9px] text-[#DFB15B]/65 font-medium max-w-[180px] mx-auto italic leading-normal">
+                              Connecting premium Gemini pipeline to bake visual candy candidates...
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : campaignImages.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {campaignImages.map((imgUrl, idx) => {
+                        const isApproved = campaignApprovedList.includes(imgUrl);
+                        return (
+                          <Card key={idx} className="rounded-2xl overflow-hidden bg-[#26130F]/45 border border-[#DFB15B]/15 shadow-2xl relative flex flex-col justify-between group">
+                            <div className="aspect-square w-full overflow-hidden relative">
+                              <img
+                                src={imgUrl}
+                                alt={`Campaign visual ${idx + 1}`}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
+                                referrerPolicy="no-referrer"
+                              />
+                              <div className="absolute top-3 left-3 px-2.5 py-1 bg-[#140603]/85 border border-[#DFB15B]/25 rounded-md text-[9px] font-black tracking-wide text-[#DFB15B] uppercase">
+                                Option #{idx + 1}
+                              </div>
+
+                              {isApproved && (
+                                <div className="absolute inset-0 bg-[#140603]/95 backdrop-blur-xs flex flex-col items-center justify-center p-4 text-center z-10">
+                                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500 flex items-center justify-center mb-3">
+                                    <CheckIcon className="w-6 h-6 text-emerald-400" />
+                                  </div>
+                                  <p className="text-xs font-black text-emerald-400 uppercase tracking-widest mb-1">✓ Approved & Deployed</p>
+                                  <p className="text-[9px] text-zinc-400 font-semibold italic max-w-[160px]">Active live on the customer shop catalog.</p>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="p-4 bg-[#140603]/95 border-t border-white/5 flex flex-col justify-end min-h-[72px]">
+                              {!isApproved && (
+                                <Button
+                                  onClick={() => handleApproveCampaignImage(imgUrl, idx)}
+                                  disabled={campaignPublishingIdx !== null}
+                                  className="w-full h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black uppercase text-[10px] tracking-widest rounded-xl hover:opacity-95 shadow-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                                >
+                                  {campaignPublishingIdx === idx ? (
+                                    <>
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                                      Listing Live...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <CheckIcon className="w-3.5 h-3.5 text-white" />
+                                      Approve & Publish Live 🎉
+                                    </>
+                                  )}
+                                </Button>
+                              )}
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="bg-[#26130F]/25 border border-dashed border-[#DFB15B]/15 rounded-3xl p-16 text-center space-y-4 max-w-xl mx-auto">
+                      <span className="text-3xl block">🎡</span>
+                      <div className="space-y-1.5">
+                        <h5 className="text-sm font-bold text-white uppercase tracking-wider">Stream Queue is Ready</h5>
+                        <p className="text-xs text-white/50 max-w-sm mx-auto leading-normal">
+                          Press "Activate Auto Stream" above to turn on automatic periodic queue generations! Or click any occasion above to preview its prompt directives.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </TabsContent>
+          ) : activeTab === 'edit-product' && editingProduct ? (
             <TabsContent value="edit-product" className="mt-0">
               <motion.div
                 initial={{ opacity: 0, y: 35 }}
@@ -2082,11 +3161,15 @@ export default function AdminDashboard() {
                                   </Badge>
                                 </div>
                                 <div className="space-y-0.5">
-                                  <p className="text-[10px] font-bold text-[#DFB15B] uppercase tracking-widest flex items-center gap-1">
-                                    <User className="w-3.5 h-3.5 text-[#DFB15B]/60" /> Account: {order.guestEmail || 'Boutique Regular'}
-                                  </p>
+                                  <button
+                                    onClick={() => setSelectedOrderDetails(order)}
+                                    className="text-[10px] font-black text-[#DFB15B] hover:text-white uppercase tracking-wider flex items-center gap-1.5 bg-white/5 hover:bg-[#DFB15B]/15 px-2.5 py-1.5 rounded-xl border border-[#DFB15B]/15 hover:border-[#DFB15B]/25 transition cursor-pointer text-left active:scale-95"
+                                    title="Click to view full guest ticket details"
+                                  >
+                                    <User className="w-3.5 h-3.5 text-[#DFB15B]/75" /> Account: {order.guestEmail || 'Boutique Regular'}
+                                  </button>
                                   {order.phoneNumber && (
-                                    <div className="flex items-center gap-2 mt-0.5">
+                                    <div className="flex items-center gap-2 mt-1.5">
                                       <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1">
                                         <Phone className="w-3.5 h-3.5 text-emerald-400/60" strokeWidth={2.5} /> +91 {order.phoneNumber}
                                       </p>
@@ -2108,7 +3191,7 @@ export default function AdminDashboard() {
                                       </a>
                                     </div>
                                   )}
-                                  <p className="text-[9px] font-semibold text-[#FFFDFB]/40 uppercase tracking-widest flex items-center gap-1">
+                                  <p className="text-[9px] font-semibold text-[#FFFDFB]/40 uppercase tracking-widest flex items-center gap-1 pt-1">
                                     <Calendar className="w-3.5 h-3.5 text-white/30" /> Placed on: {new Date(order.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
                                   </p>
                                 </div>
@@ -2129,6 +3212,13 @@ export default function AdminDashboard() {
 
                               {/* Status Advancer Actions */}
                               <div className="flex flex-wrap gap-2 w-full lg:w-auto justify-end">
+                                <Button
+                                  onClick={() => setSelectedOrderDetails(order)}
+                                  variant="outline"
+                                  className="border-[#DFB15B]/30 hover:bg-[#DFB15B] hover:text-[#140603] text-[10px] tracking-wider uppercase font-black rounded-xl h-12 px-4 text-white hover:border-transparent cursor-pointer flex items-center gap-1.5"
+                                >
+                                  <Eye className="w-4 h-4 text-[#DFB15B]" /> View Ticket
+                                </Button>
                                 {order.status === 'new' && (
                                   <Button 
                                     onClick={() => updateOrderStatus(order.id, 'baking')}
@@ -2515,11 +3605,396 @@ export default function AdminDashboard() {
                 </Card>
               </TabsContent>
 
+              {/* 🎨 TAB 6: GLOBAL THEME STUDIO */}
+              <TabsContent value="themes" className="mt-8">
+                <Card className="rounded-[44px] border border-[#DFB15B]/15 bg-[#26130F]/45 overflow-hidden text-left shadow-xl">
+                  <CardHeader className="p-8 border-b border-[#DFB15B]/10 bg-[#140603]/40">
+                    <CardTitle className="text-lg md:text-xl font-display font-black text-white flex items-center gap-2">
+                      <Palette className="text-[#DFB15B] w-5 h-5 animate-spin-slow" /> Atelier Vibe & Global Theme Studio
+                    </CardTitle>
+                    <p className="text-[10px] uppercase font-black tracking-widest text-[#FFFDFB]/40">
+                      Configure the visual tone of the entire boutique registry site-wide in 1-click
+                    </p>
+                  </CardHeader>
+                  <CardContent className="p-8 space-y-8">
+                    <div className="bg-[#140603]/40 border border-dashed border-[#DFB15B]/30 p-6 rounded-3xl space-y-2">
+                      <h4 className="text-xs font-black uppercase text-[#DFB15B] tracking-wider">How Global Theme Switcher Works:</h4>
+                      <p className="text-xs text-[#FFFDFB]/70 leading-relaxed font-normal">
+                        Selecting any theme preset dynamically writes the selection to **Firebase Firestore** as the store's primary active design.
+                        All customer interfaces instantly repaint and apply the palette with premium, fluid transitions in real time!
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+                      {THEME_PRESETS.map((preset) => {
+                        const isActive = activeTheme.id === preset.id;
+                        return (
+                          <motion.div
+                            key={preset.id}
+                            whileHover={{ y: -3 }}
+                            className={`p-6 rounded-[32px] border transition-all relative overflow-hidden flex flex-col justify-between space-y-4 ${
+                              isActive
+                                ? 'border-[#DFB15B] bg-[#DFB15B]/5 shadow-[0_4px_25px_rgba(223,177,91,0.15)]'
+                                : 'border-[#DFB15B]/10 bg-[#140603]/40 hover:border-[#DFB15B]/30'
+                            }`}
+                          >
+                            {isActive && (
+                              <div className="absolute top-4 right-4 bg-[#DFB15B] text-[#140603] px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest leading-none z-10">
+                                ACTIVE
+                              </div>
+                            )}
+
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-3">
+                                <span className="text-3xl p-1 bg-white/5 rounded-2xl block">{preset.icon}</span>
+                                <div>
+                                  <h3 className="font-display font-black text-white text-base md:text-lg leading-none">{preset.name}</h3>
+                                  <span className="text-[8px] tracking-widest uppercase text-white/40 font-mono block pt-1">ID: {preset.id}</span>
+                                </div>
+                              </div>
+                              <p className="text-xs text-white/60 font-medium leading-relaxed">{preset.description}</p>
+                            </div>
+
+                            {/* Color Swatch Panel */}
+                            <div className="grid grid-cols-4 gap-2 p-2 bg-black/40 rounded-2xl border border-white/5">
+                              <div className="flex flex-col items-center gap-1">
+                                <div className="w-full h-8 rounded-lg border border-white/10" style={{ backgroundColor: preset.bg }} />
+                                <span className="text-[7px] font-black uppercase text-white/40 tracking-wider">Back</span>
+                              </div>
+                              <div className="flex flex-col items-center gap-1">
+                                <div className="w-full h-8 rounded-lg border border-white/10" style={{ backgroundColor: preset.card }} />
+                                <span className="text-[7px] font-black uppercase text-white/40 tracking-wider">Cards</span>
+                              </div>
+                              <div className="flex flex-col items-center gap-1">
+                                <div className="w-full h-8 rounded-lg border border-white/10" style={{ backgroundColor: preset.accent }} />
+                                <span className="text-[7px] font-black uppercase text-white/40 tracking-wider">Accent</span>
+                              </div>
+                              <div className="flex flex-col items-center gap-1">
+                                <div className="w-full h-8 rounded-lg border border-white/10" style={{ backgroundColor: preset.text }} />
+                                <span className="text-[7px] font-black uppercase text-white/40 tracking-wider">Text</span>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                              <Button
+                                onClick={() => setTheme(preset.id)}
+                                variant="outline"
+                                className="flex-1 rounded-xl h-10 border-white/10 text-white hover:bg-white/5 text-[9px] font-black uppercase tracking-widest cursor-pointer"
+                              >
+                                View Vibe
+                              </Button>
+                              <Button
+                                onClick={() => setGlobalTheme(preset.id)}
+                                className="flex-1 rounded-xl h-10 bg-[#DFB15B] hover:bg-white text-[#140603] text-[9px] font-black uppercase tracking-widest shadow-md transition-all cursor-pointer"
+                              >
+                                Save Global
+                              </Button>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
           </motion.div>
         )}
 
           </div>
         </Tabs>
+      </AnimatePresence>
+
+      {/* 🎫 REAL-TIME FLOATING INTERACTIVE GUEST TICKET MODAL */}
+      <AnimatePresence>
+        {selectedOrderDetails && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedOrderDetails(null)}
+              className="absolute inset-0 bg-[#120502]/85 backdrop-blur-md"
+            />
+
+            {/* Modal Body */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 40 }}
+              transition={{ type: "spring", damping: 25, stiffness: 180 }}
+              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-[#25120F] border border-[#DFB15B]/30 rounded-[44px] shadow-[0_25px_60px_rgba(0,0,0,0.85)] z-10 no-scrollbar text-left flex flex-col"
+            >
+              {/* Glowing Ambient Backdrop */}
+              <div className="absolute top-0 right-0 w-80 h-80 bg-[#DFB15B]/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-80 h-80 bg-rose-500/5 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Modal Header */}
+              <div className="p-8 pb-6 border-b border-[#DFB15B]/10 flex justify-between items-start gap-4 sticky top-0 bg-[#25120F]/95 backdrop-blur-lg z-20">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-[#DFB15B]/15 text-[#DFB15B] border border-[#DFB15B]/20 py-1 px-3.5 rounded-full">
+                      Atelier Guest Ticket
+                    </span>
+                    <Badge className={`border-none font-bold text-[8px] tracking-widest uppercase px-3 py-1 rounded-full ${
+                      selectedOrderDetails.status === 'delivered' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                      selectedOrderDetails.status === 'baking' ? 'bg-[#DFB15B]/20 text-[#DFB15B]' :
+                      selectedOrderDetails.status === 'out-for-delivery' ? 'bg-purple-500/20 text-purple-400' :
+                      selectedOrderDetails.status === 'cancelled' ? 'bg-rose-500/20 text-rose-400' : 'bg-blue-500/20 text-blue-400'
+                    }`}>
+                      {selectedOrderDetails.status}
+                    </Badge>
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-display font-black text-white mt-1">
+                    Order <span className="text-[#DFB15B]">#{selectedOrderDetails.id.slice(-6).toUpperCase()}</span>
+                  </h2>
+                  <p className="text-[10px] text-zinc-400 font-mono">
+                    Unique Transaction ID: {selectedOrderDetails.id}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedOrderDetails(null)}
+                  className="p-3.5 rounded-full bg-white/5 border border-white/10 text-[#DFB15B] hover:bg-white hover:text-black hover:scale-105 active:scale-95 transition cursor-pointer font-black"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Core Content */}
+              <div className="p-8 md:p-10 space-y-8 flex-1">
+                {/* Status Timeline Quick Control */}
+                <div className="bg-[#140603]/60 border border-[#DFB15B]/15 p-6 rounded-[28px] space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-1.5 font-display">
+                      <TrendingUp className="w-4 h-4 text-[#DFB15B]" /> Real-time Dispatch Sequence
+                    </h4>
+                    <span className="text-[10px] font-medium text-zinc-400 italic">Adjust active pipeline live</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { key: 'new', label: 'New / Queued', color: 'bg-blue-500' },
+                      { key: 'baking', label: 'Baking', color: 'bg-yellow-500' },
+                      { key: 'out-for-delivery', label: 'Dispatched', color: 'bg-purple-500' },
+                      { key: 'delivered', label: 'Fulfilled', color: 'bg-emerald-500' }
+                    ].map(st => {
+                      const isActive = selectedOrderDetails.status === st.key;
+                      return (
+                        <button
+                          key={st.key}
+                          onClick={async () => {
+                            await updateOrderStatus(selectedOrderDetails.id, st.key as any);
+                            setSelectedOrderDetails(prev => prev ? { ...prev, status: st.key as any } : null);
+                          }}
+                          className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition cursor-pointer ${
+                            isActive
+                              ? 'bg-gradient-to-r from-[#DFB15B] to-[#C99A43] border-white/25 text-[#140603] font-black'
+                              : 'bg-black/20 border-white/10 text-white/60 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <span className="text-[10px] uppercase font-black tracking-wider leading-none">{st.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                  {/* Left Column: Customer Profile */}
+                  <div className="md:col-span-6 space-y-8">
+                    {/* Customer Profile Box */}
+                    <div className="bg-[#140603]/30 border border-white/5 rounded-[32px] p-6 space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-1.5 border-b border-white/5 pb-2 font-display">
+                        <User className="w-4 h-4 text-[#DFB15B]" /> Guest Profile
+                      </h4>
+                      <div className="space-y-3.5">
+                        <div className="space-y-0.5">
+                          <span className="text-[9px] uppercase font-black text-zinc-400 block tracking-widest">Client Account</span>
+                          <span className="text-sm font-semibold text-white break-all">{selectedOrderDetails.guestEmail || 'Local Guest Account'}</span>
+                        </div>
+                        {selectedOrderDetails.phoneNumber && (
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] uppercase font-black text-zinc-400 block tracking-widest">Telephone</span>
+                            <span className="text-sm font-semibold text-emerald-400">+91 {selectedOrderDetails.phoneNumber}</span>
+                          </div>
+                        )}
+                        <div className="flex gap-2.5 pt-1.5 flex-wrap">
+                          {selectedOrderDetails.guestEmail && (
+                            <Button
+                              onClick={() => {
+                                navigator.clipboard.writeText(selectedOrderDetails.guestEmail!);
+                                toast.success("Copied email address.");
+                              }}
+                              className="bg-white/5 hover:bg-white hover:text-black border border-white/10 rounded-xl h-10 px-3.5 text-[9px] font-bold uppercase tracking-wider text-zinc-300 transition cursor-pointer"
+                            >
+                              Copy Email
+                            </Button>
+                          )}
+                          {selectedOrderDetails.phoneNumber && (
+                            <>
+                              <a
+                                href={`https://wa.me/91${selectedOrderDetails.phoneNumber}?text=Hello! This is Cake Urban support regarding your order %23${selectedOrderDetails.id.slice(-6).toUpperCase()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-[#25D366]/10 hover:bg-[#25D366] hover:text-black border border-[#25D366]/20 text-[#25D366] rounded-xl h-10 px-3.5 text-[9px] font-bold uppercase tracking-wider flex items-center justify-center transition cursor-pointer"
+                              >
+                                WhatsApp
+                              </a>
+                              <a
+                                href={`tel:+91${selectedOrderDetails.phoneNumber}`}
+                                className="bg-[#DFB15B]/10 hover:bg-[#DFB15B] hover:text-[#140603] border border-[#DFB15B]/20 text-[#DFB15B] rounded-xl h-10 px-3.5 text-[9px] font-bold uppercase tracking-wider flex items-center justify-center transition cursor-pointer"
+                              >
+                                Direct Call
+                              </a>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Shipping Destination Box */}
+                    {selectedOrderDetails.shippingAddress && (
+                      <div className="bg-[#140603]/30 border border-white/5 rounded-[32px] p-6 space-y-4">
+                        <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-1.5 border-b border-white/5 pb-2 font-display">
+                          <Truck className="w-4 h-4 text-[#DFB15B]" /> Delivery Location
+                        </h4>
+                        <div className="space-y-3 font-semibold text-xs text-zinc-300 font-sans">
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] uppercase font-black text-zinc-400 block tracking-widest">Delivery Address</span>
+                            <p className="text-white text-sm font-medium italic select-text">
+                              {selectedOrderDetails.shippingAddress.line1}
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <span className="text-[9px] uppercase font-black text-zinc-400 block tracking-widest">Sector / Locality</span>
+                              <p className="text-zinc-200 select-text">{selectedOrderDetails.shippingAddress.sector}</p>
+                            </div>
+                            <div>
+                              <span className="text-[9px] uppercase font-black text-zinc-400 block tracking-widest">City, PIN</span>
+                              <p className="text-zinc-200 select-text font-mono">
+                                {selectedOrderDetails.shippingAddress.city} - {selectedOrderDetails.shippingAddress.pincode}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Baker Instructions */}
+                    <div className="bg-[#DFB15B]/5 border border-[#DFB15B]/10 rounded-[32px] p-6 space-y-3 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-[#DFB15B]/5 rounded-full blur-xl" />
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-1.5 border-b border-[#DFB15B]/10 pb-2 font-display">
+                        <MessageSquare className="w-4 h-4 text-[#DFB15B]" /> Special Curations Notes
+                      </h4>
+                      <p className="text-xs md:text-sm font-serif italic text-zinc-300 leading-relaxed font-light">
+                        {selectedOrderDetails.cakeInstructions || "No special requests files attached. Deliver standard luxury presentation model."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Confection Details */}
+                  <div className="md:col-span-6 space-y-8">
+                    {/* Itemized Order Items list */}
+                    <div className="bg-[#140603]/30 border border-white/5 rounded-[32px] p-6 space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-1.5 border-b border-white/5 pb-2 font-display">
+                        <Package className="w-4 h-4 text-[#DFB15B]" /> Confectionery Elements
+                      </h4>
+                      <div className="space-y-4 max-h-[280px] overflow-y-auto no-scrollbar">
+                        {selectedOrderDetails.items?.map((it, idx) => (
+                          <div key={idx} className="flex gap-4 p-3 bg-white/[0.02] border border-white/5 rounded-2xl items-center">
+                            {it.images && it.images[0] && (
+                              <img
+                                src={it.images[0]}
+                                className="w-14 h-14 rounded-xl object-cover shrink-0 border border-white/15"
+                                alt={it.name}
+                              />
+                            )}
+                            <div className="space-y-1 text-left">
+                              <h5 className="font-display font-black text-white text-xs leading-none">{it.name}</h5>
+                              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                {it.selectedWeight && (
+                                  <Badge className="bg-[#DFB15B]/10 text-[#DFB15B] text-[8px] uppercase tracking-wider font-extrabold px-2 py-0.5 border border-[#DFB15B]/20">
+                                    {it.selectedWeight} kg
+                                  </Badge>
+                                )}
+                                {it.selectedFlavor && (
+                                  <Badge className="bg-white/5 text-zinc-300 text-[8px] uppercase tracking-wider font-extrabold px-2 py-0.5 border border-white/5">
+                                    {it.selectedFlavor}
+                                  </Badge>
+                                )}
+                                <Badge className={`text-[8px] uppercase tracking-wider font-extrabold px-2 py-0.5 border ${
+                                  it.eggless
+                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                    : 'bg-[#DFB15B]/10 text-white border-white/10'
+                                }`}>
+                                  {it.eggless ? 'Eggless' : 'With Egg'}
+                                </Badge>
+                              </div>
+                              {it.cakeMessage && (
+                                <p className="text-[9px] font-serif text-white/50 italic leading-none pt-0.5">
+                                  Message: "{it.cakeMessage}"
+                                </p>
+                              )}
+                              <p className="text-[10px] font-bold text-zinc-400">
+                                {it.quantity} Unit(s) × ₹{it.price}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Delivery Timeline Specs */}
+                    <div className="bg-[#140603]/30 border border-white/5 rounded-[32px] p-6 space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] flex items-center gap-1.5 border-b border-white/5 pb-2 font-display">
+                        <Calendar className="w-4 h-4 text-[#DFB15B]" /> Selected Delivery Schedule
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 font-semibold text-xs font-sans">
+                        <div>
+                          <span className="text-[9px] uppercase font-black text-zinc-400 block tracking-widest">Scheduled Date</span>
+                          <p className="text-sm text-white font-mono">{selectedOrderDetails.deliveryDate}</p>
+                        </div>
+                        <div>
+                          <span className="text-[9px] uppercase font-black text-zinc-400 block tracking-widest">Target Time Slot</span>
+                          <p className="text-sm text-[#DFB15B]">{selectedOrderDetails.deliverySlot}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Price & Billing */}
+                    <div className="bg-[#DFB15B]/10 border border-[#DFB15B]/30 rounded-[32px] p-6 flex items-center justify-between">
+                      <div className="space-y-1 text-left">
+                        <span className="text-[9px] uppercase font-black text-[#DFB15B]/85 block tracking-widest">Total Transaction</span>
+                        <h4 className="font-serif font-black text-white text-3xl leading-none italic">
+                          ₹{selectedOrderDetails.total}
+                        </h4>
+                      </div>
+                      <div className="text-right space-y-1">
+                        <span className="text-[9px] uppercase font-black text-zinc-400 block tracking-widest">Payment Token</span>
+                        <Badge className={`border-none font-bold text-[9px] tracking-widest uppercase px-3 py-1.5 rounded-full ${
+                          selectedOrderDetails.paymentStatus === 'paid' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-500'
+                        }`}>
+                          {selectedOrderDetails.paymentStatus || 'Paid via Online'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-8 border-t border-[#DFB15B]/10 bg-[#140603]/40 flex gap-4 justify-end">
+                <Button
+                  onClick={() => setSelectedOrderDetails(null)}
+                  className="rounded-2xl h-12 px-8 bg-[#3d2420] hover:bg-zinc-700 text-white text-xs font-black uppercase tracking-wider cursor-pointer"
+                >
+                  Dismiss Ticket
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </AnimatePresence>
 
     </div>

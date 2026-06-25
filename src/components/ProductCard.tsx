@@ -3,13 +3,15 @@ import { ShoppingCart, Eye, Star, X, Check, ArrowRight, Sparkles, AlertCircle, H
 import { Button } from './ui/button';
 import { useCart } from '../lib/store';
 import { Product } from '../types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { playSuccessChime, playSlidePop, playBtnTap } from '../lib/sound';
 import { toast } from 'sonner';
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const navigate = useNavigate();
+
 
   // 3D Parallax hover tracking refs
   const cardRef = React.useRef<HTMLDivElement>(null);
@@ -34,6 +36,7 @@ export function ProductCard({ product }: { product: Product }) {
   };
 
   const [isExpanded, setIsExpanded] = useState(false);
+
   
   // Customization state for Starbucks-style interactive panel
   const [selectedWeight, setSelectedWeight] = useState(0.5);
@@ -105,6 +108,7 @@ export function ProductCard({ product }: { product: Product }) {
     <>
       {/* 1. FULL HD PREMIUM FLOATING CAKE CARD */}
       <div 
+
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -116,6 +120,7 @@ export function ProductCard({ product }: { product: Product }) {
         }}
         className="group relative bg-[#27272A]/90 backdrop-blur-xl rounded-[28px] xs:rounded-[38px] md:rounded-[48px] p-3.5 xs:p-4.5 md:p-6 flex flex-col justify-between border border-[#EAB308]/30 hover:border-[#EAB308]/90 shadow-[0_22px_55px_rgba(0,0,0,0.5)] hover:shadow-[0_32px_75px_rgba(223,177,91,0.3)] transition-all duration-300 ease-out transform-gpu h-full cursor-pointer overflow-hidden w-full min-w-0 box-border text-[#FFFDFB]"
         onClick={() => { playSlidePop(); setIsExpanded(true); }}
+
         id={`product-card-${product.id}`}
       >
         {/* Glow gold backdrop on hover */}
@@ -148,19 +153,27 @@ export function ProductCard({ product }: { product: Product }) {
             )}
           </div>
 
-          {/* Ratings, Title and Wishlist Header Row */}
-          <div className="flex flex-col gap-2 mt-4 sm:mt-6 w-full">
-            {/* Small helper row for rating and wishlist on mobile only */}
-            <div className="flex items-center justify-between w-full sm:hidden">
+          {/* Ratings, Title and Wishlist Block */}
+          <div className="flex flex-col gap-1.5 mt-4 sm:mt-5 w-full text-left">
+            {/* Title - DESERVES FULL ROW SO IT NEVER GETS SQUEEZED BY RATINGS */}
+            <h4 className="text-sm xs:text-base sm:text-lg md:text-xl font-display font-black text-[#FFFDFB] leading-tight group-hover:text-[#DFB15B] transition-colors truncate">
+              {product.name}
+            </h4>
+
+            {/* Rating Bar + Wishlist Heart button */}
+            <div className="flex items-center justify-between gap-2 w-full mt-0.5">
               {/* STAR RATING BADGE */}
+
               <div className="flex items-center gap-1 bg-[#1C0D0A]/85 border border-white/15 px-2.5 py-1 rounded-xl shadow-sm shrink-0">
                 <Star className="w-3 h-3 fill-[#DFB15B] text-[#EAB308]" />
                 <span className="text-[10px] font-black text-[#FFFDFB]">4.9</span>
                 <span className="text-[8px] font-black text-[#FFFDFB]/60">({product.reviewsCount || 42})</span>
+
               </div>
+
               {/* WISHLIST HEART */}
               <button 
-                className="w-8 h-8 rounded-full bg-[#1C0D0A]/90 hover:bg-[#DE9088]/25 text-[#FFFDFB] hover:text-[#DE9088] transition-all flex items-center justify-center border border-white/15 shrink-0 active:scale-90"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#1C0D0A]/90 hover:bg-[#DE9088]/25 text-[#FFFDFB] hover:text-[#DE9088] transition-all flex items-center justify-center border border-white/15 shrink-0 active:scale-90"
                 onClick={(e) => {
                   e.stopPropagation();
                   playBtnTap();
@@ -170,6 +183,7 @@ export function ProductCard({ product }: { product: Product }) {
                 <Heart className="w-3.5 h-3.5" />
               </button>
             </div>
+
 
             {/* Main row layout (Rating & Heart are displayed inline only on desktop) */}
             <div className="flex items-center justify-between gap-2.5 w-full">
@@ -205,28 +219,31 @@ export function ProductCard({ product }: { product: Product }) {
             <div className="h-[1px] bg-white/15 flex-grow" />
             <Sparkle className="w-3 h-3 text-[#EAB308] mx-2 animate-spin-slow shrink-0" />
             <div className="h-[1px] bg-white/15 flex-grow" />
+
           </div>
 
           {/* Description */}
-          <p className="text-center text-[#FFFDFB]/90 text-[11.5px] xs:text-[12.5px] sm:text-sm leading-relaxed font-semibold italic line-clamp-2 min-h-[34px] xs:min-h-[38px] sm:min-h-[42px] w-full px-0.5">
+          <p className="text-center text-[#FFFDFB]/85 text-[11px] xs:text-[12px] sm:text-xs leading-normal font-semibold italic line-clamp-2 min-h-[30px] sm:min-h-[36px] w-full px-0.5">
             {product.description}
           </p>
 
           {/* Custom micro boundary lines */}
-          <div className="h-[1px] bg-white/10 my-3 w-full" />
+          <div className="h-[1px] bg-white/10 my-2.5 w-full" />
         </div>
 
         {/* Pricing, Personalise and Direct Buy Buttons */}
-        <div className="w-full flex flex-col space-y-3 sm:space-y-4">
-          <div className="flex items-center justify-between gap-1.5 sm:gap-4 w-full">
+        <div className="w-full flex flex-col space-y-2.5 sm:space-y-3.5">
+          <div className="flex items-center justify-between gap-1 sm:gap-2 w-full">
             {/* Price section */}
             <div className="text-left shrink-0">
+
               <span className="text-[9px] xs:text-[10px] sm:text-xs font-black text-zinc-400 uppercase tracking-[0.2em] block leading-none mb-1">Starting from</span>
               <div className="flex items-center gap-1">
                 <span className="text-base xs:text-lg sm:text-2xl font-serif font-black text-[#EAB308] italic tracking-tighter leading-none">
+
                   ₹{product.price}
                 </span>
-                <Sparkle className="w-3 h-3 text-[#DE9088] animate-pulse shrink-0" />
+                <Sparkle className="w-2.5 h-2.5 text-[#DE9088] animate-pulse shrink-0" />
               </div>
             </div>
 
@@ -235,17 +252,19 @@ export function ProductCard({ product }: { product: Product }) {
               onClick={(e) => {
                 e.stopPropagation();
                 playSlidePop();
-                setIsExpanded(true);
+                navigate(`/product/${product.id}`);
               }}
+
               className="h-8 xs:h-9 sm:h-11 px-3 sm:px-5 rounded-full bg-gradient-to-r from-[#DFB15B] to-[#C99A43] hover:from-[#FFFDFB] hover:to-[#FFFDFB] text-black hover:text-[#2D150F] border border-[#EAB308]/30 font-black text-[9px] xs:text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-lg active:scale-95 shrink-0"
+
             >
               <span>Personalise</span>
-              <ArrowRight className="w-3 h-3 shrink-0" />
+              <ArrowRight className="w-2.5 h-2.5 shrink-0" />
             </button>
           </div>
 
-          {/* Direct Buy Buttons Row - Sits beautifully alongside */}
-          <div className="flex items-center gap-2 w-full">
+          {/* Direct Buy Buttons Row - Stacks beautifully on small screens to prevent squeezing */}
+          <div className="flex flex-col xs:flex-row items-center gap-1.5 sm:gap-2 w-full">
             {/* Direct ADD TO CART */}
             <button
               onClick={(e) => {
@@ -253,9 +272,9 @@ export function ProductCard({ product }: { product: Product }) {
                 playSlidePop();
                 openDirectWeightSelector('add_to_cart');
               }}
-              className="flex-1 min-w-0 h-9 xs:h-10 sm:h-12 rounded-xl xs:rounded-2xl bg-white/5 hover:bg-white/10 text-white border border-white/20 font-black text-[10px] xs:text-[11px] sm:text-xs uppercase tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-sm active:scale-95"
+              className="w-full xs:flex-1 h-8 xs:h-9 sm:h-11 rounded-lg xs:rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/20 font-black text-[8px] xs:text-[9.5px] sm:text-xs uppercase tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-sm active:scale-95"
             >
-              <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <ShoppingCart className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate">Add to Cart</span>
             </button>
 
@@ -266,13 +285,16 @@ export function ProductCard({ product }: { product: Product }) {
                 playSlidePop();
                 openDirectWeightSelector('buy_now');
               }}
+
               className="flex-1 min-w-0 h-9 xs:h-10 sm:h-12 rounded-xl xs:rounded-2xl bg-[#EAB308] hover:bg-white text-[#140603] font-black text-[10px] xs:text-[11px] sm:text-xs uppercase tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-md active:scale-95 cursor-pointer"
+
             >
               <span className="font-black truncate">⚡ Buy Now</span>
             </button>
           </div>
 
           {/* Premium Quality Indicators Footer inside the card */}
+
           <div className="grid grid-cols-3 gap-0.5 pt-3 sm:pt-4 border-t border-white/10 w-full text-center">
             <div className="flex items-center justify-center gap-1 text-[8.5px] xs:text-[10px] sm:text-[11px] md:text-xs font-black text-white uppercase tracking-wider">
               <span className="text-[#EAB308] text-[10px] md:text-base">🛡️</span>
@@ -285,6 +307,7 @@ export function ProductCard({ product }: { product: Product }) {
             <div className="flex items-center justify-center gap-1 text-[8.5px] xs:text-[10px] sm:text-[11px] md:text-xs font-black text-white uppercase tracking-wider">
               <span className="text-[#EAB308] text-[10px] md:text-base">🚚</span>
               <span className="truncate">Fast Delv</span>
+
             </div>
           </div>
         </div>
@@ -392,6 +415,7 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </AnimatePresence>
       </div>
+
 
       {/* 2. STARBUCKS-STYLE SMOOTH INFUSED DETAILED OVERLAY EXPANSION */}
       <AnimatePresence>
@@ -608,6 +632,7 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         )}
       </AnimatePresence>
+
     </>
   );
 }
