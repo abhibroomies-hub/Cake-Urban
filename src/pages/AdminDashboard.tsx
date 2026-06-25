@@ -189,6 +189,47 @@ interface SeoResult {
 export default function AdminDashboard() {
   const { user, profile, isAdmin } = useAuth();
   
+  // Dynamic Chart points from Orders
+  const generateChartPath = () => {
+    if (orders.length === 0) return "M0 150 L500 150";
+
+    // Sort orders by date
+    const sortedOrders = [...orders].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    // We want 8 data points, bin the orders
+    const bins = Array(8).fill(0);
+    const minTime = new Date(sortedOrders[0].createdAt).getTime();
+    const maxTime = new Date(sortedOrders[sortedOrders.length - 1].createdAt).getTime();
+
+    let timeRange = maxTime - minTime;
+    if (timeRange === 0) timeRange = 1000; // avoid divide by zero
+
+    sortedOrders.forEach(o => {
+       const t = new Date(o.createdAt).getTime();
+       const normalized = (t - minTime) / timeRange; // 0 to 1
+       let binIndex = Math.floor(normalized * 8);
+       if (binIndex >= 8) binIndex = 7;
+       bins[binIndex] += o.total;
+    });
+
+    // Normalize bins to height 0 - 100 (y will be 150 - 50 to 150 - 130)
+    const maxVal = Math.max(...bins, 1);
+
+    // Generate SVG path string. Width is 500, Height is 150.
+    let path = "M0 150";
+    const stepX = 500 / 7;
+    bins.forEach((val, i) => {
+       const x = Math.round(i * stepX);
+       const y = Math.round(150 - ((val / maxVal) * 100));
+       path += ` L${x} ${y}`;
+    });
+
+    return path;
+  };
+
+  const dynamicPath = generateChartPath();
+  const filledDynamicPath = dynamicPath + " L500 150 Z";
+
   // Dashboard Core States
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -198,6 +239,9 @@ export default function AdminDashboard() {
 
   // Add Product form states
   const [activeTab, setActiveTab] = useState<string>('insights');
+  const [orderStatusFilter, setOrderStatusFilter] = useState<string>('All');
+  const [orderSearchQuery, setOrderSearchQuery] = useState<string>('');
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [newProductImage, setNewProductImage] = useState<string | null>(null);
   const [newProductMimeType, setNewProductMimeType] = useState<string>('image/jpeg');
@@ -1890,9 +1934,9 @@ export default function AdminDashboard() {
                             </linearGradient>
                           </defs>
                           {/* Smooth curved shadow area */}
-                          <path d="M0 150 L50 110 L120 130 L180 80 L250 100 L320 50 L400 90 L450 30 L500 40 L500 150 Z" fill="url(#chartGradient)" />
+                          <path d={filledDynamicPath} fill="url(#chartGradient)" />
                           {/* Rich glowing line vector */}
-                          <path d="M0 150 L50 110 L120 130 L180 80 L250 100 L320 50 L400 90 L450 30 L500 40" fill="none" stroke="#DFB15B" strokeWidth="3" strokeLinecap="round" />
+                          <path d={dynamicPath} fill="none" stroke="#DFB15B" strokeWidth="3" strokeLinecap="round" />
                           
                           {/* Animated pointer nodes */}
                           <circle cx="320" cy="50" r="5" fill="#140603" stroke="#DFB15B" strokeWidth="2" />
@@ -1982,15 +2026,45 @@ export default function AdminDashboard() {
                     <p className="text-[10px] font-black uppercase tracking-widest text-[#DFB15B]/75 mt-0.5">Approve, update dispatch progress, or complete clients bakes</p>
                   </CardHeader>
                   <CardContent className="p-0">
+
+                    <div className="px-8 pt-6 pb-2 flex flex-col md:flex-row items-center gap-4 border-b border-[#DFB15B]/10 justify-between">
+                       <div className="flex bg-[#140603]/80 p-1 border border-white/10 rounded-xl">
+                          {['All', 'new', 'baking', 'out-for-delivery', 'delivered'].map(status => (
+                            <button
+                              key={status}
+                              onClick={() => setOrderStatusFilter(status)}
+                              className={`text-[9px] font-black uppercase tracking-widest px-3.5 py-1.5 rounded-lg cursor-pointer ${
+                                orderStatusFilter === status ? 'bg-[#DFB15B] text-[#140603]' : 'text-white/45'
+                              }`}
+                            >
+                              {status === 'All' ? 'All' : status}
+                            </button>
+                          ))}
+                       </div>
+                       <Input
+                          placeholder="Search Order ID or Guest Email..."
+                          value={orderSearchQuery}
+                          onChange={e => setOrderSearchQuery(e.target.value)}
+                          className="w-full md:w-64 h-10 rounded-lg bg-[#140603]/80 border border-white/10 px-4 text-xs font-semibold text-white focus:outline-none focus:border-[#DFB15B]"
+                        />
+                    </div>
                     <ScrollArea className="h-[500px] w-full">
-                      {orders.length === 0 ? (
+                      {orders.filter(o =>
+                          (orderStatusFilter === 'All' || o.status === orderStatusFilter) &&
+                          (o.id.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+                           (o.guestEmail && o.guestEmail.toLowerCase().includes(orderSearchQuery.toLowerCase())))
+                       ).length === 0 ? (
                         <div className="py-24 text-center space-y-4">
                           <ShoppingBag className="w-12 h-12 text-[#DFB15B]/25 mx-auto" />
                           <p className="text-xs text-[#FFFDFB]/60 font-semibold italic">No standard reservations found in Firestore registry.</p>
                         </div>
                       ) : (
                         <div className="divide-y divide-[#DFB15B]/10">
-                          {orders.map(order => (
+                          {orders.filter(o =>
+                              (orderStatusFilter === 'All' || o.status === orderStatusFilter) &&
+                              (o.id.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+                               (o.guestEmail && o.guestEmail.toLowerCase().includes(orderSearchQuery.toLowerCase())))
+                           ).map(order => (
                             <div key={order.id} className="p-8 flex flex-col lg:flex-row items-center lg:items-center justify-between gap-6 hover:bg-white/[0.02] transition duration-300">
                               
                               <div className="space-y-2.5 w-full lg:w-auto">

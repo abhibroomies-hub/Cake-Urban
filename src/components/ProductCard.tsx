@@ -10,6 +10,29 @@ import { toast } from 'sonner';
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+
+  // 3D Parallax hover tracking refs
+  const cardRef = React.useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - left) / width - 0.5;
+    const y = (e.clientY - top) / height - 0.5;
+    cardRef.current.style.setProperty('--card-mouse-x', `${x}`);
+    cardRef.current.style.setProperty('--card-mouse-y', `${y}`);
+    cardRef.current.style.setProperty('--card-rotate-x', `${y * -15}deg`);
+    cardRef.current.style.setProperty('--card-rotate-y', `${x * 15}deg`);
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.setProperty('--card-mouse-x', '0');
+    cardRef.current.style.setProperty('--card-mouse-y', '0');
+    cardRef.current.style.setProperty('--card-rotate-x', '0deg');
+    cardRef.current.style.setProperty('--card-rotate-y', '0deg');
+  };
+
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Customization state for Starbucks-style interactive panel
@@ -82,7 +105,16 @@ export function ProductCard({ product }: { product: Product }) {
     <>
       {/* 1. FULL HD PREMIUM FLOATING CAKE CARD */}
       <div 
-        className="group relative bg-[#26130F]/90 backdrop-blur-xl rounded-[28px] xs:rounded-[38px] md:rounded-[48px] p-3.5 xs:p-4.5 md:p-6 flex flex-col justify-between border border-[#DFB15B]/30 hover:border-[#DFB15B]/90 shadow-[0_22px_55px_rgba(0,0,0,0.5)] hover:shadow-[0_32px_75px_rgba(223,177,91,0.3)] hover:-translate-y-2 hover:scale-[1.015] transition-all duration-300 ease-out transform-gpu h-full cursor-pointer overflow-hidden w-full min-w-0 box-border text-[#FFFDFB]"
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transformStyle: "preserve-3d",
+          perspective: "1000px",
+          transform: 'rotateX(var(--card-rotate-x, 0deg)) rotateY(var(--card-rotate-y, 0deg))',
+          transition: 'transform 0.1s ease-out'
+        }}
+        className="group relative bg-[#26130F]/90 backdrop-blur-xl rounded-[28px] xs:rounded-[38px] md:rounded-[48px] p-3.5 xs:p-4.5 md:p-6 flex flex-col justify-between border border-[#DFB15B]/30 hover:border-[#DFB15B]/90 shadow-[0_22px_55px_rgba(0,0,0,0.5)] hover:shadow-[0_32px_75px_rgba(223,177,91,0.3)] transition-all duration-300 ease-out transform-gpu h-full cursor-pointer overflow-hidden w-full min-w-0 box-border text-[#FFFDFB]"
         onClick={() => { playSlidePop(); setIsExpanded(true); }}
         id={`product-card-${product.id}`}
       >
@@ -91,7 +123,10 @@ export function ProductCard({ product }: { product: Product }) {
 
         <div className="w-full flex flex-col">
           {/* Beautiful Rounded Image Pedestal */}
-          <div className="relative w-full aspect-square rounded-[22px] xs:rounded-[30px] md:rounded-[38px] overflow-hidden drop-shadow-[0_18px_35px_rgba(0,0,0,0.55)] border border-white/10 bg-[#1D0A07] transition-all duration-500 group-hover:drop-shadow-[0_28px_50px_rgba(223,177,91,0.2)]">
+          <div style={{
+              transform: 'translateZ(15px)'
+            }}
+            className="relative w-full aspect-square rounded-[22px] xs:rounded-[30px] md:rounded-[38px] overflow-hidden drop-shadow-[0_18px_35px_rgba(0,0,0,0.55)] border border-white/10 bg-[#1D0A07] transition-all duration-500 group-hover:drop-shadow-[0_28px_50px_rgba(223,177,91,0.2)]">
             <img 
               src={product.images?.[0] || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=600'} 
               className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
