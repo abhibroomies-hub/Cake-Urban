@@ -179,7 +179,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     occasions: ["Anniversary", "Wedding"],
     flavors: ["Strawberry"],
     dietary: ["Eggless"],
-    images: ["https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=800"],
+    images: ["https://images.unsplash.com/photo-1606312619070-d48b4c652a52?auto=format&fit=crop&q=80&w=800"],
     stockStatus: "in-stock",
     isCustomizable: true,
     isBestseller: false,
@@ -615,7 +615,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     occasions: ["Festival"],
     flavors: ["Mixed"],
     dietary: ["Eggless"],
-    images: ["https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=800"],
+    images: ["https://images.unsplash.com/photo-1557925923-33b251dc3296?auto=format&fit=crop&q=80&w=800"],
     stockStatus: "in-stock",
     isCustomizable: false
   },
@@ -660,7 +660,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     occasions: ["Anniversary"],
     flavors: ["Chocolate"],
     dietary: ["Eggless"],
-    images: ["https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=800"],
+    images: ["https://images.unsplash.com/photo-1557925923-33b251dc3296?auto=format&fit=crop&q=80&w=800"],
     stockStatus: "in-stock",
     isCustomizable: false,
     isNew: true

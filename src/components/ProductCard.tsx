@@ -10,6 +10,29 @@ import { toast } from 'sonner';
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+
+  // 3D Parallax hover tracking refs
+  const cardRef = React.useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - left) / width - 0.5;
+    const y = (e.clientY - top) / height - 0.5;
+    cardRef.current.style.setProperty('--card-mouse-x', `${x}`);
+    cardRef.current.style.setProperty('--card-mouse-y', `${y}`);
+    cardRef.current.style.setProperty('--card-rotate-x', `${y * -15}deg`);
+    cardRef.current.style.setProperty('--card-rotate-y', `${x * 15}deg`);
+  };
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.setProperty('--card-mouse-x', '0');
+    cardRef.current.style.setProperty('--card-mouse-y', '0');
+    cardRef.current.style.setProperty('--card-rotate-x', '0deg');
+    cardRef.current.style.setProperty('--card-rotate-y', '0deg');
+  };
+
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Customization state for Starbucks-style interactive panel
@@ -82,7 +105,16 @@ export function ProductCard({ product }: { product: Product }) {
     <>
       {/* 1. FULL HD PREMIUM FLOATING CAKE CARD */}
       <div 
-        className="group relative bg-[#26130F]/90 backdrop-blur-xl rounded-[28px] xs:rounded-[38px] md:rounded-[48px] p-3.5 xs:p-4.5 md:p-6 flex flex-col justify-between border border-[#DFB15B]/30 hover:border-[#DFB15B]/90 shadow-[0_22px_55px_rgba(0,0,0,0.5)] hover:shadow-[0_32px_75px_rgba(223,177,91,0.3)] hover:-translate-y-2 hover:scale-[1.015] transition-all duration-300 ease-out transform-gpu h-full cursor-pointer overflow-hidden w-full min-w-0 box-border text-[#FFFDFB]"
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transformStyle: "preserve-3d",
+          perspective: "1000px",
+          transform: 'rotateX(var(--card-rotate-x, 0deg)) rotateY(var(--card-rotate-y, 0deg))',
+          transition: 'transform 0.1s ease-out'
+        }}
+        className="group relative bg-[#27272A]/90 backdrop-blur-xl rounded-[28px] xs:rounded-[38px] md:rounded-[48px] p-3.5 xs:p-4.5 md:p-6 flex flex-col justify-between border border-[#EAB308]/30 hover:border-[#EAB308]/90 shadow-[0_22px_55px_rgba(0,0,0,0.5)] hover:shadow-[0_32px_75px_rgba(223,177,91,0.3)] transition-all duration-300 ease-out transform-gpu h-full cursor-pointer overflow-hidden w-full min-w-0 box-border text-[#FFFDFB]"
         onClick={() => { playSlidePop(); setIsExpanded(true); }}
         id={`product-card-${product.id}`}
       >
@@ -91,7 +123,10 @@ export function ProductCard({ product }: { product: Product }) {
 
         <div className="w-full flex flex-col">
           {/* Beautiful Rounded Image Pedestal */}
-          <div className="relative w-full aspect-square rounded-[22px] xs:rounded-[30px] md:rounded-[38px] overflow-hidden drop-shadow-[0_18px_35px_rgba(0,0,0,0.55)] border border-white/10 bg-[#1D0A07] transition-all duration-500 group-hover:drop-shadow-[0_28px_50px_rgba(223,177,91,0.2)]">
+          <div style={{
+              transform: 'translateZ(15px)'
+            }}
+            className="relative w-full aspect-square rounded-[22px] xs:rounded-[30px] md:rounded-[38px] overflow-hidden drop-shadow-[0_18px_35px_rgba(0,0,0,0.55)] border border-white/10 bg-[#1D0A07] transition-all duration-500 group-hover:drop-shadow-[0_28px_50px_rgba(223,177,91,0.2)]">
             <img 
               src={product.images?.[0] || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=600'} 
               className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
@@ -119,7 +154,7 @@ export function ProductCard({ product }: { product: Product }) {
             <div className="flex items-center justify-between w-full sm:hidden">
               {/* STAR RATING BADGE */}
               <div className="flex items-center gap-1 bg-[#1C0D0A]/85 border border-white/15 px-2.5 py-1 rounded-xl shadow-sm shrink-0">
-                <Star className="w-3 h-3 fill-[#DFB15B] text-[#DFB15B]" />
+                <Star className="w-3 h-3 fill-[#DFB15B] text-[#EAB308]" />
                 <span className="text-[10px] font-black text-[#FFFDFB]">4.9</span>
                 <span className="text-[8px] font-black text-[#FFFDFB]/60">({product.reviewsCount || 42})</span>
               </div>
@@ -139,14 +174,14 @@ export function ProductCard({ product }: { product: Product }) {
             {/* Main row layout (Rating & Heart are displayed inline only on desktop) */}
             <div className="flex items-center justify-between gap-2.5 w-full">
               {/* Title layout with highly readable sizes replacing microscopic clamp */}
-              <h4 className="text-sm xs:text-base md:text-xl font-display font-black text-[#FFFDFB] flex-grow text-left leading-tight line-clamp-1 group-hover:text-[#DFB15B] transition-colors truncate">
+              <h4 className="text-sm xs:text-base md:text-xl font-display font-black text-[#FFFDFB] flex-grow text-left leading-tight line-clamp-1 group-hover:text-[#EAB308] transition-colors truncate">
                 {product.name}
               </h4>
 
               {/* Rating badge & heart button for tablet & desktop (hidden on mobile) */}
               <div className="hidden sm:flex items-center gap-2.5 shrink-0">
                 <div className="flex items-center gap-1.5 bg-[#1C0D0A]/70 border border-white/10 px-3 py-1.5 rounded-2xl shadow-sm shrink-0">
-                  <Star className="w-3.5 h-3.5 fill-[#DFB15B] text-[#DFB15B]" />
+                  <Star className="w-3.5 h-3.5 fill-[#DFB15B] text-[#EAB308]" />
                   <span className="text-xs font-black text-[#FFFDFB]">4.9</span>
                   <span className="text-[9px] font-black tracking-normal text-[#FFFDFB]/50 uppercase">({product.reviewsCount || 42})</span>
                 </div>
@@ -168,7 +203,7 @@ export function ProductCard({ product }: { product: Product }) {
           {/* Separation Line with central gold diamond ornament */}
           <div className="flex items-center justify-center my-3 w-full">
             <div className="h-[1px] bg-white/15 flex-grow" />
-            <Sparkle className="w-3 h-3 text-[#DFB15B] mx-2 animate-spin-slow shrink-0" />
+            <Sparkle className="w-3 h-3 text-[#EAB308] mx-2 animate-spin-slow shrink-0" />
             <div className="h-[1px] bg-white/15 flex-grow" />
           </div>
 
@@ -188,7 +223,7 @@ export function ProductCard({ product }: { product: Product }) {
             <div className="text-left shrink-0">
               <span className="text-[9px] xs:text-[10px] sm:text-xs font-black text-zinc-400 uppercase tracking-[0.2em] block leading-none mb-1">Starting from</span>
               <div className="flex items-center gap-1">
-                <span className="text-base xs:text-lg sm:text-2xl font-serif font-black text-[#DFB15B] italic tracking-tighter leading-none">
+                <span className="text-base xs:text-lg sm:text-2xl font-serif font-black text-[#EAB308] italic tracking-tighter leading-none">
                   ₹{product.price}
                 </span>
                 <Sparkle className="w-3 h-3 text-[#DE9088] animate-pulse shrink-0" />
@@ -202,7 +237,7 @@ export function ProductCard({ product }: { product: Product }) {
                 playSlidePop();
                 setIsExpanded(true);
               }}
-              className="h-8 xs:h-9 sm:h-11 px-3 sm:px-5 rounded-full bg-gradient-to-r from-[#DFB15B] to-[#C99A43] hover:from-[#FFFDFB] hover:to-[#FFFDFB] text-black hover:text-[#2D150F] border border-[#DFB15B]/30 font-black text-[9px] xs:text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-lg active:scale-95 shrink-0"
+              className="h-8 xs:h-9 sm:h-11 px-3 sm:px-5 rounded-full bg-gradient-to-r from-[#DFB15B] to-[#C99A43] hover:from-[#FFFDFB] hover:to-[#FFFDFB] text-black hover:text-[#2D150F] border border-[#EAB308]/30 font-black text-[9px] xs:text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-lg active:scale-95 shrink-0"
             >
               <span>Personalise</span>
               <ArrowRight className="w-3 h-3 shrink-0" />
@@ -231,7 +266,7 @@ export function ProductCard({ product }: { product: Product }) {
                 playSlidePop();
                 openDirectWeightSelector('buy_now');
               }}
-              className="flex-1 min-w-0 h-9 xs:h-10 sm:h-12 rounded-xl xs:rounded-2xl bg-[#DFB15B] hover:bg-white text-[#140603] font-black text-[10px] xs:text-[11px] sm:text-xs uppercase tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-md active:scale-95 cursor-pointer"
+              className="flex-1 min-w-0 h-9 xs:h-10 sm:h-12 rounded-xl xs:rounded-2xl bg-[#EAB308] hover:bg-white text-[#140603] font-black text-[10px] xs:text-[11px] sm:text-xs uppercase tracking-wider flex items-center justify-center gap-1 transition-all duration-300 shadow-md active:scale-95 cursor-pointer"
             >
               <span className="font-black truncate">⚡ Buy Now</span>
             </button>
@@ -240,15 +275,15 @@ export function ProductCard({ product }: { product: Product }) {
           {/* Premium Quality Indicators Footer inside the card */}
           <div className="grid grid-cols-3 gap-0.5 pt-3 sm:pt-4 border-t border-white/10 w-full text-center">
             <div className="flex items-center justify-center gap-1 text-[8.5px] xs:text-[10px] sm:text-[11px] md:text-xs font-black text-white uppercase tracking-wider">
-              <span className="text-[#DFB15B] text-[10px] md:text-base">🛡️</span>
+              <span className="text-[#EAB308] text-[10px] md:text-base">🛡️</span>
               <span className="truncate">Premium</span>
             </div>
             <div className="flex items-center justify-center gap-1 text-[8.5px] xs:text-[10px] sm:text-[11px] md:text-xs font-black text-white uppercase tracking-wider border-x border-white/10 px-1">
-              <span className="text-[#DFB15B] text-[10px] md:text-base">🍰</span>
+              <span className="text-[#EAB308] text-[10px] md:text-base">🍰</span>
               <span className="truncate">Fresh</span>
             </div>
             <div className="flex items-center justify-center gap-1 text-[8.5px] xs:text-[10px] sm:text-[11px] md:text-xs font-black text-white uppercase tracking-wider">
-              <span className="text-[#DFB15B] text-[10px] md:text-base">🚚</span>
+              <span className="text-[#EAB308] text-[10px] md:text-base">🚚</span>
               <span className="truncate">Fast Delv</span>
             </div>
           </div>
@@ -262,13 +297,13 @@ export function ProductCard({ product }: { product: Product }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: "100%" }}
               transition={{ type: "spring", stiffness: 350, damping: 24 }}
-              className="absolute inset-0 bg-[#25120E]/95 backdrop-blur-2xl z-30 p-3 xs:p-4 md:p-5 flex flex-col justify-between rounded-[20px] xs:rounded-[32px] md:rounded-[44px] border border-[#DFB15B]/40 shadow-[0_-15px_40px_rgba(0,0,0,0.6)]"
+              className="absolute inset-0 bg-[#25120E]/95 backdrop-blur-2xl z-30 p-3 xs:p-4 md:p-5 flex flex-col justify-between rounded-[20px] xs:rounded-[32px] md:rounded-[44px] border border-[#EAB308]/40 shadow-[0_-15px_40px_rgba(0,0,0,0.6)]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="space-y-4">
                 {/* Header inside overlay */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] uppercase font-black tracking-[0.2em] text-[#DFB15B]">
+                  <span className="text-[9px] uppercase font-black tracking-[0.2em] text-[#EAB308]">
                     Select Cake Weight
                   </span>
                   <button 
@@ -297,7 +332,7 @@ export function ProductCard({ product }: { product: Product }) {
                       }}
                       className={`py-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center ${
                         selectedWeight === weight 
-                          ? 'bg-[#DFB15B] text-black border-[#DFB15B] shadow-md font-black scale-105' 
+                          ? 'bg-[#EAB308] text-black border-[#EAB308] shadow-md font-black scale-105'
                           : 'bg-white/5 text-zinc-300 border-white/10 hover:bg-[#DE9088]/10'
                       }`}
                     >
@@ -333,7 +368,7 @@ export function ProductCard({ product }: { product: Product }) {
                 <div className="text-left">
                   <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest block leading-none mb-0.5">Calculated Rate</span>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-serif font-black text-[#DFB15B] italic">
+                    <span className="text-lg font-serif font-black text-[#EAB308] italic">
                       ₹{calculatedPrice}
                     </span>
                     <span className="text-[8px] font-black text-zinc-400 uppercase">
@@ -377,23 +412,23 @@ export function ProductCard({ product }: { product: Product }) {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 50, opacity: 0 }}
               transition={{ type: "spring", stiffness: 350, damping: 26 }}
-              className="relative w-full max-w-4xl bg-[#140603] rounded-[48px] overflow-hidden shadow-[0_30px_80px_rgba(20,6,3,0.9)] border border-[#DFB15B]/25 max-h-[90vh] overflow-y-auto no-scrollbar z-10 grid grid-cols-1 md:grid-cols-2"
+              className="relative w-full max-w-4xl bg-[#18181B] rounded-[48px] overflow-hidden shadow-[0_30px_80px_rgba(20,6,3,0.9)] border border-[#EAB308]/25 max-h-[90vh] overflow-y-auto no-scrollbar z-10 grid grid-cols-1 md:grid-cols-2"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
               <button 
                 onClick={() => setIsExpanded(false)}
-                className="absolute top-6 right-6 w-11 h-11 rounded-full bg-[#2D150F]/70 hover:bg-[#DFB15B] text-white hover:text-[#140603] transition-all duration-300 flex items-center justify-center shadow-md hover:scale-105 z-50 active:scale-95 cursor-pointer"
+                className="absolute top-6 right-6 w-11 h-11 rounded-full bg-[#2D150F]/70 hover:bg-[#EAB308] text-white hover:text-[#140603] transition-all duration-300 flex items-center justify-center shadow-md hover:scale-105 z-50 active:scale-95 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
 
               {/* LEFT COLUMN: VISUAL SPECTACLE & HERO IMAGE DISPLAY */}
-              <div className="p-8 sm:p-12 flex flex-col justify-center items-center bg-[#26130F]/45 relative border-b md:border-b-0 md:border-r border-[#DFB15B]/15 min-h-[300px] md:min-h-auto">
+              <div className="p-8 sm:p-12 flex flex-col justify-center items-center bg-[#27272A]/45 relative border-b md:border-b-0 md:border-r border-[#EAB308]/15 min-h-[300px] md:min-h-auto">
                 <div className="absolute inset-12 rounded-full bg-gradient-to-tr from-[#DFB15B]/10 to-[#140603] scale-110 blur-xl pointer-events-none" />
                 
                 {/* Micro Category Tag */}
-                <div className="absolute top-8 left-8 flex items-center gap-1 bg-[#DFB15B]/10 text-[#DFB15B] px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">
+                <div className="absolute top-8 left-8 flex items-center gap-1 bg-[#EAB308]/10 text-[#EAB308] px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">
                   <Sparkles className="w-3.5 h-3.5 animate-spin" />
                   <span>Artisanal Spec</span>
                 </div>
@@ -414,7 +449,7 @@ export function ProductCard({ product }: { product: Product }) {
                 </motion.div>
 
                 {/* Delivery Indicator pill */}
-                <div className="mt-8 bg-[#140603] border border-[#DFB15B]/20 rounded-2xl px-5 py-3 shadow-md flex items-center gap-3 relative z-10">
+                <div className="mt-8 bg-[#18181B] border border-[#EAB308]/20 rounded-2xl px-5 py-3 shadow-md flex items-center gap-3 relative z-10">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="text-[10px] font-black uppercase tracking-wider text-[#FFFDFB]">
                     Express Midnight Dispatch Available
@@ -423,11 +458,11 @@ export function ProductCard({ product }: { product: Product }) {
               </div>
 
               {/* RIGHT COLUMN: INTERACTIVE CUSTOMIZATION PANEL */}
-              <div className="p-8 sm:p-12 text-left flex flex-col justify-between space-y-8 max-h-[80vh] overflow-y-auto no-scrollbar bg-[#140603]">
+              <div className="p-8 sm:p-12 text-left flex flex-col justify-between space-y-8 max-h-[80vh] overflow-y-auto no-scrollbar bg-[#18181B]">
                 
                 {/* Title and Ratings Header */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-1.5 text-[#DFB15B]">
+                  <div className="flex items-center gap-1.5 text-[#EAB308]">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-current" />
                     ))}
@@ -445,7 +480,7 @@ export function ProductCard({ product }: { product: Product }) {
                 <div className="space-y-3">
                   <h5 className="text-[10px] uppercase font-black tracking-widest text-[#FFFDFB]/70 flex items-center justify-between">
                     <span>1. SELECT CAKE WEIGHT</span>
-                    <span className="text-[#DFB15B] font-bold">Standard 0.5kg to 3kg+</span>
+                    <span className="text-[#EAB308] font-bold">Standard 0.5kg to 3kg+</span>
                   </h5>
                   <div className="grid grid-cols-4 gap-2">
                     {[0.5, 1.0, 2.0, 3.0].map((weight) => (
@@ -454,8 +489,8 @@ export function ProductCard({ product }: { product: Product }) {
                         onClick={() => { playBtnTap(); setSelectedWeight(weight); }}
                         className={`py-3.5 rounded-2xl border text-center transition-all duration-300 flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
                           selectedWeight === weight 
-                            ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B] shadow-lg scale-105 font-black' 
-                            : 'bg-[#140603] text-[#FFFDFB] border-[#DFB15B]/20 hover:bg-[#DFB15B]/10'
+                            ? 'bg-[#EAB308] text-[#140603] border-[#EAB308] shadow-lg scale-105 font-black'
+                            : 'bg-[#18181B] text-[#FFFDFB] border-[#EAB308]/20 hover:bg-[#EAB308]/10'
                         }`}
                       >
                         <span className="text-sm font-black tracking-tighter">{weight} KG</span>
@@ -479,8 +514,8 @@ export function ProductCard({ product }: { product: Product }) {
                         onClick={() => { playBtnTap(); setSelectedFlavor(flv); }}
                         className={`px-4 py-2.5 rounded-full border text-[10px] font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                           selectedFlavor === flv 
-                            ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B] shadow-md scale-105' 
-                            : 'bg-[#140603]/80 text-[#FFFDFB]/70 border-[#DFB15B]/20 hover:border-[#DFB15B]/50'
+                            ? 'bg-[#EAB308] text-[#140603] border-[#EAB308] shadow-md scale-105'
+                            : 'bg-[#18181B]/80 text-[#FFFDFB]/70 border-[#EAB308]/20 hover:border-[#EAB308]/50'
                         }`}
                       >
                         {flv}
@@ -490,7 +525,7 @@ export function ProductCard({ product }: { product: Product }) {
                 </div>
 
                 {/* 3. DIETARY PREFERENCES DIAL */}
-                <div className="bg-[#26130F]/45 rounded-2xl p-4 border border-[#DFB15B]/15 flex items-center justify-between">
+                <div className="bg-[#27272A]/45 rounded-2xl p-4 border border-[#EAB308]/15 flex items-center justify-between">
                   <div className="space-y-0.5 text-left">
                      <p className="text-xs font-black text-white uppercase tracking-wide flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
@@ -503,7 +538,7 @@ export function ProductCard({ product }: { product: Product }) {
                     className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                       isEggless 
                         ? 'bg-emerald-600 text-white shadow-sm' 
-                        : 'bg-[#140603] text-[#FFFDFB]/60 border border-[#DFB15B]/15'
+                        : 'bg-[#18181B] text-[#FFFDFB]/60 border border-[#EAB308]/15'
                     }`}
                   >
                     {isEggless ? '✓ Active Eggless' : 'Vegetarian Only'}
@@ -522,7 +557,7 @@ export function ProductCard({ product }: { product: Product }) {
                       value={inscription}
                       onChange={(e) => setInscription(e.target.value)}
                       placeholder='Write "Happy Birthday Arjun!" or "Happy 25th"'
-                      className="w-full bg-[#140603] border border-[#DFB15B]/20 rounded-2xl px-5 py-3.5 text-xs text-white placeholder-white/35 font-medium focus:outline-none focus:border-[#DFB15B] transition-all shadow-inner"
+                      className="w-full bg-[#18181B] border border-[#EAB308]/20 rounded-2xl px-5 py-3.5 text-xs text-white placeholder-white/35 font-medium focus:outline-none focus:border-[#EAB308] transition-all shadow-inner"
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-[#FFFDFB]/50 uppercase tracking-widest">
                       {32 - inscription.length} chars
@@ -531,11 +566,11 @@ export function ProductCard({ product }: { product: Product }) {
                 </div>
 
                 {/* PRICING & FINAL ADD CONVERTOR */}
-                <div className="pt-6 border-t border-white/10 flex items-center justify-between gap-4 bg-[#140603]">
+                <div className="pt-6 border-t border-white/10 flex items-center justify-between gap-4 bg-[#18181B]">
                   <div className="text-left">
                     <span className="text-[10px] font-black text-white/40 uppercase tracking-widest block mb-0.5">Calculated Rate</span>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-serif font-black text-[#DFB15B] italic tracking-tighter">
+                      <span className="text-3xl font-serif font-black text-[#EAB308] italic tracking-tighter">
                         ₹{calculatedPrice}
                       </span>
                       <span className="text-[10px] font-sans font-black text-[#FFFDFB]/60 uppercase tracking-widest">
@@ -550,7 +585,7 @@ export function ProductCard({ product }: { product: Product }) {
                       className={`h-14 px-8 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transform active:scale-95 transition-all duration-300 shadow-xl cursor-pointer ${
                         addedSuccessfully 
                           ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200' 
-                          : 'bg-[#DFB15B] hover:bg-white text-[#140603] hover:text-[#140603]'
+                          : 'bg-[#EAB308] hover:bg-white text-[#140603] hover:text-[#140603]'
                       }`}
                     >
                       {addedSuccessfully ? (
