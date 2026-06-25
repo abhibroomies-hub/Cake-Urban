@@ -7,9 +7,11 @@ import { FloatingElements } from './FloatingElements';
 import { MobileNav } from './MobileNav';
 import { LiveToastAndExitPopup } from './LiveToastAndExitPopup';
 import { motion, useMotionValue, useSpring } from 'motion/react';
+import { useTheme } from '../lib/theme';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const { activeTheme } = useTheme();
 
   useEffect(() => {
     let frameId: number;
@@ -35,13 +37,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const bgPattern = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='%23DFB15B' fill-opacity='0.025'%3E%3Cpath d='M15 15c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm0 80c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm80 0c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm0-80c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm-50 40c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3-3-1.3-3-3zM25 55c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v2c0 .6-.4 1-1 1h-6a1 1 0 01-1-1v-2zm80 0c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v2c0 .6-.4 1-1 1h-6a1 1 0 01-1-1v-2zm-40-5C65 42 75 32 75 32s10 10 10 18H65zm0 14h20v2H65v-2zM15 130l5-3 5 3v6h-10v-6zm80 0l5-3 5 3v6H95v-6z'/%3E%3C/g%3E%3C/svg%3E")`;
+  const fillAccent = (activeTheme?.accent || '#DFB15B').replace('#', '%23');
+  const bgPattern = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='${fillAccent}' fill-opacity='0.025'%3E%3Cpath d='M15 15c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm0 80c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm80 0c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm0-80c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm-50 40c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3-3-1.3-3-3zM25 55c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v2c0 .6-.4 1-1 1h-6a1 1 0 01-1-1v-2zm80 0c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v2c0 .6-.4 1-1 1h-6a1 1 0 01-1-1v-2zm-40-5C65 42 75 32 75 32s10 10 10 18H65zm0 14h20v2H65v-2zM15 130l5-3 5 3v6h-10v-6zm80 0l5-3 5 3v6H95v-6z'/%3E%3C/g%3E%3C/svg%3E")`;
 
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen bg-gradient-to-tr from-[#140603] via-[#2F150F] to-[#210D09] flex flex-col relative overflow-hidden text-[#FFFDFB]"
-      style={{ backgroundImage: bgPattern }}
+      className="min-h-screen bg-gradient-to-tr from-[#080808] via-[#121212] to-[#0B0B0B] flex flex-col relative overflow-hidden text-[#FFFDFB]"
+      style={{ 
+        backgroundImage: bgPattern,
+        backgroundAttachment: 'fixed'
+      }}
     >
       {/* 3D Glossy Live Moving Wave Elements & Mouse Tracker Parallax Layers */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -53,22 +59,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div 
           className="absolute inset-0 opacity-40 transition-transform duration-1000 ease-out"
           style={{
-            background: `radial-gradient(circle 480px at var(--mouse-px, 50%) var(--mouse-py, 50%), rgba(223, 177, 91, 0.08), transparent)`,
+            background: `radial-gradient(circle 480px at var(--mouse-px, 50%) var(--mouse-py, 50%), ${activeTheme.accentLight}, transparent)`,
           }}
         />
 
-        {/* Interactive Smooth Caramel Gold Shifting Blob with parallax drift */}
+        {/* Interactive Smooth Camel Gold Shifting Blob with parallax drift */}
         <div 
-          className="absolute top-[-10%] left-[-15%] w-[80vw] h-[80vw] sm:w-[60vw] sm:h-[60vw] bg-[#DFB15B] opacity-[0.09] blur-[100px] sm:blur-[140px] rounded-full animate-wave-slow mix-blend-screen transition-transform duration-750 ease-out"
+          className="absolute top-[-10%] left-[-15%] w-[80vw] h-[80vw] sm:w-[60vw] sm:h-[60vw] opacity-[0.14] blur-[100px] sm:blur-[140px] rounded-full animate-wave-slow mix-blend-screen transition-all duration-750 ease-out"
           style={{
+            backgroundColor: activeTheme.accent,
             transform: `translate(calc(var(--mouse-x, 0) * -25px), calc(var(--mouse-y, 0) * -25px))`,
           }}
         />
         
         {/* Luxurious Rose Syrup Shifting Blob with inverse parallax drift */}
         <div 
-          className="absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] sm:w-[65vw] sm:h-[65vw] bg-[#DE9088] opacity-[0.09] blur-[120px] sm:blur-[160px] rounded-full animate-wave-secondary mix-blend-screen transition-transform duration-750 ease-out" 
+          className="absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] sm:w-[65vw] sm:h-[65vw] opacity-[0.11] blur-[120px] sm:blur-[160px] rounded-full animate-wave-secondary mix-blend-screen transition-all duration-750 ease-out" 
           style={{
+            backgroundColor: activeTheme.id === 'classic' ? '#DE8070' : activeTheme.accent,
             transform: `translate(calc(var(--mouse-x, 0) * 25px), calc(var(--mouse-y, 0) * 25px))`,
           }}
         />

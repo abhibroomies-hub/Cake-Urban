@@ -284,39 +284,45 @@ export function generateDynamicSEO(slug: string): LocationDetails {
 
   // 1. Resolve City / Neighborhood / Sector
   let city = 'Faridabad & Delhi NCR';
-
-  // Dynamic sector extraction
-  const sectorMatch = cleanSlug.match(/sector[-\s]*(\w+)/i);
-  let sectorPart = '';
-  if (sectorMatch && sectorMatch[1]) {
-    sectorPart = `Sector ${sectorMatch[1]} `;
-  }
-
-  if (cleanSlug.includes('punjabi bagh')) city = `${sectorPart}Punjabi Bagh, Delhi`;
-  else if (cleanSlug.includes('dwarka')) city = `${sectorPart}Dwarka, Delhi`;
-  else if (cleanSlug.includes('rohini')) city = `${sectorPart}Rohini, Delhi`;
-  else if (cleanSlug.includes('janakpuri')) city = `${sectorPart}Janakpuri, Delhi`;
-  else if (cleanSlug.includes('laxmi nagar')) city = `${sectorPart}Laxmi Nagar, Delhi`;
-  else if (cleanSlug.includes('saket')) city = `${sectorPart}Saket, Delhi`;
-  else if (cleanSlug.includes('pitampura')) city = `${sectorPart}Pitampura, Delhi`;
-  else if (cleanSlug.includes('karol bagh')) city = `${sectorPart}Karol Bagh, Delhi`;
-  else if (cleanSlug.includes('cp delhi') || cleanSlug.includes('connaught place')) city = `${sectorPart}Connaught Place, Delhi`;
-  else if (cleanSlug.includes('south delhi')) city = `${sectorPart}South Delhi`;
-  else if (cleanSlug.includes('west delhi')) city = `${sectorPart}West Delhi`;
-  else if (cleanSlug.includes('north delhi')) city = `${sectorPart}North Delhi`;
-  else if (cleanSlug.includes('east delhi')) city = `${sectorPart}East Delhi`;
-  else if (cleanSlug.includes('gaur city')) city = `${sectorPart}Gaur City Noida`;
-  else if (cleanSlug.includes('noida extension')) city = `${sectorPart}Noida Extension`;
-  else if (cleanSlug.includes('greater noida')) city = `${sectorPart}Greater Noida`;
-  else if (cleanSlug.includes('greenfield')) city = `${sectorPart}Greenfield Colony Faridabad`;
-  else if (cleanSlug.includes('nit faridabad') || cleanSlug.includes('nit')) city = `${sectorPart}NIT Faridabad`;
-  else if (cleanSlug.includes('surajkund')) city = `${sectorPart}Surajkund Faridabad`;
-  else if (cleanSlug.includes('charmwood')) city = `${sectorPart}Charmwood Faridabad`;
-  else if (cleanSlug.includes('noida')) city = `${sectorPart}Noida`;
-  else if (cleanSlug.includes('delhi')) city = `${sectorPart}Delhi`;
-  else if (cleanSlug.includes('gurgaon') || cleanSlug.includes('gurugram')) city = `${sectorPart}Gurgaon`;
-  else if (cleanSlug.includes('faridabad')) city = `${sectorPart}Faridabad`;
-  else if (sectorPart) city = sectorPart.trim();
+  if (cleanSlug.includes('sector 14')) city = 'Sector 14 Faridabad';
+  else if (cleanSlug.includes('sector 150')) city = 'Sector 150 Noida';
+  else if (cleanSlug.includes('sector 137')) city = 'Sector 137 Noida';
+  else if (cleanSlug.includes('sector 15')) city = 'Sector 15 Faridabad';
+  else if (cleanSlug.includes('sector 16')) city = 'Sector 16 Faridabad';
+  else if (cleanSlug.includes('sector 18')) city = 'Sector 18 Noida';
+  else if (cleanSlug.includes('sector 62')) city = 'Sector 62 Noida';
+  else if (cleanSlug.includes('sector 63')) city = 'Sector 63 Noida';
+  else if (cleanSlug.includes('sector 75')) city = 'Sector 75 Noida';
+  else if (cleanSlug.includes('sector 76')) city = 'Sector 76 Noida';
+  else if (cleanSlug.includes('sector 78')) city = 'Sector 78 Noida';
+  else if (cleanSlug.includes('sector 21')) city = 'Sector 21 Faridabad';
+  else if (cleanSlug.includes('sector 31')) city = 'Sector 31 Faridabad';
+  else if (cleanSlug.includes('sector 37')) city = 'Sector 37 Faridabad';
+  else if (cleanSlug.includes('sector 46')) city = 'Sector 46 Faridabad';
+  else if (cleanSlug.includes('punjabi bagh')) city = 'Punjabi Bagh, Delhi';
+  else if (cleanSlug.includes('dwarka')) city = 'Dwarka, Delhi';
+  else if (cleanSlug.includes('rohini')) city = 'Rohini, Delhi';
+  else if (cleanSlug.includes('janakpuri')) city = 'Janakpuri, Delhi';
+  else if (cleanSlug.includes('laxmi nagar')) city = 'Laxmi Nagar, Delhi';
+  else if (cleanSlug.includes('saket')) city = 'Saket, Delhi';
+  else if (cleanSlug.includes('pitampura')) city = 'Pitampura, Delhi';
+  else if (cleanSlug.includes('karol bagh')) city = 'Karol Bagh, Delhi';
+  else if (cleanSlug.includes('cp delhi') || cleanSlug.includes('connaught place')) city = 'Connaught Place, Delhi';
+  else if (cleanSlug.includes('south delhi')) city = 'South Delhi';
+  else if (cleanSlug.includes('west delhi')) city = 'West Delhi';
+  else if (cleanSlug.includes('north delhi')) city = 'North Delhi';
+  else if (cleanSlug.includes('east delhi')) city = 'East Delhi';
+  else if (cleanSlug.includes('gaur city')) city = 'Gaur City Noida';
+  else if (cleanSlug.includes('noida extension')) city = 'Noida Extension';
+  else if (cleanSlug.includes('greater noida')) city = 'Greater Noida';
+  else if (cleanSlug.includes('greenfield')) city = 'Greenfield Colony Faridabad';
+  else if (cleanSlug.includes('nit faridabad') || cleanSlug.includes('nit')) city = 'NIT Faridabad';
+  else if (cleanSlug.includes('surajkund')) city = 'Surajkund Faridabad';
+  else if (cleanSlug.includes('charmwood')) city = 'Charmwood Faridabad';
+  else if (cleanSlug.includes('noida')) city = 'Noida';
+  else if (cleanSlug.includes('delhi')) city = 'Delhi';
+  else if (cleanSlug.includes('gurgaon') || cleanSlug.includes('gurugram')) city = 'Gurgaon';
+  else if (cleanSlug.includes('faridabad')) city = 'Faridabad';
 
   // 2. Resolve Flavor / Type / Style
   let flavor = '';

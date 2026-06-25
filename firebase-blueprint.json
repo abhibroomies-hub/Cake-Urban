@@ -94,6 +94,16 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["contactName", "contactEmail", "status", "createdAt"]
+    },
+    "Setting": {
+      "title": "Global Setting",
+      "description": "App settings such as default theme",
+      "type": "object",
+      "properties": {
+        "themeId": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["themeId"]
     }
   },
   "firestore": {
@@ -120,6 +130,10 @@
     "/custom_orders/{orderId}": {
       "schema": "CustomOrder",
       "description": "Store for bespoke user interactive inquiries"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Global application properties like activeTheme"
     }
   }
 }

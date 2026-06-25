@@ -70,6 +70,7 @@ export interface Order {
   deliveryDate: string;
   deliverySlot: string;
   createdAt: string;
+  cakeInstructions?: string;
 }
 
 export interface Review {

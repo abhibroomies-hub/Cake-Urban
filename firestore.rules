@@ -138,5 +138,11 @@ service cloud.firestore {
       allow create: if isValidCustomOrder(incoming());
       allow update, delete: if isAdmin();
     }
+
+    // Global App Settings (including active default theme)
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }

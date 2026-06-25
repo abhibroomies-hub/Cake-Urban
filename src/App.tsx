@@ -9,6 +9,7 @@ import { Layout } from './components/Layout';
 import { AnimatePresence } from 'motion/react';
 import { Loader2 } from 'lucide-react';
 import { seedProducts } from './lib/seed';
+import { ThemeProvider } from './lib/theme';
 
 const Home = lazy(() => import('./pages/Home'));
 const Shop = lazy(() => import('./pages/Shop'));
@@ -103,14 +104,16 @@ export default function App() {
   }, []);
 
   return (
-    <Router>
-      <ScrollToTop />
-      <Layout>
-        <Suspense fallback={<PageLoader />}>
-          <AnimatedRoutes />
-        </Suspense>
-      </Layout>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <ScrollToTop />
+        <Layout>
+          <Suspense fallback={<PageLoader />}>
+            <AnimatedRoutes />
+          </Suspense>
+        </Layout>
+      </Router>
+    </ThemeProvider>
   );
 }
 

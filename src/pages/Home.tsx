@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Star, Clock, Gift, MapPin, Search, Cake, Cookie, ShoppingBag, UtensilsCrossed, ChefHat, Heart, ChevronRight, Sparkles, Truck, Box, Sparkle } from 'lucide-react';
+import { ArrowRight, Star, Clock, Gift, MapPin, Search, Cake, Cookie, ShoppingBag, UtensilsCrossed, ChefHat, Heart, ChevronRight, Sparkles, Truck, Box, Sparkle, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ProductCard } from '../components/ProductCard';
+import { Rotating3DCake } from '../components/Rotating3DCake';
+import { LiquidGoldButton } from '../components/LiquidGoldButton';
 import { db } from '../lib/firebase';
 import { collection, getDocs, limit, query, where } from 'firebase/firestore';
 import { Product } from '../types';
@@ -23,10 +25,10 @@ const HERO_SHOWCASED_CONFECTIONS = [
     image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1200&auto=format&fit=crop",
     desc: "An exquisite luxury white sponge cake interspaced with authentic creamy Speculoos spread, garnished meticulously with salted biscuit crumbs and hand-crafted brown sugar frosting rosewood spirals.",
     tagline: "FARIDABAD'S REQUISITE BIAS",
-    bgColor: "from-[#2A110A] via-[#3E1E12] to-[#1C0A05]",
+    bgColor: "from-[#080808] via-[#141210] to-[#020202]",
     shadowColor: "shadow-amber-950/50",
     accent: "text-amber-300",
-    bgBadge: "bg-[#4E2719] border border-amber-500/30 text-amber-300"
+    bgBadge: "bg-[#2A1812] border border-amber-500/30 text-amber-300"
   },
   {
     id: "chocolate-truffle-noir",
@@ -36,7 +38,7 @@ const HERO_SHOWCASED_CONFECTIONS = [
     image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=1200&auto=format&fit=crop",
     desc: "Layers of dense moist cocoa chiffon sponge cake coated with authentic premium melted Belgian dark chocolate ganache, finished with hand-spun glaze and air-brushed 24k edible gold dust.",
     tagline: "INCOMPARABLE METALLIC GANACHE",
-    bgColor: "from-[#1A0A06] via-[#2F140A] to-[#120502]",
+    bgColor: "from-[#080808] via-[#12110F] to-[#020202]",
     shadowColor: "shadow-amber-950/70",
     accent: "text-yellow-200",
     bgBadge: "bg-amber-950/80 border border-yellow-600/30 text-yellow-200"
@@ -49,7 +51,7 @@ const HERO_SHOWCASED_CONFECTIONS = [
     image: "https://images.unsplash.com/photo-1535141192574-5d4897c13636?q=80&w=1200&auto=format&fit=crop",
     desc: "Traditional fluffy cocoa buttermilk velvet cake layer arrays topped with premium fresh whipped cream cheese mousse swirls, sprinkled with dehydrated sweet crumbs.",
     tagline: "LUXURY CELEBRATION SHOWSTOPPER",
-    bgColor: "from-[#330808] via-[#2D150F] to-[#1C0505]",
+    bgColor: "from-[#080808] via-[#161111] to-[#020202]",
     shadowColor: "shadow-rose-950/60",
     accent: "text-rose-300",
     bgBadge: "bg-rose-950/80 border border-rose-500/30 text-rose-300"
@@ -62,18 +64,169 @@ const HERO_SHOWCASED_CONFECTIONS = [
     image: "https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?q=80&w=1200&auto=format&fit=crop",
     desc: "Premium crushed hazelnut creme layered with crisp wafers and imperial milk chocolate ganache, draped in smooth roasted hazelnut coating and gold leaf finish.",
     tagline: "THE ULTIMATE GOLDEN CONFECTIONERY",
-    bgColor: "from-[#2A1B0E] via-[#3B2515] to-[#1C1109]",
+    bgColor: "from-[#080808] via-[#14120E] to-[#020202]",
     shadowColor: "shadow-yellow-950/60",
     accent: "text-yellow-100",
     bgBadge: "bg-yellow-950/80 border border-yellow-500/30 text-yellow-300"
   }
 ];
 
+// ---------------------------------------------------------
+// DYNAMIC HOLIDAY & SEASONS PLANNERS (DAILY SMART COUTDOWN BANNER ENGINE)
+// ---------------------------------------------------------
+export interface FestiveOccasion {
+  id: string;
+  name: string;
+  emoji: string;
+  title: string;
+  tagline: string;
+  bannerMessage: string;
+  bannerImage: string;
+  code: string;
+  accentColor: string;
+  accentBg: string;
+  filterKeywords: string[];
+  flourishes: string[];
+}
+
+export const FESTIVE_OCCASIONS: FestiveOccasion[] = [
+  {
+    id: 'diwali',
+    name: 'Diwali Festive',
+    emoji: '🪔',
+    title: 'Festival of Lights Grand Celebration',
+    tagline: 'GOLD FLAKES & SAFFRON ELIXIR',
+    bannerMessage: 'Shubh Deepavali! Pure eggless fusion cakes crafted with real 24k edible Gold leaf, Saffron Pistachio mousse, and caramelized rose petals.',
+    bannerImage: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?q=80&w=1200&auto=format&fit=crop',
+    code: 'DIWALI15',
+    accentColor: '#FF9933',
+    accentBg: 'rgba(255, 153, 51, 0.15)',
+    filterKeywords: ['chocolate', 'truffle', 'royal', 'speculoos', 'gold', 'ferrero', 'hazelnut'],
+    flourishes: ['✨', '🪔', '🌟', '🏵️']
+  },
+  {
+    id: 'christmas',
+    name: 'Christmas Winter',
+    emoji: '🎄',
+    title: 'Winter Wonderland Baking Studio',
+    tagline: 'CRANBERRY COCOA & PLUM GLAZE',
+    bannerMessage: 'Merry Christmas! Experience winter joy with spiced red-velvet logs, snow-cream clouds, and chocolate-hazelnut peaks.',
+    bannerImage: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop',
+    code: 'SNOW15',
+    accentColor: '#EF4444',
+    accentBg: 'rgba(239, 68, 68, 0.15)',
+    filterKeywords: ['velvet', 'strawberry', 'chiffon', 'biscoff', 'speculoos', 'white'],
+    flourishes: ['❄️', '🎄', '🎁', '✨']
+  },
+  {
+    id: 'valentines',
+    name: "Valentine's Rose",
+    emoji: '💖',
+    title: 'Season of Sweet Amour & Petals',
+    tagline: 'CRIMSON VELVET & FRESH STRAWBERRY CREAM',
+    bannerMessage: 'Celebrate Love! Elegant crimson red velvet bouquets, whipped rose syrup sponges, and heart-shaped strawberry confections.',
+    bannerImage: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1200&auto=format&fit=crop',
+    code: 'LOVE15',
+    accentColor: '#EC4899',
+    accentBg: 'rgba(236, 72, 153, 0.15)',
+    filterKeywords: ['velvet', 'crimson', 'strawberry', 'macaron', 'blush'],
+    flourishes: ['💖', '🌹', '✨', '🎈']
+  },
+  {
+    id: 'halloween',
+    name: 'Spooky Carnival',
+    emoji: '🎃',
+    title: 'Midnight Witching Cocoa Brews',
+    tagline: 'DARK CHOCOLATE NOIR & CHARCOAL FUDGE',
+    bannerMessage: 'Trick or Treat! Witchy chocolate glazes, charcoal fudge cobwebs, and delicious blood-orange cream pastries.',
+    bannerImage: 'https://images.unsplash.com/photo-1508349082404-55310f5949ec?q=80&w=1200&auto=format&fit=crop',
+    code: 'BOO15',
+    accentColor: '#F97316',
+    accentBg: 'rgba(249, 115, 22, 0.15)',
+    filterKeywords: ['fudge', 'noir', 'truffle', 'espresso', 'caramel', 'cocoa'],
+    flourishes: ['🎃', '🦇', '👻', '🌌']
+  },
+  {
+    id: 'anniversary',
+    name: 'Bespoke Milestone',
+    emoji: '👑',
+    title: 'Grand Milestone & Custom Design',
+    tagline: 'CUSTOM TIER MASTERPIECE & FLOWERS',
+    bannerMessage: 'Perfect Centerpieces! Royal designer tier cakes, luxury golden decorations, and handcrafted personalized models.',
+    bannerImage: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=1200&auto=format&fit=crop',
+    code: 'ROYAL15',
+    accentColor: '#DFB15B',
+    accentBg: 'rgba(223, 177, 91, 0.15)',
+    filterKeywords: ['designer', 'custom', 'imperial', 'rocher', 'luxury'],
+    flourishes: ['✨', '👑', '🎉', '🌟']
+  }
+];
+
+export function FestiveParticles({ flourishes }: { flourishes: string[] }) {
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; s: number; d: number; char: string }[]>([]);
+
+  useEffect(() => {
+    const arr = Array.from({ length: 14 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 95,
+      y: Math.random() * 100,
+      s: Math.random() * 1.4 + 0.7,
+      d: Math.random() * 8 + 6,
+      char: flourishes[i % flourishes.length]
+    }));
+    setParticles(arr);
+  }, [flourishes]);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-10 select-none">
+      {particles.map(p => (
+        <motion.div
+          key={p.id}
+          initial={{ y: -60, opacity: 0 }}
+          animate={{
+            y: ['0vh', '100vh'],
+            x: [`${p.x}vw`, `${p.x + (Math.random() * 10 - 5)}vw`],
+            opacity: [0, 0.75, 0.75, 0],
+            rotate: [0, 360]
+          }}
+          transition={{
+            duration: p.d,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute text-sm sm:text-lg filter drop-shadow-md"
+          style={{
+            left: `${p.x}%`,
+            top: `-5%`,
+          }}
+        >
+          {p.char}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+export function getFestiveSortedProducts(products: Product[], keywords: string[]) {
+  return [...products].sort((a, b) => {
+    const aMatch = keywords.some(kw => 
+      a.name.toLowerCase().includes(kw) || a.description?.toLowerCase().includes(kw)
+    );
+    const bMatch = keywords.some(kw => 
+      b.name.toLowerCase().includes(kw) || b.description?.toLowerCase().includes(kw)
+    );
+    if (aMatch && !bMatch) return -1;
+    if (!aMatch && bMatch) return 1;
+    return 0;
+  });
+}
+
 export default function Home() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [activeCategoryTab, setActiveCategoryTab] = useState('Regular Cakes');
   const [loading, setLoading] = useState(true);
+  const [selectedFeature, setSelectedFeature] = useState<any>(null);
   
   // Interactive Active spotlight carousel selection index
   const [spotlightIdx, setSpotlightIdx] = useState(0);
@@ -143,6 +296,19 @@ export default function Home() {
     heroSectionRef.current.style.setProperty('--hero-rotate-y', '0deg');
   };
 
+  // Dynamic Festival calendar initialization (auto-detect based on calendar date system)
+  const getInitialOccasion = () => {
+    const month = new Date().getMonth(); // 0 is Jan, 11 is Dec
+    if (month === 1) return 'valentines';
+    if (month === 9) return 'halloween';
+    if (month === 10) return 'diwali';
+    if (month === 11) return 'christmas';
+    return 'anniversary'; // default sweet celebration milestones
+  };
+
+  const [selectedOccasionId, setSelectedOccasionId] = useState<string>(getInitialOccasion());
+  const activeOccasion = FESTIVE_OCCASIONS.find(o => o.id === selectedOccasionId) || FESTIVE_OCCASIONS[4];
+
   const categories = [
     { name: 'Regular Cakes', queryName: 'Cakes', icon: Cake, color: '#fcf2f0', desc: 'Moist, fresh everyday celebration bakes' },
     { name: 'Designer Cakes', queryName: 'Custom Cakes', icon: ChefHat, color: '#fef7ef', desc: 'Bespoke multi-tier & themed masterpieces' },
@@ -154,6 +320,10 @@ export default function Home() {
   const categoryProductsPreview = allProducts
     .filter(p => p.categories?.some(c => c.toLowerCase() === activeCategoryObject.queryName.toLowerCase()))
     .slice(0, 10);
+
+  // Dynamic sorting based on selected holiday filter keywords!
+  const festiveCategoryProducts = getFestiveSortedProducts(categoryProductsPreview, activeOccasion.filterKeywords);
+  const festiveFeaturedProducts = getFestiveSortedProducts(featuredProducts, activeOccasion.filterKeywords);
 
   return (
     <motion.div 
@@ -307,14 +477,12 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap sm:flex-nowrap gap-1 sm:gap-3">
-                <Link to="/shop">
-                  <Button className="h-7 sm:h-14 px-2 sm:px-6 rounded-lg sm:rounded-xl bg-[#DFB15B] text-black hover:bg-white text-[7px] sm:text-xs font-black uppercase tracking-widest transition-all duration-300">
-                    Explore
-                  </Button>
+              <div className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-4 items-center w-full">
+                <Link to="/shop" className="w-full sm:w-auto">
+                  <LiquidGoldButton text="ORDER NOW" />
                 </Link>
-                <Link to="/custom-order">
-                  <Button variant="outline" className="h-7 sm:h-14 px-2 sm:px-6 rounded-lg sm:rounded-xl border-white/20 bg-white/5 text-white hover:bg-white hover:text-black text-[7px] sm:text-xs font-black uppercase tracking-widest">
+                <Link to="/custom-order" className="w-full sm:w-auto">
+                  <Button variant="outline" className="w-full sm:w-auto h-12 sm:h-14 px-6 rounded-2xl border-2 border-white/20 bg-white/5 text-white hover:bg-white hover:text-black text-[10px] sm:text-xs font-black uppercase tracking-widest">
                     Custom Studio
                   </Button>
                 </Link>
@@ -346,65 +514,9 @@ export default function Home() {
 
           </div>
 
-          {/* RIGHT COLUMN: CAROUSEL HERO GLASS IMAGE PEDESTAL */}
-          <div className="relative w-full flex items-center justify-center min-h-[140px] xs:min-h-[180px] sm:min-h-[480px]">
-            {/* Ambient Background spinning orbit */}
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-              className="absolute w-[120px] xs:w-[160px] sm:w-[480px] h-[120px] xs:h-[160px] sm:h-[480px] rounded-full border border-dashed border-[#DFB15B]/15 z-0"
-            />
-            
-            {/* Glowing spot pedestal */}
-            <div className="absolute w-[110px] xs:w-[140px] sm:w-[380px] h-[110px] xs:h-[140px] sm:h-[380px] rounded-full bg-gradient-to-tr from-[#DFB15B]/10 to-transparent transition-colors duration-1000 z-0" />
-
-            {/* Multi-layered Flying Pedestal with highly performant CSS Coordinates */}
-            <div
-              style={{
-                transformStyle: "preserve-3d",
-                perspective: 1000,
-                transform: 'translate(calc(var(--hero-mouse-x, 0) * 25px), calc(var(--hero-mouse-y, 0) * 25px)) rotateX(var(--hero-rotate-x, 0deg)) rotateY(var(--hero-rotate-y, 0deg))',
-                transition: 'transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)'
-              }}
-              className="relative p-1.5 sm:p-3 bg-[#26130F]/90 backdrop-blur-md rounded-[22px] sm:rounded-[60px] shadow-2xl border border-[#DFB15B]/25 w-11/12 max-w-[150px] xs:max-w-[200px] sm:max-w-[420px] aspect-square flex items-center justify-center z-10"
-            >
-              {/* Flying Cake Image Frame */}
-              <div className="relative w-full h-full rounded-[14px] sm:rounded-[50px] overflow-hidden drop-shadow-2xl">
-                <AnimatePresence mode="wait">
-                  <motion.img 
-                    key={currentSpotlight.id}
-                    src={currentSpotlight.image} 
-                    alt={currentSpotlight.name} 
-                    initial={{ scale: 0.88, opacity: 0, rotate: -4 }}
-                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                    exit={{ scale: 0.88, opacity: 0, rotate: 4 }}
-                    transition={{ type: "spring", stiffness: 180, damping: 18 }}
-                    className="w-full h-full object-cover rounded-[14px] sm:rounded-[50px]"
-                    loading="eager"
-                  />
-                </AnimatePresence>
-                
-                {/* Micro Gloss Glassmorphism Layer overlay */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#1C0A05]/25 via-transparent to-white/15" />
-              </div>
-              
-              {/* Floating circular 100% organic guarantee badge */}
-              <motion.div 
-                animate={{
-                  y: [-4, 4, -4],
-                  rotate: [0, 4, -4, 0]
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="absolute -top-1.5 -right-1.5 sm:-top-6 sm:-right-6 w-9 h-9 sm:w-32 sm:h-32 bg-amber-950 text-white shadow-2xl rounded-full border border-[#DFB15B] flex flex-col items-center justify-center p-0.5 sm:p-2 text-center z-20"
-              >
-                <span className="text-[5px] sm:text-base font-black text-[#DFB15B] leading-none mb-0.5">100%</span>
-                <span className="text-[3px] sm:text-[9px] font-bold uppercase tracking-wider leading-tight">Eggless<br/>Pure</span>
-              </motion.div>
-            </div>
+          {/* RIGHT COLUMN: HIGH-END 3D ROTATING CAKE IN PERSPECTIVE VIEW */}
+          <div className="relative w-full flex items-center justify-center z-10 min-h-[220px] xs:min-h-[260px] sm:min-h-[480px]">
+            <Rotating3DCake />
           </div>
         </div>
       </section>
@@ -450,6 +562,112 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FESTIVE TIMELINE SYSTEM & AMBIENT SPOTLIGHT BANNER */}
+      <section className="px-4 sm:px-6 lg:px-8 py-8 relative z-30 -mt-2">
+        <div className="max-w-7xl mx-auto space-y-6 relative">
+          
+          {/* Active Particle Flourishes floating layer */}
+          <FestiveParticles flourishes={activeOccasion.flourishes} />
+
+          {/* Interactive Event Timeline Select Bar */}
+          <div className="bg-[#26130F]/90 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border border-[#DFB15B]/20 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="flex items-center gap-3 text-left">
+              <span className="text-2xl animate-pulse">📅</span>
+              <div>
+                <h4 className="text-xs sm:text-sm font-display font-black text-white leading-none uppercase tracking-wider">Atelier Festival Calendar & Vibe Simulator</h4>
+                <p className="text-[10px] text-zinc-400 font-medium italic mt-1">Select any celebration event to dynamically customize the menu and showcase relevant bakes!</p>
+              </div>
+            </div>
+
+            {/* Selector Pills Slider */}
+            <div className="flex flex-wrap items-center gap-2 max-w-full pb-1 no-scrollbar shrink-0">
+              {FESTIVE_OCCASIONS.map(occ => {
+                const isSelected = selectedOccasionId === occ.id;
+                return (
+                  <button
+                    key={occ.id}
+                    onClick={() => {
+                      playSlidePop();
+                      setSelectedOccasionId(occ.id);
+                    }}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 border cursor-pointer select-none ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-[#140603] border-white/40 shadow-md scale-105'
+                        : 'bg-white/5 text-[#FFFDFB]/80 border-white/10 hover:bg-white/10'
+                    }`}
+                  >
+                    <span>{occ.emoji}</span>
+                    <span>{occ.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Dynamic Festive Highlight Banner */}
+          <motion.div
+            key={activeOccasion.id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="rounded-[40px] border border-[#DFB15B]/20 bg-[#26130F]/45 overflow-hidden text-left shadow-2xl relative min-h-[200px] flex flex-col justify-between"
+          >
+            {/* Ambient Background decoration specific to the event */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center opacity-[0.16] z-0 transition-all duration-700 pointer-events-none" 
+              style={{ backgroundImage: `url(${activeOccasion.bannerImage})` }}
+            />
+            {/* Radiant glow specific to the active festival color */}
+            <div 
+              className="absolute inset-0 opacity-[0.25] pointer-events-none z-0" 
+              style={{
+                background: `radial-gradient(circle 500px at right, ${activeOccasion.accentColor}, transparent)`
+              }}
+            />
+
+            <div className="p-6 sm:p-10 relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 w-full">
+              <div className="space-y-4 max-w-2xl text-left">
+                <div 
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black tracking-widest uppercase border"
+                  style={{
+                    color: activeOccasion.accentColor,
+                    borderColor: `${activeOccasion.accentColor}30`,
+                    backgroundColor: activeOccasion.accentBg
+                  }}
+                >
+                  <span>{activeOccasion.emoji}</span>
+                  <span>TODAY'S SEASONAL SPOTLIGHT</span>
+                </div>
+                
+                <h3 className="text-2xl sm:text-4xl font-display font-black text-white leading-tight">
+                  {activeOccasion.title}
+                </h3>
+                
+                <p className="text-[#FFFDFB]/80 text-xs sm:text-sm md:text-base leading-relaxed font-semibold italic">
+                  {activeOccasion.bannerMessage}
+                </p>
+                
+                <div className="flex items-center gap-2.5 text-[10px] uppercase font-mono text-zinc-400">
+                  <Clock className="w-3.5 h-3.5 text-[#DFB15B]" />
+                  <span>SAME-DAY EXPRESS DELIVERIES NCR BOUND: <strong className="text-[#DFB15B]">ORDER BEFORE 4:00 PM</strong></span>
+                </div>
+              </div>
+
+              {/* Instant discount voucher card */}
+              <div className="w-full md:w-auto shrink-0 bg-white/5 border border-white/10 rounded-[30px] p-6 text-center space-y-4 relative overflow-hidden backdrop-blur-sm z-10">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-[#DFB15B]/10 rounded-full blur-xl" />
+                <span className="text-[10px] uppercase font-black tracking-widest text-[#DFB15B]">FESTIVAL PROMO CODE</span>
+                <div className="bg-black/50 border border-dashed border-[#DFB15B]/30 py-3 px-6 rounded-2xl">
+                  <span className="font-mono text-xl sm:text-2xl font-black text-white tracking-widest">{activeOccasion.code}</span>
+                </div>
+                <p className="text-[10px] font-medium text-zinc-300">Apply during checkout for <strong className="text-white">15% Instant Off</strong></p>
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
+      </section>
+
       {/* HIGHLY CATEGORIZED DYNAMIC INTERACTIVE SHOWCASE WITH STAGGERED ENTRACK */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 bg-gradient-to-b from-[#1C0A05] via-[#2F140A] to-[#120502] text-white relative overflow-hidden border-y-2 border-[#DFB15B]/30 shadow-2xl">
         {/* Dynamic shining gold background atmosphere leaks */}
@@ -474,14 +692,14 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="text-center mb-12 sm:mb-16 space-y-4"
           >
-            <div className="inline-block bg-[#DFB15B]/20 text-[#DFB15B] border border-[#DFB15B]/40 px-5 py-2 rounded-full text-[10px] md:text-xs font-black tracking-[0.25em] uppercase shadow-md">
-              ✨ CURATED MASTERPIECES
+            <div className="inline-block bg-[#DFB15B]/20 text-[#DFB15B] border border-[#DFB15B]/40 px-5 py-2 rounded-full text-[10px] md:text-xs font-black tracking-[0.25em] uppercase shadow-md animate-pulse">
+              ✨ FRESH & EGGLESS
             </div>
             <h3 className="text-3xl sm:text-6xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-[#DFB15B] to-yellow-100 tracking-tight drop-shadow-md">
-              Browse our Curations
+              Our Cake Boutique
             </h3>
-            <p className="text-zinc-300 text-xs sm:text-base font-medium italic max-w-xl mx-auto leading-relaxed">
-              We have divided our boutique into clear artisanal branches, allowing you to easily browse and select standard premium bakes, instant pastries, or bespoke creations.
+            <p className="text-zinc-300 text-xs sm:text-sm font-bold italic max-w-xl mx-auto leading-relaxed">
+              Select your favorite sweet category below and customize your order instantly!
             </p>
           </motion.div>
 
@@ -521,8 +739,8 @@ export default function Home() {
                   Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className="h-[360px] rounded-[32px] bg-white/5 border border-white/10 animate-pulse" />
                   ))
-                ) : categoryProductsPreview.length > 0 ? (
-                  categoryProductsPreview.map((product) => (
+                ) : festiveCategoryProducts.length > 0 ? (
+                  festiveCategoryProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))
                 ) : (
@@ -544,10 +762,10 @@ export default function Home() {
               className="flex flex-col sm:flex-row items-center justify-between p-8 bg-[#2D150F] rounded-[32px] sm:rounded-[48px] text-white shadow-xl relative overflow-hidden group text-left"
             >
               <div className="absolute top-0 right-0 w-80 h-80 bg-[#DE9088]/10 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-700" />
-              <div className="space-y-2 mb-6 sm:mb-0 relative z-10">
-                <span className="text-[9px] font-black uppercase text-[#DE9088] tracking-[0.3em]">Excellence Hand-Crafted</span>
-                <p className="text-lg sm:text-2xl font-serif font-medium tracking-tight italic">Want to explore our complete {activeCategoryTab} selection?</p>
-                <p className="text-xs text-white/60 font-light">Custom size options, flavors, messages and eggless choices are fully customizable at checkout.</p>
+              <div className="space-y-2 mb-6 sm:mb-0 relative z-10 text-left">
+                <span className="text-[9px] font-black uppercase text-[#DE9088] tracking-[0.3em]">Freshly Baked for You</span>
+                <p className="text-lg sm:text-2xl font-serif font-black italic">Explore all {activeCategoryTab} designs</p>
+                <p className="text-xs text-white/70 font-semibold">100% customizable size, flavor, and custom messages at checkout.</p>
               </div>
               <Button 
                 onClick={() => { playBtnTap(); navigate(`/shop?category=${activeCategoryObject.queryName}`); }}
@@ -592,29 +810,39 @@ export default function Home() {
             <h3 className="text-2xl sm:text-4xl font-display font-black text-white">Why Cake Urban Faridabad?</h3>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
             {/* CARD 1: THE CAKE ARTISANRY */}
             <motion.div 
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+              onClick={() => {
+                playSlidePop();
+                setSelectedFeature({
+                  title: "100% Chef Curated",
+                  icon: "Cake",
+                  headline: "Curated Masterpieces & Fine Patisserie Care",
+                  content: "Every single frosting stroke at Cake Urban is perfected under professional oversight. We run a boutique kitchen where only luxury dairy cream, authentic Belgian chocolate truffle batches, and real field-plucked strawberries are ever allowed. Nothing artificial, no pre-baked freezing. Our chefs curate each design dynamically to ensure it matches your dream celebration perfectly.",
+                  badge: "Pure Chocolate & Fruit"
+                });
+              }}
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] sm:rounded-[36px] p-4 sm:p-6 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_10px_25px_rgba(0,0,0,0.55)] hover:shadow-[0_20px_50px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white cursor-pointer hover:-translate-y-1.5 animate-reveal"
             >
-              <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
-                  <Cake className="w-8 h-8" />
+              <div className="space-y-3 sm:space-y-6 text-left">
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-[18px] sm:rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <Cake className="w-5 h-5 sm:w-8 sm:h-8" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">100% Chef Curated</h4>
-                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
-                    Every frosting stroke is perfected. Chef-guided, real chocolate truffles, fresh strawberries, and luxury grade dairy.
+                <div className="space-y-1.5 sm:space-y-3">
+                  <h4 className="text-xs sm:text-lg font-display font-black text-white group-hover:text-[#DFB15B] transition-colors line-clamp-1">100% Chef Curated</h4>
+                  <p className="text-[10px] sm:text-xs text-[#FFFDFB]/60 leading-normal sm:leading-relaxed font-semibold font-sans">
+                    Gourmet dairy, signature Belgian cocoa, and fresh organic fruits. No pre-mixes!
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Pure Chocolate & Fruit</span>
-                <Sparkles className="w-4 h-4 text-[#DE9088] animate-pulse" />
+              <div className="pt-4 border-t border-white/10 mt-4 sm:mt-8 flex items-center justify-between">
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-[#DFB15B] truncate">Chef Patie</span>
+                <Sparkles className="w-3.5 h-3.5 text-[#DE9088] animate-pulse" />
               </div>
             </motion.div>
 
@@ -624,22 +852,32 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+              onClick={() => {
+                playSlidePop();
+                setSelectedFeature({
+                  title: "Midnight Surprise Slot",
+                  icon: "Clock",
+                  headline: "Elite Midnight Delivery Service",
+                  content: "Want to surprise your favorite person exactly at 12:00 AM? We operate a dedicated midnight delivery fleet that handles local transit with cold-storage boxes between 11:30 PM and midnight. Experience premium promptness across Faridabad, Noida, and NCR sectors.",
+                  badge: "Midnight Enclaves"
+                });
+              }}
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] sm:rounded-[36px] p-4 sm:p-6 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_10px_25px_rgba(0,0,0,0.55)] hover:shadow-[0_20px_50px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white cursor-pointer hover:-translate-y-1.5 animate-reveal"
             >
-              <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
-                  <Clock className="w-8 h-8" />
+              <div className="space-y-3 sm:space-y-6 text-left">
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-[18px] sm:rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <Clock className="w-5 h-5 sm:w-8 sm:h-8" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Midnight Surprise Slot</h4>
-                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
-                    Delight those who matter most exactly when they turn a year older. Elite slot operations from 11:30 PM to midnight.
+                <div className="space-y-1.5 sm:space-y-3">
+                  <h4 className="text-xs sm:text-lg font-display font-black text-white group-hover:text-[#DFB15B] transition-colors line-clamp-1">Midnight Surprise</h4>
+                  <p className="text-[10px] sm:text-xs text-[#FFFDFB]/60 leading-normal sm:leading-relaxed font-semibold font-sans">
+                    Surprise them exactly at 12:00 AM. Guaranteed cold-chain temperature routing!
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Midnight Enclaves</span>
-                <Truck className="w-4 h-4 text-[#DE9088] animate-bounce" />
+              <div className="pt-4 border-t border-white/10 mt-4 sm:mt-8 flex items-center justify-between">
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-[#DFB15B] truncate">12:00 AM slots</span>
+                <Truck className="w-3.5 h-3.5 text-[#DE9088] animate-bounce" />
               </div>
             </motion.div>
 
@@ -649,22 +887,32 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+              onClick={() => {
+                playSlidePop();
+                setSelectedFeature({
+                  title: "Creative Canvas Studio",
+                  icon: "ChefHat",
+                  headline: "Bespoke Sculptures & Flavor Engineering",
+                  content: "If you have a Google Image reference, a digital sketch, or a specific Pantone shade card, our lead pastry artist will transform it into sugar and cake. From custom-sculpted fondant toppers to 3D architectural bakes, your imagination is our master blueprint.",
+                  badge: "Customizable Weights"
+                });
+              }}
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] sm:rounded-[36px] p-4 sm:p-6 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_10px_25px_rgba(0,0,0,0.55)] hover:shadow-[0_20px_50px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white cursor-pointer hover:-translate-y-1.5 animate-reveal"
             >
-              <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
-                  <ChefHat className="w-8 h-8" />
+              <div className="space-y-3 sm:space-y-6 text-left">
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-[18px] sm:rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <ChefHat className="w-5 h-5 sm:w-8 sm:h-8" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Creative Canvas Studio</h4>
-                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
-                    Have a digital reference? We accept reference designs and color swatches to paint custom buttercream masterworks.
+                <div className="space-y-1.5 sm:space-y-3">
+                  <h4 className="text-xs sm:text-lg font-display font-black text-white group-hover:text-[#DFB15B] transition-colors line-clamp-1">Creative Canvas</h4>
+                  <p className="text-[10px] sm:text-xs text-[#FFFDFB]/60 leading-normal sm:leading-relaxed font-semibold font-sans">
+                    Have an image reference? Send us any design to bring your custom cake to life!
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Customizable Weights</span>
-                <ChevronRight className="w-4 h-4 text-[#DE9088] group-hover:translate-x-1 transition-transform" />
+              <div className="pt-4 border-t border-white/10 mt-4 sm:mt-8 flex items-center justify-between">
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-[#DFB15B] truncate">Customisations</span>
+                <ChevronRight className="w-3.5 h-3.5 text-[#DE9088] group-hover:translate-x-1 transition-transform" />
               </div>
             </motion.div>
 
@@ -674,22 +922,32 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
-              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[40px] p-8 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_20px_50px_rgba(0,0,0,0.55)] hover:shadow-[0_30px_70px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white"
+              onClick={() => {
+                playSlidePop();
+                setSelectedFeature({
+                  title: "Artisanal Gifting Hampers",
+                  icon: "Gift",
+                  headline: "Curated Hampers & Premium Packaging",
+                  content: "Perfect for corporate events, elegant festivals, or precious family gatherings. We curate luxury crates carrying handmade pralines, tea loaves, custom Helium balloons, and fine pastries. Each box is decorated with premium satin ribbons.",
+                  badge: "Bespoke Box Curations"
+                });
+              }}
+              className="bg-[#26130F]/85 backdrop-blur-xl rounded-[24px] sm:rounded-[36px] p-4 sm:p-6 border border-[#DFB15B]/25 hover:border-[#DFB15B]/80 shadow-[0_10px_25px_rgba(0,0,0,0.55)] hover:shadow-[0_20px_50px_rgba(223,177,91,0.25)] flex flex-col justify-between group transition-all duration-500 text-white cursor-pointer hover:-translate-y-1.5 animate-reveal"
             >
-              <div className="space-y-6 text-left">
-                <div className="w-16 h-16 rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
-                  <Gift className="w-8 h-8" />
+              <div className="space-y-3 sm:space-y-6 text-left">
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-[18px] sm:rounded-3xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] group-hover:scale-110 transition-transform duration-300">
+                  <Gift className="w-5 h-5 sm:w-8 sm:h-8" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-xl font-display font-black text-white group-hover:text-[#DFB15B] transition-colors">Artisanal Gifting Hampers</h4>
-                  <p className="text-xs text-white/80 leading-relaxed font-semibold italic">
-                    Deliver handcrafted chocolate crates, cookie trays, and custom balloons. Beautifully wrapped with luxury satin bows and personalized parchment.
+                <div className="space-y-1.5 sm:space-y-3">
+                  <h4 className="text-xs sm:text-lg font-display font-black text-white group-hover:text-[#DFB15B] transition-colors line-clamp-1">Luxury Hampers</h4>
+                  <p className="text-[10px] sm:text-xs text-[#FFFDFB]/60 leading-normal sm:leading-relaxed font-semibold font-sans">
+                    Handcrafted premium gift boxes filled with exquisite pralines, cookies, and ribbons!
                   </p>
                 </div>
               </div>
-              <div className="pt-8 border-t border-white/10 mt-8 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-[#DFB15B]">Bespoke Box Curations</span>
-                <Sparkle className="w-4 h-4 text-[#DE9088] animate-spin" style={{ animationDuration: '3s' }} />
+              <div className="pt-4 border-t border-white/10 mt-4 sm:mt-8 flex items-center justify-between">
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-[#DFB15B] truncate">Festive crates</span>
+                <Sparkle className="w-3.5 h-3.5 text-[#DE9088] animate-spin" style={{ animationDuration: '3s' }} />
               </div>
             </motion.div>
           </div>
@@ -740,7 +998,7 @@ export default function Home() {
                 <div key={i} className="h-[400px] rounded-[40px] bg-[#2D150F]/45 animate-pulse" />
               ))
             ) : (
-              featuredProducts.map((p) => (
+              festiveFeaturedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))
             )}
@@ -908,6 +1166,78 @@ export default function Home() {
 
         </div>
       </section>
+
+      {/* 4. EXQUISITE INTERACTIVE FEATURE DETAIL MODAL popup */}
+      <AnimatePresence>
+        {selectedFeature && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            {/* Dark glass backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedFeature(null)}
+              className="absolute inset-0 bg-[#1A0A07]/80 backdrop-blur-md"
+            />
+
+            {/* Modal Body with Golden accents */}
+            <motion.div
+              initial={{ scale: 0.92, y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.92, y: 30, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 350, damping: 26 }}
+              className="relative w-full max-w-xl bg-[#210F0C] rounded-[36px] overflow-hidden shadow-[0_35px_80px_rgba(0,0,0,0.8)] border border-[#DFB15B]/35 z-10 p-6 sm:p-10 text-left text-white"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button 
+                onClick={() => setSelectedFeature(null)}
+                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 hover:bg-[#DFB15B] text-white hover:text-[#140603] transition-all duration-300 flex items-center justify-center border border-white/10 shadow-md active:scale-90 z-20 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Icon Pedestal */}
+              <div className="w-16 h-16 rounded-2xl bg-[#DFB15B]/15 flex items-center justify-center text-[#DFB15B] mb-6">
+                {selectedFeature.icon === 'Cake' && <Cake className="w-8 h-8" />}
+                {selectedFeature.icon === 'Clock' && <Clock className="w-8 h-8" />}
+                {selectedFeature.icon === 'ChefHat' && <ChefHat className="w-8 h-8" />}
+                {selectedFeature.icon === 'Gift' && <Gift className="w-8 h-8" />}
+              </div>
+
+              {/* Title, Headline & Badge */}
+              <div className="space-y-2 mb-6">
+                <span className="bg-[#DFB15B]/15 text-[#DFB15B] px-3.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">
+                  {selectedFeature.badge}
+                </span>
+                <h4 className="text-2xl sm:text-3xl font-display font-black text-white leading-tight pt-1">
+                  {selectedFeature.title}
+                </h4>
+                <p className="text-xs sm:text-sm font-bold text-amber-300 italic">
+                  {selectedFeature.headline}
+                </p>
+              </div>
+
+              {/* Content text */}
+              <div className="space-y-4">
+                <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-semibold">
+                  {selectedFeature.content}
+                </p>
+              </div>
+
+              {/* CTA button to close or consult */}
+              <div className="mt-8 pt-6 border-t border-white/5 flex justify-end">
+                <Button 
+                  onClick={() => setSelectedFeature(null)}
+                  className="px-6 rounded-2xl bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-black font-black uppercase text-xs tracking-widest hover:opacity-90 active:scale-95 transition-all"
+                >
+                  Wonderful, I Got It!
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

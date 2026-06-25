@@ -128,9 +128,9 @@ export default function Cart() {
         {/* Cart Items */}
         <div className="flex-grow space-y-6 md:space-y-8">
           <AnimatePresence mode='popLayout'>
-            {items.map((item) => (
+            {items.map((item, index) => (
               <motion.div 
-                key={`${item.id}-${item.selectedWeight}`}
+                key={`${item.id}-${item.selectedWeight || ''}-${item.selectedFlavor || ''}-${item.eggless ? 'eggless' : 'regular'}-${item.cakeMessage || ''}-${index}`}
                 layout
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
