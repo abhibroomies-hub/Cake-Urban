@@ -21,6 +21,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { FALLBACK_PRODUCTS } from '../lib/fallbackProducts';
 import { ProductCard } from '../components/ProductCard';
+import { handleImageError } from '../lib/utils';
 
 interface BlogPost {
   id: string;
@@ -233,6 +234,7 @@ export default function Blog() {
                           src={post.image} 
                           alt={post.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                          onError={handleImageError}
                         />
                         <span className="absolute top-4 left-4 bg-[#2D150F] text-white text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">
                           {post.category}
@@ -330,6 +332,7 @@ export default function Blog() {
                   src={activePost.image} 
                   alt={activePost.title} 
                   className="w-full h-full object-cover"
+                  onError={handleImageError}
                 />
               </div>
 

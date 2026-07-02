@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { motion, useSpring } from 'motion/react';
 import { Sparkle, Sparkles } from 'lucide-react';
+import { handleImageError } from '../lib/utils';
 
 export function Rotating3DCake({ 
   image = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800", 
@@ -223,6 +224,7 @@ export function Rotating3DCake({
             alt={alt}
             className="w-full h-full object-contain drop-shadow-[0_20px_45px_rgba(0,0,0,0.85)] filter hover:brightness-105 transition-all duration-300"
             referrerPolicy="no-referrer"
+            onError={handleImageError}
           />
 
           {/* Golden floating particles right on the cake body */}

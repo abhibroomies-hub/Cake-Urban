@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import SEO from '../components/SEO';
 import { FALLBACK_PRODUCTS } from '../lib/fallbackProducts';
 import { playSuccessChime, playBtnTap, playSlidePop } from '../lib/sound';
+import { handleImageError } from '../lib/utils';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -416,6 +417,7 @@ export default function ProductDetail() {
                 className="w-full h-full object-cover rounded-[24px]"
                 referrerPolicy="no-referrer"
                 alt={product.name}
+                onError={handleImageError}
               />
               <div 
                 className="absolute inset-4 pointer-events-none rounded-[24px] z-10 hidden lg:block"
@@ -443,7 +445,7 @@ export default function ProductDetail() {
                   activeImage === img ? 'border-[#3B1F17] scale-95' : 'border-transparent'
                 }`}
                >
-                  <img src={img} className="w-full h-full object-cover" referrerPolicy="no-referrer" alt={`view ${i}`} />
+                  <img src={img} className="w-full h-full object-cover" referrerPolicy="no-referrer" alt={`view ${i}`} onError={handleImageError} />
                </div>
             ))}
           </div>

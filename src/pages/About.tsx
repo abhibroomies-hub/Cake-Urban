@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Heart, Star, Cake } from 'lucide-react';
 import SEO from '../components/SEO';
+import { handleImageError } from '../lib/utils';
 
 export default function About() {
   return (
@@ -27,6 +28,7 @@ export default function About() {
               src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=800" 
               className="w-full h-full object-cover"
               alt="Artisan Bakery"
+              onError={handleImageError}
             />
           </div>
           <div className="space-y-6 text-[#FFFDFB]/80 leading-relaxed font-medium italic text-lg">

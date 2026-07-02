@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { playSuccessChime, playSlidePop, playBtnTap } from '../lib/sound';
 import { toast } from 'sonner';
+import { handleImageError } from '../lib/utils';
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -97,6 +98,7 @@ export function ProductCard({ product }: { product: Product }) {
               className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
               referrerPolicy="no-referrer"
               alt={product.name}
+              onError={handleImageError}
             />
 
             {/* Bestseller Badge */}
