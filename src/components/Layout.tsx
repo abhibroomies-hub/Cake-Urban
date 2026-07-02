@@ -43,10 +43,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen bg-gradient-to-tr from-[#080808] via-[#121212] to-[#0B0B0B] flex flex-col relative overflow-hidden text-[#FFFDFB]"
+      className="min-h-screen bg-[#070302] flex flex-col relative overflow-hidden text-[#FFFDFB]"
       style={{ 
-        backgroundImage: bgPattern,
-        backgroundAttachment: 'fixed'
+        backgroundImage: `${bgPattern}, linear-gradient(to bottom, rgba(10, 5, 4, 0.93) 0%, rgba(18, 9, 7, 0.96) 50%, rgba(8, 3, 2, 0.98) 100%), url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1920")`,
+        backgroundAttachment: 'fixed, scroll, fixed',
+        backgroundSize: 'auto, cover, cover',
+        backgroundPosition: 'center'
       }}
     >
       {/* 3D Glossy Live Moving Wave Elements & Mouse Tracker Parallax Layers */}
