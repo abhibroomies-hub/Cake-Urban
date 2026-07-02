@@ -163,17 +163,20 @@ export const FESTIVE_OCCASIONS: FestiveOccasion[] = [
 ];
 
 export function FestiveParticles({ flourishes }: { flourishes: string[] }) {
-  const [particles, setParticles] = useState<{ id: number; x: number; y: number; s: number; d: number; char: string }[]>([]);
+  const [particles, setParticles] = useState<{ id: number; x: number; targetX: number; s: number; d: number; char: string }[]>([]);
 
   useEffect(() => {
-    const arr = Array.from({ length: 14 }).map((_, i) => ({
-      id: i,
-      x: Math.random() * 95,
-      y: Math.random() * 100,
-      s: Math.random() * 1.4 + 0.7,
-      d: Math.random() * 8 + 6,
-      char: flourishes[i % flourishes.length]
-    }));
+    const arr = Array.from({ length: 14 }).map((_, i) => {
+      const startX = Math.random() * 95;
+      return {
+        id: i,
+        x: startX,
+        targetX: startX + (Math.random() * 10 - 5),
+        s: Math.random() * 1.4 + 0.7,
+        d: Math.random() * 8 + 6,
+        char: flourishes[i % flourishes.length]
+      };
+    });
     setParticles(arr);
   }, [flourishes]);
 
@@ -185,7 +188,7 @@ export function FestiveParticles({ flourishes }: { flourishes: string[] }) {
           initial={{ y: -60, opacity: 0 }}
           animate={{
             y: ['0vh', '100vh'],
-            x: [`${p.x}vw`, `${p.x + (Math.random() * 10 - 5)}vw`],
+            x: [`${p.x}vw`, `${p.targetX}vw`],
             opacity: [0, 0.75, 0.75, 0],
             rotate: [0, 360]
           }}
@@ -516,7 +519,7 @@ export default function Home() {
 
           {/* RIGHT COLUMN: HIGH-END 3D ROTATING CAKE IN PERSPECTIVE VIEW */}
           <div className="relative w-full flex items-center justify-center z-10 min-h-[220px] xs:min-h-[260px] sm:min-h-[480px]">
-            <Rotating3DCake />
+            <Rotating3DCake image={currentSpotlight.image} alt={currentSpotlight.name} />
           </div>
         </div>
       </section>

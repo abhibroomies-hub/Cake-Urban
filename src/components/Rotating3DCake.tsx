@@ -2,7 +2,13 @@ import React, { useRef, useState } from 'react';
 import { motion, useSpring } from 'motion/react';
 import { Sparkle, Sparkles } from 'lucide-react';
 
-export function Rotating3DCake() {
+export function Rotating3DCake({ 
+  image = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800", 
+  alt = "Artisanal 3D rotating gold cake" 
+}: { 
+  image?: string; 
+  alt?: string; 
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   
   // High-fidelity interactive spring physics for 3D tilt
@@ -39,6 +45,21 @@ export function Rotating3DCake() {
     rotateY.set(0);
   };
 
+  // Pre-calculate stable sparkle metrics to guarantee 60 FPS performance during mouse tilt re-renders
+  const sparklesList = React.useMemo(() => {
+    return Array.from({ length: 10 }).map((_, i) => ({
+      id: i,
+      initX: Math.random() * 300 - 150 + 200,
+      initY: Math.random() * 300 - 150 + 200,
+      targetX: Math.random() * 50 - 25,
+      targetXEnd: Math.random() * 100 - 50,
+      duration: 5 + Math.random() * 4,
+      delay: Math.random() * 5,
+      left: 15 + Math.random() * 70,
+      top: 25 + Math.random() * 55,
+    }));
+  }, []);
+
   return (
     <div 
       ref={containerRef}
@@ -57,31 +78,31 @@ export function Rotating3DCake() {
 
       {/* 2. Ambient Floating Sparkles / Fireflies */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
-        {[...Array(10)].map((_, i) => (
+        {sparklesList.map((sp) => (
           <motion.div
-            key={i}
+            key={sp.id}
             className="absolute w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-gradient-to-r from-[#DFB15B] to-yellow-300"
             initial={{ 
-              x: Math.random() * 300 - 150 + 200,
-              y: Math.random() * 300 - 150 + 200, 
+              x: sp.initX,
+              y: sp.initY, 
               opacity: 0, 
               scale: 0.5 
             }}
             animate={{
               y: [0, -70, -140],
-              x: [0, Math.random() * 50 - 25, Math.random() * 100 - 50],
+              x: [0, sp.targetX, sp.targetXEnd],
               opacity: [0, 0.9, 0],
               scale: [0.5, 1.3, 0.3]
             }}
             transition={{
-              duration: 5 + Math.random() * 4,
+              duration: sp.duration,
               repeat: Infinity,
-              delay: Math.random() * 5,
+              delay: sp.delay,
               ease: "easeInOut"
             }}
             style={{
-              left: `${15 + Math.random() * 70}%`,
-              top: `${25 + Math.random() * 55}%`,
+              left: `${sp.left}%`,
+              top: `${sp.top}%`,
               filter: 'drop-shadow(0 0 8px #DFB15B)'
             }}
           />
@@ -198,8 +219,8 @@ export function Rotating3DCake() {
           style={{ transform: "translateZ(30px)" }}
         >
           <img 
-            src="https://images.unsplash.com/photo-1589415490074-9f7626d30e7f?auto=format&fit=crop&q=80&w=800"
-            alt="Artisanal 3D rotating gold cake"
+            src={image}
+            alt={alt}
             className="w-full h-full object-contain drop-shadow-[0_20px_45px_rgba(0,0,0,0.85)] filter hover:brightness-105 transition-all duration-300"
             referrerPolicy="no-referrer"
           />
