@@ -45,7 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       ref={containerRef}
       className="min-h-screen bg-[#070302] flex flex-col relative overflow-hidden text-[#FFFDFB]"
       style={{ 
-        backgroundImage: `${bgPattern}, linear-gradient(to bottom, rgba(10, 5, 4, 0.93) 0%, rgba(18, 9, 7, 0.96) 50%, rgba(8, 3, 2, 0.98) 100%), url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1920")`,
+        backgroundImage: `${bgPattern}, linear-gradient(to bottom, rgba(10, 5, 4, 0.95) 0%, rgba(18, 9, 7, 0.98) 50%, rgba(8, 3, 2, 1) 100%), url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1920")`,
         backgroundAttachment: 'fixed, scroll, fixed',
         backgroundSize: 'auto, cover, cover',
         backgroundPosition: 'center'
@@ -54,6 +54,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* 3D Glossy Live Moving Wave Elements & Mouse Tracker Parallax Layers */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         
+        {/* Dynamic Premium Ambient Luxury Video Background Layer */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.28] pointer-events-none mix-blend-screen z-0 filter brightness-110 saturate-125"
+          poster="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1920"
+        >
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-golden-particles-slowly-drifting-in-the-air-42353-large.mp4" type="video/mp4" />
+        </video>
+
         {/* Dynamic Sweeping Diagonal Metallic Reflection / Glass Sheen */}
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.035] to-transparent -translate-y-full rotate-12 animate-glossy-sheen pointer-events-none" />
 
