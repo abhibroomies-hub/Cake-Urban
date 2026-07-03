@@ -15,6 +15,20 @@ interface ScrollParallaxShowcaseProps {
 export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
+  const [isTouchDevice, setIsTouchDevice] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkTouch = () => {
+      setIsTouchDevice(
+        ('ontouchstart' in window) || 
+        (navigator.maxTouchPoints > 0) || 
+        (window.innerWidth < 1024)
+      );
+    };
+    checkTouch();
+    window.addEventListener('resize', checkTouch);
+    return () => window.removeEventListener('resize', checkTouch);
+  }, []);
 
   // Bind vertical viewport scroll coordinates of this section to horizontal translation offsets
   const { scrollYProgress } = useScroll({
@@ -106,23 +120,30 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
             Artisanal Confection Track
           </h3>
           <p className="text-zinc-300 text-xs sm:text-sm font-bold italic max-w-xl mx-auto leading-relaxed">
-            Scroll vertically to watch our gourmet masterpieces float and slide dynamically in physical depth.
+            {isTouchDevice 
+              ? "Touch and swipe horizontally to browse our delicious selection of freshly baked premium cakes."
+              : "Scroll vertically to watch our gourmet masterpieces float and slide dynamically in physical depth."}
           </p>
+          {isTouchDevice && (
+            <div className="flex items-center justify-center gap-2 text-[#DFB15B] text-[10px] font-black uppercase tracking-[0.25em] bg-black/40 border border-[#DFB15B]/20 py-1.5 px-4 rounded-full w-max mx-auto animate-pulse mt-2">
+              <span>Swipe left & right ⟵ ⟶</span>
+            </div>
+          )}
         </motion.div>
       </div>
 
       {/* TRACK 1: LEFT-TO-RIGHT SLIDER */}
-      <div className="relative z-10 py-6 overflow-hidden">
+      <div className={`relative z-10 py-6 ${isTouchDevice ? 'overflow-x-auto no-scrollbar snap-x snap-mandatory flex w-full' : 'overflow-hidden'}`}>
         <motion.div 
-          style={{ x: x1, rotate: rotate1 }} 
-          className="flex gap-4 sm:gap-8 w-max px-[10%] will-change-transform"
+          style={isTouchDevice ? undefined : { x: x1, rotate: rotate1 }} 
+          className={`flex gap-4 sm:gap-8 will-change-transform ${isTouchDevice ? 'px-6 w-auto' : 'w-max px-[10%]'}`}
         >
           {row1.map((product) => (
             <Link 
               to={`/product/${product.id}`} 
               key={product.id}
               onClick={playSlidePop}
-              className="block shrink-0"
+              className={`block shrink-0 ${isTouchDevice ? 'snap-center' : ''}`}
             >
               <div className="w-[240px] sm:w-[320px] rounded-[32px] sm:rounded-[40px] bg-gradient-to-b from-[#1E0D09]/95 to-[#0F0503]/95 border-2 border-[#DFB15B]/20 p-4 sm:p-5 relative group transition-all duration-500 hover:border-[#DFB15B]/80 hover:shadow-[0_20px_50px_rgba(223,177,91,0.25)] hover:-translate-y-2">
                 
@@ -174,17 +195,17 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
       </div>
 
       {/* TRACK 2: RIGHT-TO-LEFT SLIDER */}
-      <div className="relative z-10 py-6 overflow-hidden mt-2 sm:mt-6">
+      <div className={`relative z-10 py-6 mt-2 sm:mt-6 ${isTouchDevice ? 'overflow-x-auto no-scrollbar snap-x snap-mandatory flex w-full' : 'overflow-hidden'}`}>
         <motion.div 
-          style={{ x: x2, rotate: rotate2 }} 
-          className="flex gap-4 sm:gap-8 w-max px-[10%] will-change-transform"
+          style={isTouchDevice ? undefined : { x: x2, rotate: rotate2 }} 
+          className={`flex gap-4 sm:gap-8 will-change-transform ${isTouchDevice ? 'px-6 w-auto' : 'w-max px-[10%]'}`}
         >
           {row2.map((product) => (
             <Link 
               to={`/product/${product.id}`} 
               key={product.id}
               onClick={playSlidePop}
-              className="block shrink-0"
+              className={`block shrink-0 ${isTouchDevice ? 'snap-center' : ''}`}
             >
               <div className="w-[240px] sm:w-[320px] rounded-[32px] sm:rounded-[40px] bg-gradient-to-b from-[#1C0F0E]/95 to-[#0A0403]/95 border-2 border-[#DFB15B]/15 p-4 sm:p-5 relative group transition-all duration-500 hover:border-[#DFB15B]/80 hover:shadow-[0_20px_50px_rgba(223,177,91,0.25)] hover:-translate-y-2">
                 

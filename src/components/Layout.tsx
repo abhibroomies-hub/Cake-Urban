@@ -11,38 +11,39 @@ import { useTheme } from '../lib/theme';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const backgroundRef = React.useRef<HTMLDivElement>(null);
   const { activeTheme } = useTheme();
 
   useEffect(() => {
     let frameId: number;
     const handleMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
+      if (!backgroundRef.current) return;
       cancelAnimationFrame(frameId);
       frameId = requestAnimationFrame(() => {
-        if (!containerRef.current) return;
+        if (!backgroundRef.current) return;
         const x = (e.clientX / window.innerWidth) * 2 - 1;
         const y = (e.clientY / window.innerHeight) * 2 - 1;
         const px = ((x + 1) / 2) * 100;
         const py = ((y + 1) / 2) * 100;
-        containerRef.current.style.setProperty('--mouse-x', `${x}`);
-        containerRef.current.style.setProperty('--mouse-y', `${y}`);
-        containerRef.current.style.setProperty('--mouse-px', `${px}%`);
-        containerRef.current.style.setProperty('--mouse-py', `${py}%`);
+        backgroundRef.current.style.setProperty('--mouse-x', `${x}`);
+        backgroundRef.current.style.setProperty('--mouse-y', `${y}`);
+        backgroundRef.current.style.setProperty('--mouse-px', `${px}%`);
+        backgroundRef.current.style.setProperty('--mouse-py', `${py}%`);
       });
     };
 
     let scrollFrameId: number;
     const handleScroll = () => {
-      if (!containerRef.current) return;
+      if (!backgroundRef.current) return;
       cancelAnimationFrame(scrollFrameId);
       scrollFrameId = requestAnimationFrame(() => {
-        if (!containerRef.current) return;
+        if (!backgroundRef.current) return;
         const scrollY = window.scrollY;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
         const scrollPercent = maxScroll > 0 ? scrollY / maxScroll : 0;
-        containerRef.current.style.setProperty('--scroll-y', `${scrollY}`);
-        containerRef.current.style.setProperty('--scroll-y-px', `${scrollY}px`);
-        containerRef.current.style.setProperty('--scroll-percent', `${scrollPercent}`);
+        backgroundRef.current.style.setProperty('--scroll-y', `${scrollY}`);
+        backgroundRef.current.style.setProperty('--scroll-y-px', `${scrollY}px`);
+        backgroundRef.current.style.setProperty('--scroll-percent', `${scrollPercent}`);
       });
     };
 
@@ -73,7 +74,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       }}
     >
       {/* 3D Glossy Live Moving Wave Elements & Mouse Tracker Parallax Layers */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div ref={backgroundRef} className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         
         {/* Dynamic Premium Ambient Luxury Video Background Layer - Hidden on mobile, fixed viewport bounds to prevent scaling */}
         <video
@@ -99,33 +100,39 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
 
         {/* Interactive Smooth Camel Gold Shifting Blob with parallax drift - Hidden on mobile */}
-        <div 
-          className="hidden md:block absolute top-[-10%] left-[-15%] w-[80vw] h-[80vw] sm:w-[60vw] sm:h-[60vw] opacity-[0.14] blur-[100px] sm:blur-[140px] rounded-full animate-wave-slow mix-blend-screen transition-none"
-          style={{
-            backgroundColor: activeTheme.accent,
-            transform: `translate3d(calc(var(--mouse-x, 0) * -25px), calc(var(--mouse-y, 0) * -25px + var(--scroll-y, 0) * 0.1px), 0)`,
-            willChange: 'transform'
-          }}
-        />
+        <div className="hidden md:block absolute top-[-10%] left-[-15%] w-[80vw] h-[80vw] sm:w-[60vw] sm:h-[60vw] animate-wave-slow mix-blend-screen pointer-events-none">
+          <div 
+            className="w-full h-full opacity-[0.14] blur-[100px] sm:blur-[140px] rounded-full transition-none"
+            style={{
+              backgroundColor: activeTheme.accent,
+              transform: `translate3d(calc(var(--mouse-x, 0) * -25px), calc(var(--mouse-y, 0) * -25px + var(--scroll-y, 0) * 0.1px), 0)`,
+              willChange: 'transform'
+            }}
+          />
+        </div>
         
         {/* Luxurious Rose Syrup Shifting Blob with inverse parallax drift - Hidden on mobile */}
-        <div 
-          className="hidden md:block absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] sm:w-[65vw] sm:h-[65vw] opacity-[0.11] blur-[120px] sm:blur-[160px] rounded-full animate-wave-secondary mix-blend-screen transition-none" 
-          style={{
-            backgroundColor: activeTheme.id === 'classic' ? '#DE8070' : activeTheme.accent,
-            transform: `translate3d(calc(var(--mouse-x, 0) * 25px), calc(var(--mouse-y, 0) * 25px - var(--scroll-y, 0) * 0.15px), 0)`,
-            willChange: 'transform'
-          }}
-        />
+        <div className="hidden md:block absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] sm:w-[65vw] sm:h-[65vw] animate-wave-secondary mix-blend-screen pointer-events-none">
+          <div 
+            className="w-full h-full opacity-[0.11] blur-[120px] sm:blur-[160px] rounded-full transition-none" 
+            style={{
+              backgroundColor: activeTheme.id === 'classic' ? '#DE8070' : activeTheme.accent,
+              transform: `translate3d(calc(var(--mouse-x, 0) * 25px), calc(var(--mouse-y, 0) * 25px - var(--scroll-y, 0) * 0.15px), 0)`,
+              willChange: 'transform'
+            }}
+          />
+        </div>
         
         {/* Ambient Velvet Fudge Accent Blob - Hidden on mobile */}
-        <div 
-          className="hidden md:block absolute top-[35%] left-[20%] w-[60vw] h-[60vw] bg-[#D89C95] opacity-[0.06] blur-[110px] sm:blur-[130px] rounded-full animate-wave-third transition-none"
-          style={{
-            transform: `translate3d(calc(var(--mouse-x, 0) * -10px), calc(var(--mouse-y, 0) * 15px + var(--scroll-y, 0) * 0.05px), 0)`,
-            willChange: 'transform'
-          }}
-        />
+        <div className="hidden md:block absolute top-[35%] left-[20%] w-[60vw] h-[60vw] animate-wave-third pointer-events-none">
+          <div 
+            className="w-full h-full bg-[#D89C95] opacity-[0.06] blur-[110px] sm:blur-[130px] rounded-full transition-none"
+            style={{
+              transform: `translate3d(calc(var(--mouse-x, 0) * -10px), calc(var(--mouse-y, 0) * 15px + var(--scroll-y, 0) * 0.05px), 0)`,
+              willChange: 'transform'
+            }}
+          />
+        </div>
 
         {/* Realistic Translucent 3D Floating Glass Spheres with real drop-shadows (4D depth layer) - Hidden on mobile to prevent extreme rendering overhead */}
         <div 
