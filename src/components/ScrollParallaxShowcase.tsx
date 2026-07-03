@@ -115,7 +115,7 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
       <div className="relative z-10 py-6 overflow-hidden">
         <motion.div 
           style={{ x: x1, rotate: rotate1 }} 
-          className="flex gap-4 sm:gap-8 w-max px-[10%]"
+          className="flex gap-4 sm:gap-8 w-max px-[10%] will-change-transform"
         >
           {row1.map((product) => (
             <Link 
@@ -177,7 +177,7 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
       <div className="relative z-10 py-6 overflow-hidden mt-2 sm:mt-6">
         <motion.div 
           style={{ x: x2, rotate: rotate2 }} 
-          className="flex gap-4 sm:gap-8 w-max px-[10%]"
+          className="flex gap-4 sm:gap-8 w-max px-[10%] will-change-transform"
         >
           {row2.map((product) => (
             <Link 
