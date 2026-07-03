@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { ProductCard } from '../components/ProductCard';
 import { Rotating3DCake } from '../components/Rotating3DCake';
 import { LiquidGoldButton } from '../components/LiquidGoldButton';
+import { ScrollParallaxShowcase } from '../components/ScrollParallaxShowcase';
 import { db } from '../lib/firebase';
 import { collection, getDocs, limit, query, where } from 'firebase/firestore';
 import { Product } from '../types';
@@ -781,6 +782,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Interactive horizontal scrolling dual track parallax confections gallery */}
+      <ScrollParallaxShowcase products={allProducts} />
 
       {/* SHINY LIQUID CHOCOLATE VELVET SCROLLING WAVE 1 */}
       <div className="relative h-20 w-full overflow-hidden pointer-events-none z-10 -mt-10 opacity-80">

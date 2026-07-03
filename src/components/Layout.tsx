@@ -30,10 +30,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
         containerRef.current.style.setProperty('--mouse-py', `${py}%`);
       });
     };
+
+    let scrollFrameId: number;
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+      cancelAnimationFrame(scrollFrameId);
+      scrollFrameId = requestAnimationFrame(() => {
+        if (!containerRef.current) return;
+        const scrollY = window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = maxScroll > 0 ? scrollY / maxScroll : 0;
+        containerRef.current.style.setProperty('--scroll-y', `${scrollY}`);
+        containerRef.current.style.setProperty('--scroll-y-px', `${scrollY}px`);
+        containerRef.current.style.setProperty('--scroll-percent', `${scrollPercent}`);
+      });
+    };
+
     window.addEventListener('mousemove', handleMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
     return () => {
       cancelAnimationFrame(frameId);
+      cancelAnimationFrame(scrollFrameId);
       window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -54,13 +75,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* 3D Glossy Live Moving Wave Elements & Mouse Tracker Parallax Layers */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         
-        {/* Dynamic Premium Ambient Luxury Video Background Layer */}
+        {/* Dynamic Premium Ambient Luxury Video Background Layer - Fixed viewport bounds to prevent scaling to layout height */}
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-[0.28] pointer-events-none mix-blend-screen z-0 filter brightness-110 saturate-125"
+          className="fixed inset-0 w-screen h-screen object-cover opacity-[0.22] pointer-events-none mix-blend-screen z-0"
           poster="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1920"
         >
           <source src="https://assets.mixkit.co/videos/preview/mixkit-golden-particles-slowly-drifting-in-the-air-42353-large.mp4" type="video/mp4" />
@@ -77,57 +98,60 @@ export function Layout({ children }: { children: React.ReactNode }) {
           }}
         />
 
-        {/* Interactive Smooth Camel Gold Shifting Blob with parallax drift */}
+        {/* Interactive Smooth Camel Gold Shifting Blob with parallax drift - Transition-none prevents interpolation fighting on scroll */}
         <div 
-          className="absolute top-[-10%] left-[-15%] w-[80vw] h-[80vw] sm:w-[60vw] sm:h-[60vw] opacity-[0.14] blur-[100px] sm:blur-[140px] rounded-full animate-wave-slow mix-blend-screen transition-all duration-750 ease-out"
+          className="absolute top-[-10%] left-[-15%] w-[80vw] h-[80vw] sm:w-[60vw] sm:h-[60vw] opacity-[0.14] blur-[100px] sm:blur-[140px] rounded-full animate-wave-slow mix-blend-screen transition-none"
           style={{
             backgroundColor: activeTheme.accent,
-            transform: `translate(calc(var(--mouse-x, 0) * -25px), calc(var(--mouse-y, 0) * -25px))`,
+            transform: `translate3d(calc(var(--mouse-x, 0) * -25px), calc(var(--mouse-y, 0) * -25px + var(--scroll-y, 0) * 0.1px), 0)`,
+            willChange: 'transform'
           }}
         />
         
-        {/* Luxurious Rose Syrup Shifting Blob with inverse parallax drift */}
+        {/* Luxurious Rose Syrup Shifting Blob with inverse parallax drift - Transition-none prevents interpolation fighting on scroll */}
         <div 
-          className="absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] sm:w-[65vw] sm:h-[65vw] opacity-[0.11] blur-[120px] sm:blur-[160px] rounded-full animate-wave-secondary mix-blend-screen transition-all duration-750 ease-out" 
+          className="absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] sm:w-[65vw] sm:h-[65vw] opacity-[0.11] blur-[120px] sm:blur-[160px] rounded-full animate-wave-secondary mix-blend-screen transition-none" 
           style={{
             backgroundColor: activeTheme.id === 'classic' ? '#DE8070' : activeTheme.accent,
-            transform: `translate(calc(var(--mouse-x, 0) * 25px), calc(var(--mouse-y, 0) * 25px))`,
+            transform: `translate3d(calc(var(--mouse-x, 0) * 25px), calc(var(--mouse-y, 0) * 25px - var(--scroll-y, 0) * 0.15px), 0)`,
+            willChange: 'transform'
           }}
         />
         
-        {/* Ambient Velvet Fudge Accent Blob */}
+        {/* Ambient Velvet Fudge Accent Blob - Transition-none prevents interpolation fighting on scroll */}
         <div 
-          className="absolute top-[35%] left-[20%] w-[60vw] h-[60vw] bg-[#D89C95] opacity-[0.06] blur-[110px] sm:blur-[130px] rounded-full animate-wave-third transition-transform duration-1000 ease-out"
+          className="absolute top-[35%] left-[20%] w-[60vw] h-[60vw] bg-[#D89C95] opacity-[0.06] blur-[110px] sm:blur-[130px] rounded-full animate-wave-third transition-none"
           style={{
-            transform: `translate(calc(var(--mouse-x, 0) * -10px), calc(var(--mouse-y, 0) * 15px))`,
+            transform: `translate3d(calc(var(--mouse-x, 0) * -10px), calc(var(--mouse-y, 0) * 15px + var(--scroll-y, 0) * 0.05px), 0)`,
+            willChange: 'transform'
           }}
         />
 
         {/* Realistic Translucent 3D Floating Glass Spheres with real drop-shadows (4D depth layer) */}
         <div 
-          className="absolute top-[18%] left-[8%] w-16 h-16 rounded-full bg-white/[0.04] border border-white/20 backdrop-blur-md shadow-2xl transition-transform duration-500"
+          className="absolute top-[18%] left-[8%] w-16 h-16 rounded-full bg-white/[0.04] border border-white/20 backdrop-blur-md shadow-2xl"
           style={{
-            transform: `translate(calc(var(--mouse-x, 0) * -35px), calc(var(--mouse-y, 0) * -35px)) rotate(calc(var(--mouse-x, 0) * 12deg))`,
+            transform: `translate3d(calc(var(--mouse-x, 0) * -35px), calc(var(--mouse-y, 0) * -35px + var(--scroll-y, 0) * 0.12px), 0) rotate(calc(var(--mouse-x, 0) * 12deg))`,
             boxShadow: 'inset -8px -8px 20px rgba(0,0,0,0.3), inset 8px 8px 20px rgba(255,255,255,0.1), 0 20px 40px rgba(0,0,0,0.4)',
-            transition: 'transform 0.1s ease-out'
+            willChange: 'transform'
           }}
         />
 
         <div 
-          className="absolute bottom-[22%] right-[12%] w-24 h-24 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md shadow-2xl transition-transform duration-500"
+          className="absolute bottom-[22%] right-[12%] w-24 h-24 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md shadow-2xl"
           style={{
-            transform: `translate(calc(var(--mouse-x, 0) * 40px), calc(var(--mouse-y, 0) * 40px)) rotate(calc(var(--mouse-y, 0) * -15deg))`,
+            transform: `translate3d(calc(var(--mouse-x, 0) * 40px), calc(var(--mouse-y, 0) * 40px - var(--scroll-y, 0) * 0.18px), 0) rotate(calc(var(--mouse-y, 0) * -15deg))`,
             boxShadow: 'inset -12px -12px 30px rgba(0,0,0,0.4), inset 12px 12px 30px rgba(255,255,255,0.08), 0 35px 50px rgba(0,0,0,0.5)',
-            transition: 'transform 0.1s ease-out'
+            willChange: 'transform'
           }}
         />
 
         <div 
-          className="absolute top-[65%] left-[85%] w-12 h-12 rounded-full bg-[#DFB15B]/[0.08] border border-[#DFB15B]/20 backdrop-blur-sm shadow-2xl transition-transform duration-700"
+          className="absolute top-[65%] left-[85%] w-12 h-12 rounded-full bg-[#DFB15B]/[0.08] border border-[#DFB15B]/20 backdrop-blur-sm shadow-2xl"
           style={{
-            transform: `translate(calc(var(--mouse-x, 0) * -20px), calc(var(--mouse-y, 0) * -20px))`,
+            transform: `translate3d(calc(var(--mouse-x, 0) * -20px), calc(var(--mouse-y, 0) * -20px + var(--scroll-y, 0) * 0.08px), 0)`,
             boxShadow: 'inset -5px -5px 12px rgba(0,0,0,0.3), inset 5px 5px 12px rgba(255,255,255,0.14), 0 15px 30px rgba(0,0,0,0.4)',
-            transition: 'transform 0.1s ease-out'
+            willChange: 'transform'
           }}
         />
       </div>
