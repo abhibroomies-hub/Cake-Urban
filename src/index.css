@@ -211,6 +211,18 @@
   }
 }
 
+@keyframes laserScan {
+  0% {
+    top: 0%;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 0%;
+  }
+}
+
 .animate-wave-slow {
   animation: waveSlow 32s ease-in-out infinite;
   will-change: transform;
@@ -228,4 +240,8 @@
 
 .animate-glossy-sheen {
   animation: glossySheen 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-laser-scan {
+  animation: laserScan 2.5s ease-in-out infinite;
 }

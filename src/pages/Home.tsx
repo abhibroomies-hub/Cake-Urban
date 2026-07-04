@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import { ArrowRight, Star, Clock, Gift, MapPin, Search, Cake, Cookie, ShoppingBag, UtensilsCrossed, ChefHat, Heart, ChevronRight, Sparkles, Truck, Box, Sparkle, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ProductCard } from '../components/ProductCard';
@@ -236,8 +236,38 @@ export default function Home() {
   const [spotlightIdx, setSpotlightIdx] = useState(0);
   const currentSpotlight = HERO_SHOWCASED_CONFECTIONS[spotlightIdx];
 
+  // Compact UI view toggles for clean professional aesthetics
+  const [expandedHubIdx, setExpandedHubIdx] = useState<number | null>(null);
+  const [showSeoBreadcrumbs, setShowSeoBreadcrumbs] = useState(false);
+
   // 3D Parallax Mouse Tracking wrapper ref
   const heroSectionRef = useRef<HTMLDivElement>(null);
+
+  // Scroll Parallax Hooks for diverse interactive page elements
+  const whySectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: whyScroll } = useScroll({
+    target: whySectionRef,
+    offset: ["start end", "end start"]
+  });
+  const whyY1 = useTransform(whyScroll, [0, 1], ["-12%", "12%"]);
+  const whyY2 = useTransform(whyScroll, [0, 1], ["12%", "-12%"]);
+  const whyRotate = useTransform(whyScroll, [0, 1], [-10, 20]);
+
+  const deliverySectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: deliveryScroll } = useScroll({
+    target: deliverySectionRef,
+    offset: ["start end", "end start"]
+  });
+  const deliveryY1 = useTransform(deliveryScroll, [0, 1], ["-15%", "15%"]);
+  const deliveryY2 = useTransform(deliveryScroll, [0, 1], ["15%", "-15%"]);
+  const deliveryRotate = useTransform(deliveryScroll, [0, 1], [-5, 5]);
+
+  const testimonialSectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: testimonialScroll } = useScroll({
+    target: testimonialSectionRef,
+    offset: ["start end", "end start"]
+  });
+  const testimonialY = useTransform(testimonialScroll, [0, 1], ["-8%", "8%"]);
 
   const { setSearchOpen } = useUI();
   const navigate = useNavigate();
@@ -804,8 +834,22 @@ export default function Home() {
       </div>
 
       {/* THREE EXQUISITE BOUTIQUE CARDS FEATURE SHOWCASE */}
-      <section className="px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section ref={whySectionRef} className="px-4 sm:px-6 lg:px-8 py-12 relative overflow-hidden">
+        {/* Parallax Floating Confectionery Ornaments */}
+        <motion.div 
+          style={{ y: whyY1, rotate: whyRotate }}
+          className="absolute top-10 left-[4%] z-0 opacity-20 pointer-events-none hidden lg:block"
+        >
+          <span className="text-6xl">🧁</span>
+        </motion.div>
+        <motion.div 
+          style={{ y: whyY2 }}
+          className="absolute bottom-10 right-[4%] z-0 opacity-20 pointer-events-none hidden lg:block"
+        >
+          <span className="text-6xl">🍓</span>
+        </motion.div>
+
+        <div className="max-w-7xl mx-auto space-y-12 relative z-10">
           {/* Section title */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -1014,7 +1058,21 @@ export default function Home() {
       </section>
 
       {/* DELIVERABLE NCR ZONES & SEARCH OPTIMIZATION MAP - CRITICAL SEO ACCELERATOR */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-transparent border-t border-white/5 relative overflow-hidden">
+      <section ref={deliverySectionRef} className="px-4 sm:px-6 lg:px-8 py-16 bg-transparent border-t border-white/5 relative overflow-hidden">
+        {/* Parallax Floating Delivery/Location Icons */}
+        <motion.div 
+          style={{ y: deliveryY1, rotate: deliveryRotate }}
+          className="absolute top-12 right-[5%] z-0 opacity-15 pointer-events-none hidden lg:block"
+        >
+          <span className="text-6xl">🚚</span>
+        </motion.div>
+        <motion.div 
+          style={{ y: deliveryY2 }}
+          className="absolute bottom-12 left-[5%] z-0 opacity-15 pointer-events-none hidden lg:block"
+        >
+          <span className="text-6xl">📍</span>
+        </motion.div>
+
         <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-[#cc7a74]/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto space-y-12 relative z-10">
           <motion.div 
@@ -1030,60 +1088,133 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
             {[
               {
-                title: "Bakery in Faridabad",
-                desc: "Same-Day Hand-Delivery & Custom Studio in Sectors 14, 15, 21 & Greenfield Enclave.",
+                title: "Faridabad Hub",
+                short: "Premium Eggless Delivery in Sectors 14, 15, 21 & Greenfield Enclave.",
+                desc: "Our primary flagship bakery catering to Greenfield, Sector 14, 15, 21, and surrounding local areas. Specializes in instant 30-60 min delivery of customized premium eggless cream cakes, high-end chocolate truffles, and wedding tiers.",
                 link: "/cake-delivery-in-faridabad"
               },
               {
-                title: "Premium Bakery in Delhi",
-                desc: "Plush chocolate truffles and anniversary cakes delivered with elite precision across South Delhi.",
+                title: "South Delhi Hub",
+                short: "Plush chocolate truffles and anniversary cakes delivered with elite precision.",
+                desc: "Serving South Delhi enclaves with premium temperature-controlled transit. Features rapid shipping of high-fidelity customized fondant structures, red velvet bakes, and gourmet gift hampers.",
                 link: "/bakery-in-delhi"
               },
               {
-                title: "Designer Cakes in Noida",
-                desc: "Multi-layered customized character monuments and baby shower cakes handcrafted live.",
+                title: "Noida Sector Hub",
+                short: "Multi-layered customized character monuments and baby shower cakes.",
+                desc: "Handcrafted live custom cake designs for Noida families. Fully eggless, 100% vegetarian workspace focusing on custom photo cakes, smash pinatas, and milestone birthday double-deckers.",
                 link: "/designer-cakes-in-noida"
               },
               {
-                title: "Custom Cakes in Gurgaon",
-                desc: "Luxury fondant structures and customized brand hampers for cyber-enclaves & DLF residences.",
+                title: "Gurgaon Cyber Hub",
+                short: "Luxury fondant structures and customized corporate brand hampers.",
+                desc: "Premium boutique services for Gurgaon tech-corridors and elite DLF sectors. Providing same-day executive express delivery of luxury sweet creations and customized client confections.",
                 link: "/custom-cakes-in-gurgaon"
               }
-            ].map((node, idx) => (
-              <div
-                key={idx}
-                className="bg-[#26130F]/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 border border-[#DFB15B]/25 shadow-lg flex flex-col justify-between hover:shadow-2xl hover:border-[#DFB15B]/80 hover:shadow-[0_20px_45px_rgba(223,177,91,0.15)] hover:-translate-y-1.5 transform-gpu transition-all duration-300 text-left text-white"
-              >
-                <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-2xl bg-[#DFB15B]/15 text-[#DFB15B] flex items-center justify-center">
-                    <MapPin className="w-5 h-5" />
+            ].map((node, idx) => {
+              const isExpanded = expandedHubIdx === idx;
+              return (
+                <div
+                  key={idx}
+                  className="bg-[#1C0A05]/90 backdrop-blur-xl rounded-[16px] sm:rounded-[24px] p-3 sm:p-5 border border-[#DFB15B]/20 shadow-md flex flex-col justify-between hover:shadow-xl hover:border-[#DFB15B]/60 transition-all duration-300 text-left text-white"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#DFB15B]/10 text-[#DFB15B] flex items-center justify-center">
+                        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      </div>
+                      <button
+                        onClick={() => setExpandedHubIdx(isExpanded ? null : idx)}
+                        className="text-[8px] sm:text-[10px] text-[#DFB15B] hover:text-white font-bold uppercase tracking-widest bg-[#DFB15B]/10 hover:bg-[#DFB15B]/20 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded transition-colors"
+                      >
+                        {isExpanded ? "Less" : "Info"}
+                      </button>
+                    </div>
+
+                    <h4 className="text-[11px] sm:text-sm font-black text-white font-display tracking-tight leading-tight">{node.title}</h4>
+                    <p className="text-[9px] sm:text-[11px] text-zinc-300/90 leading-normal font-medium italic line-clamp-3 sm:line-clamp-none">{node.short}</p>
+
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25, ease: "easeInOut" }}
+                          className="overflow-hidden pt-1.5 border-t border-white/5"
+                        >
+                          <p className="text-[8px] sm:text-[10px] text-zinc-400 font-sans leading-relaxed">
+                            {node.desc}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <h4 className="text-base font-black text-white">{node.title}</h4>
-                  <p className="text-xs text-zinc-300 font-semibold italic leading-relaxed">{node.desc}</p>
+
+                  <div className="mt-3 pt-2 border-t border-white/5 flex items-center justify-between">
+                    <Link to={node.link} className="flex items-center gap-0.5 text-[8px] sm:text-[9px] uppercase font-black tracking-widest text-[#DFB15B] hover:text-white transition-colors font-sans">
+                      <span>Explore Hub</span>
+                      <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                    </Link>
+                  </div>
                 </div>
-                <Link to={node.link} className="mt-6 flex items-center gap-1 text-[10px] uppercase font-black tracking-widest text-[#DFB15B] hover:text-white transition-colors font-sans">
-                  <span>Explore Hub</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* Master SEO Keywords cloud list */}
-          <div className="bg-[#1E0D0A]/90 backdrop-blur-md rounded-[40px] p-6 sm:p-10 border border-[#DFB15B]/25 max-w-4xl mx-auto space-y-4 shadow-lg text-center text-white">
-            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#DFB15B] block">Our Confectionery Breadcrumbs</span>
-            <p className="text-[10px] text-white/70 leading-relaxed italic font-medium">
-              We specialize in: <strong>Custom cakes in Faridabad</strong> · <strong>Bestseller Red Velvet Pastry</strong> · Edible Photo Cakes Noida · Same Day Birthday Cakes Gurgaon · Pure Eggless Bakery Delhi NCR · French Macarons delivery · Belgian Chocolate Truffles · Pinata Smash Cakes · Double-Decker Wedding Tier cakes.
-            </p>
+          {/* Master SEO Keywords cloud list - collapsible for pristine luxury look */}
+          <div className="bg-[#1E0D0A]/70 backdrop-blur-md rounded-[24px] p-5 border border-[#DFB15B]/15 max-w-3xl mx-auto space-y-3 shadow-md text-center text-white">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-left space-y-0.5">
+                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-[#DFB15B] block">Confectionery Index & Navigation</span>
+                <p className="text-[10px] text-zinc-400 font-medium">Verified 100% Pure Vegetarian Eggless Bakeries NCR</p>
+              </div>
+              <button
+                onClick={() => setShowSeoBreadcrumbs(!showSeoBreadcrumbs)}
+                className="bg-[#DFB15B]/10 hover:bg-[#DFB15B] text-[#DFB15B] hover:text-black text-[9px] font-black uppercase tracking-widest py-1.5 px-4 rounded-full transition-all duration-300"
+              >
+                {showSeoBreadcrumbs ? "Hide Index" : "Show Directory Index"}
+              </button>
+            </div>
+
+            <AnimatePresence initial={false}>
+              {showSeoBreadcrumbs && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden pt-3 border-t border-white/5 text-left"
+                >
+                  <p className="text-[10px] text-white/70 leading-relaxed italic font-medium">
+                    We specialize in: <strong>Custom cakes in Faridabad</strong> · <strong>Bestseller Red Velvet Pastry</strong> · Edible Photo Cakes Noida · Same Day Birthday Cakes Gurgaon · Pure Eggless Bakery Delhi NCR · French Macarons delivery · Belgian Chocolate Truffles · Pinata Smash Cakes · Double-Decker Wedding Tier cakes.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </section>
 
       {/* ROCKET CONVERSION & LIVE TRUST TESTIMONIALS */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-transparent relative overflow-hidden">
+      <section ref={testimonialSectionRef} className="px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-transparent relative overflow-hidden">
+        {/* Parallax Floating Stars & Ribbons */}
+        <motion.div 
+          style={{ y: testimonialY }}
+          className="absolute top-10 left-[2%] z-0 opacity-15 pointer-events-none hidden lg:block"
+        >
+          <span className="text-6xl">✨</span>
+        </motion.div>
+        <motion.div 
+          style={{ y: testimonialY }}
+          className="absolute bottom-10 right-[2%] z-0 opacity-15 pointer-events-none hidden lg:block"
+        >
+          <span className="text-6xl">🥇</span>
+        </motion.div>
+
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#DFB15B]/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           

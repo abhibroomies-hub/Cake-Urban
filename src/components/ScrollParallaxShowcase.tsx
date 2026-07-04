@@ -45,18 +45,18 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
   });
 
   // Track 1: Slides left-to-right as page scrolls down
-  const x1 = useTransform(smoothProgress, [0, 1], ["-15%", "12%"]);
+  const x1 = useTransform(smoothProgress, [0, 1], ["-15%", "15%"]);
   // Track 2: Slides right-to-left as page scrolls down
-  const x2 = useTransform(smoothProgress, [0, 1], ["12%", "-15%"]);
+  const x2 = useTransform(smoothProgress, [0, 1], ["15%", "-15%"]);
   
   // Dynamic rotate/scale effects for elements based on scroll progress
-  const rotate1 = useTransform(smoothProgress, [0, 1], [-8, 8]);
-  const rotate2 = useTransform(smoothProgress, [0, 1], [8, -8]);
-  const bgGlowY = useTransform(smoothProgress, [0, 1], ["-20%", "20%"]);
+  const rotate1 = useTransform(smoothProgress, [0, 1], [-6, 6]);
+  const rotate2 = useTransform(smoothProgress, [0, 1], [6, -6]);
+  const bgGlowY = useTransform(smoothProgress, [0, 1], ["-15%", "15%"]);
 
   // Categorize or slice products to distribute into two stunning tracks
-  const showcaseRow1 = products.filter(p => p.isBestseller).slice(0, 6);
-  const showcaseRow2 = products.filter(p => !p.isBestseller).slice(0, 6);
+  const showcaseRow1 = products.filter(p => p.isBestseller).slice(0, 7);
+  const showcaseRow2 = products.filter(p => !p.isBestseller).slice(0, 7);
 
   // If we don't have enough products, fall back to slicing the main array
   const row1 = showcaseRow1.length > 0 ? showcaseRow1 : products.slice(0, 5);
@@ -112,9 +112,9 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
           transition={{ duration: 0.8 }}
           className="space-y-4"
         >
-          <div className="inline-flex items-center gap-2 bg-[#DFB15B]/15 text-[#DFB15B] border border-[#DFB15B]/40 px-5 py-2 rounded-full text-[10px] md:text-xs font-black tracking-[0.3em] uppercase shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-[#DFB15B] animate-pulse" />
-            <span>Interactive Parallax Gallery</span>
+          <div className="inline-flex items-center gap-2 bg-[#DFB15B]/15 text-[#DFB15B] border border-[#DFB15B]/40 px-5 py-2 rounded-full text-[10px] md:text-xs font-black tracking-[0.3em] uppercase shadow-md animate-pulse">
+            <Sparkles className="w-3.5 h-3.5 text-[#DFB15B]" />
+            <span>Interactive Parallax Gallery & Glass Orbs</span>
           </div>
           <h3 className="text-3xl sm:text-6xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-[#DFB15B] to-yellow-100 tracking-tight drop-shadow-md">
             Artisanal Confection Track
@@ -132,11 +132,11 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
         </motion.div>
       </div>
 
-      {/* TRACK 1: LEFT-TO-RIGHT SLIDER */}
-      <div className={`relative z-10 py-6 ${isTouchDevice ? 'overflow-x-auto no-scrollbar snap-x snap-mandatory flex w-full' : 'overflow-hidden'}`}>
+      {/* TRACK 1: LEFT-TO-RIGHT SLIDER (CIRCULAR GLASS ORB DESIGN) */}
+      <div className={`relative z-10 py-8 ${isTouchDevice ? 'overflow-x-auto no-scrollbar snap-x snap-mandatory flex w-full' : 'overflow-hidden'}`}>
         <motion.div 
           style={isTouchDevice ? undefined : { x: x1, rotate: rotate1 }} 
-          className={`flex gap-4 sm:gap-8 will-change-transform ${isTouchDevice ? 'px-6 w-auto' : 'w-max px-[10%]'}`}
+          className={`flex gap-6 sm:gap-10 will-change-transform ${isTouchDevice ? 'px-6 w-auto' : 'w-max px-[8%]'}`}
         >
           {row1.map((product) => (
             <Link 
@@ -145,60 +145,75 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
               onClick={playSlidePop}
               className={`block shrink-0 ${isTouchDevice ? 'snap-center' : ''}`}
             >
-              <div className="w-[240px] sm:w-[320px] rounded-[32px] sm:rounded-[40px] bg-gradient-to-b from-[#1E0D09]/95 to-[#0F0503]/95 border-2 border-[#DFB15B]/20 p-4 sm:p-5 relative group transition-all duration-500 hover:border-[#DFB15B]/80 hover:shadow-[0_20px_50px_rgba(223,177,91,0.25)] hover:-translate-y-2">
+              {/* Circular Premium Glassmorph Card */}
+              <div className="w-[280px] sm:w-[340px] aspect-square rounded-full bg-[#1C0A05]/75 backdrop-blur-xl border-2 border-[#DFB15B]/25 p-6 relative group transition-all duration-700 hover:border-[#DFB15B] hover:shadow-[0_0_50px_rgba(223,177,91,0.35)] flex flex-col items-center justify-center text-center overflow-hidden">
                 
-                {/* Visual Accent Corner Glow */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-[#DFB15B]/5 rounded-full blur-xl group-hover:bg-[#DFB15B]/15 transition-all duration-500" />
-                
-                {/* 3D Curved Photo Container */}
-                <div className="w-full aspect-[4/3] rounded-[24px] sm:rounded-[30px] overflow-hidden relative bg-black/40">
-                  <img 
-                    src={product.images?.[0] || ''} 
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter brightness-[1.05]"
-                    onError={handleImageError}
-                    referrerPolicy="no-referrer"
-                  />
-                  {product.isBestseller && (
-                    <span className="absolute top-3 left-3 bg-[#DFB15B] text-black text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md">
-                      BESTSELLER
-                    </span>
-                  )}
-                  {/* Glass shimmer overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
-                </div>
+                {/* Rotating Gold Dash Orbit Ring */}
+                <div className="absolute inset-3 rounded-full border border-dashed border-[#DFB15B]/30 group-hover:rotate-45 transition-transform duration-[8s] ease-out pointer-events-none" />
+                <div className="absolute inset-5 rounded-full border border-[#DFB15B]/5 group-hover:-rotate-90 transition-transform duration-[12s] ease-in-out pointer-events-none" />
 
-                {/* Info block */}
-                <div className="mt-4 sm:mt-5 space-y-2 text-left">
-                  <span className="text-[8px] sm:text-[9px] font-black uppercase text-[#DE9088] tracking-[0.2em]">
-                    {product.categories?.[0] || 'Premium Bakes'}
-                  </span>
-                  <h4 className="text-sm sm:text-base font-display font-black text-white group-hover:text-[#DFB15B] transition-colors truncate">
-                    {product.name}
-                  </h4>
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                    <span className="text-[#DFB15B] font-serif font-black italic text-base sm:text-lg">
+                {/* Shimmer flare overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none z-10" />
+
+                {/* Inner layout with circular focal photo */}
+                <div className="relative z-10 flex flex-col items-center justify-center space-y-3 w-full max-w-[85%]">
+                  
+                  {/* Perfectly round zoom photo ring with interactive hover tilt */}
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-[#DFB15B]/40 shadow-inner relative bg-black/40 group-hover:scale-110 transition-transform duration-700 group-hover:border-[#DFB15B]">
+                    <img 
+                      src={product.images?.[0] || ''} 
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-700 filter brightness-[1.05]"
+                      onError={handleImageError}
+                      referrerPolicy="no-referrer"
+                    />
+                    {product.isBestseller && (
+                      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-[#DFB15B] text-black text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow-md whitespace-nowrap leading-none scale-90">
+                        BEST
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Cake labels & text content */}
+                  <div className="space-y-1">
+                    <span className="text-[7px] sm:text-[8px] font-black uppercase text-[#DE9088] tracking-[0.25em] block leading-none">
+                      {product.categories?.[0] || 'Premium Bakes'}
+                    </span>
+                    <h4 className="text-xs sm:text-sm font-display font-black text-white group-hover:text-[#DFB15B] transition-colors truncate max-w-[200px]">
+                      {product.name}
+                    </h4>
+                    <p className="text-[8px] sm:text-[10px] text-[#FFFDFB]/55 font-medium italic line-clamp-1 max-w-[180px]">
+                      {product.description || 'Exquisite luxury sweet creation'}
+                    </p>
+                  </div>
+
+                  {/* Actions & pricing */}
+                  <div className="flex items-center gap-3 pt-2 border-t border-white/10 w-full justify-center">
+                    <span className="text-[#DFB15B] font-serif font-black italic text-xs sm:text-sm">
                       ₹{product.price}
                     </span>
                     <button
                       onClick={(e) => handleAddToCart(e, product)}
-                      className="bg-[#DFB15B] hover:bg-white text-black hover:text-black py-1.5 px-4 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-300"
+                      className="bg-[#DFB15B] hover:bg-white text-black py-1 px-3 rounded-full text-[8px] font-black uppercase tracking-widest transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer shadow-md"
                     >
                       ADD +
                     </button>
                   </div>
                 </div>
+
+                {/* Frosted Circular glass rim shadow reflection effect */}
+                <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none group-hover:border-[#DFB15B]/40 transition-colors duration-500" />
               </div>
             </Link>
           ))}
         </motion.div>
       </div>
 
-      {/* TRACK 2: RIGHT-TO-LEFT SLIDER */}
-      <div className={`relative z-10 py-6 mt-2 sm:mt-6 ${isTouchDevice ? 'overflow-x-auto no-scrollbar snap-x snap-mandatory flex w-full' : 'overflow-hidden'}`}>
+      {/* TRACK 2: RIGHT-TO-LEFT SLIDER (CIRCULAR GLASS ORB DESIGN) */}
+      <div className={`relative z-10 py-8 mt-4 sm:mt-6 ${isTouchDevice ? 'overflow-x-auto no-scrollbar snap-x snap-mandatory flex w-full' : 'overflow-hidden'}`}>
         <motion.div 
           style={isTouchDevice ? undefined : { x: x2, rotate: rotate2 }} 
-          className={`flex gap-4 sm:gap-8 will-change-transform ${isTouchDevice ? 'px-6 w-auto' : 'w-max px-[10%]'}`}
+          className={`flex gap-6 sm:gap-10 will-change-transform ${isTouchDevice ? 'px-6 w-auto' : 'w-max px-[8%]'}`}
         >
           {row2.map((product) => (
             <Link 
@@ -207,50 +222,65 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
               onClick={playSlidePop}
               className={`block shrink-0 ${isTouchDevice ? 'snap-center' : ''}`}
             >
-              <div className="w-[240px] sm:w-[320px] rounded-[32px] sm:rounded-[40px] bg-gradient-to-b from-[#1C0F0E]/95 to-[#0A0403]/95 border-2 border-[#DFB15B]/15 p-4 sm:p-5 relative group transition-all duration-500 hover:border-[#DFB15B]/80 hover:shadow-[0_20px_50px_rgba(223,177,91,0.25)] hover:-translate-y-2">
+              {/* Circular Premium Glassmorph Card */}
+              <div className="w-[280px] sm:w-[340px] aspect-square rounded-full bg-[#180A08]/75 backdrop-blur-xl border-2 border-[#DFB15B]/20 p-6 relative group transition-all duration-700 hover:border-[#DFB15B] hover:shadow-[0_0_50px_rgba(223,177,91,0.35)] flex flex-col items-center justify-center text-center overflow-hidden">
                 
-                {/* Visual Accent Corner Glow */}
-                <div className="absolute top-0 left-0 w-24 h-24 bg-[#DE9088]/5 rounded-full blur-xl group-hover:bg-[#DE9088]/15 transition-all duration-500" />
-                
-                {/* 3D Curved Photo Container */}
-                <div className="w-full aspect-[4/3] rounded-[24px] sm:rounded-[30px] overflow-hidden relative bg-black/40">
-                  <img 
-                    src={product.images?.[0] || ''} 
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter brightness-[1.05]"
-                    onError={handleImageError}
-                    referrerPolicy="no-referrer"
-                  />
-                  {product.rating && (
-                    <span className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-[#DFB15B] text-[8px] font-black tracking-widest px-2.5 py-1.5 rounded-full shadow-md flex items-center gap-1 border border-[#DFB15B]/20">
-                      <Star className="w-2.5 h-2.5 fill-[#DFB15B] text-[#DFB15B]" />
-                      <span>{product.rating}</span>
-                    </span>
-                  )}
-                  {/* Glass shimmer overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
-                </div>
+                {/* Rotating Gold Dash Orbit Ring */}
+                <div className="absolute inset-3 rounded-full border border-dashed border-[#DFB15B]/30 group-hover:rotate-45 transition-transform duration-[8s] ease-out pointer-events-none" />
+                <div className="absolute inset-5 rounded-full border border-[#DFB15B]/5 group-hover:-rotate-90 transition-transform duration-[12s] ease-in-out pointer-events-none" />
 
-                {/* Info block */}
-                <div className="mt-4 sm:mt-5 space-y-2 text-left">
-                  <span className="text-[8px] sm:text-[9px] font-black uppercase text-[#DE9088] tracking-[0.2em]">
-                    {product.categories?.[0] || 'Artisanal Selection'}
-                  </span>
-                  <h4 className="text-sm sm:text-base font-display font-black text-white group-hover:text-[#DFB15B] transition-colors truncate">
-                    {product.name}
-                  </h4>
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                    <span className="text-[#DFB15B] font-serif font-black italic text-base sm:text-lg">
+                {/* Shimmer flare overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none z-10" />
+
+                {/* Inner layout with circular focal photo */}
+                <div className="relative z-10 flex flex-col items-center justify-center space-y-3 w-full max-w-[85%]">
+                  
+                  {/* Perfectly round zoom photo ring with interactive hover tilt */}
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-[#DFB15B]/35 shadow-inner relative bg-black/40 group-hover:scale-110 transition-transform duration-700 group-hover:border-[#DFB15B]">
+                    <img 
+                      src={product.images?.[0] || ''} 
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-700 filter brightness-[1.05]"
+                      onError={handleImageError}
+                      referrerPolicy="no-referrer"
+                    />
+                    {product.rating && (
+                      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/75 backdrop-blur-md text-[#DFB15B] text-[7px] font-black tracking-widest px-2.5 py-1 rounded-full shadow-md flex items-center gap-0.5 border border-[#DFB15B]/20 leading-none">
+                        <Star className="w-2 h-2 fill-[#DFB15B] text-[#DFB15B]" />
+                        <span>{product.rating}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Cake labels & text content */}
+                  <div className="space-y-1">
+                    <span className="text-[7px] sm:text-[8px] font-black uppercase text-[#DE9088] tracking-[0.25em] block leading-none">
+                      {product.categories?.[0] || 'Artisanal Selection'}
+                    </span>
+                    <h4 className="text-xs sm:text-sm font-display font-black text-white group-hover:text-[#DFB15B] transition-colors truncate max-w-[200px]">
+                      {product.name}
+                    </h4>
+                    <p className="text-[8px] sm:text-[10px] text-[#FFFDFB]/55 font-medium italic line-clamp-1 max-w-[180px]">
+                      {product.description || 'Meticulously crafted treat'}
+                    </p>
+                  </div>
+
+                  {/* Actions & pricing */}
+                  <div className="flex items-center gap-3 pt-2 border-t border-white/10 w-full justify-center">
+                    <span className="text-[#DFB15B] font-serif font-black italic text-xs sm:text-sm">
                       ₹{product.price}
                     </span>
                     <button
                       onClick={(e) => handleAddToCart(e, product)}
-                      className="bg-[#DFB15B] hover:bg-white text-black hover:text-black py-1.5 px-4 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-300"
+                      className="bg-[#DFB15B] hover:bg-white text-black py-1 px-3 rounded-full text-[8px] font-black uppercase tracking-widest transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer shadow-md"
                     >
                       ADD +
                     </button>
                   </div>
                 </div>
+
+                {/* Frosted Circular glass rim shadow reflection effect */}
+                <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none group-hover:border-[#DFB15B]/40 transition-colors duration-500" />
               </div>
             </Link>
           ))}

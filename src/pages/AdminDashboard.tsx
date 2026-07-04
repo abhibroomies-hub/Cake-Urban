@@ -2403,6 +2403,12 @@ export default function AdminDashboard() {
                     {editPastedImageUrl && (
                       <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden border border-[#DFB15B]/15 bg-[#140603]">
                         <img src={editPastedImageUrl} alt="Pasted preview catalog" className="w-full h-full object-cover animate-fade-in" />
+                        {specsGenerating && (
+                          <>
+                            <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#DFB15B] to-transparent shadow-[0_0_12px_#DFB15B] z-20 animate-laser-scan pointer-events-none" />
+                            <div className="absolute inset-0 bg-[#DFB15B]/10 animate-pulse z-10 pointer-events-none" />
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -2428,6 +2434,12 @@ export default function AdminDashboard() {
                       {editProductImage ? (
                         <div className="relative aspect-[4/3] w-full">
                           <img src={editProductImage} alt="Cake preview edit lookup" className="w-full h-full object-cover" />
+                          {specsGenerating && (
+                            <>
+                              <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#DFB15B] to-transparent shadow-[0_0_12px_#DFB15B] z-20 animate-laser-scan pointer-events-none" />
+                              <div className="absolute inset-0 bg-[#DFB15B]/10 animate-pulse z-10 pointer-events-none" />
+                            </>
+                          )}
                         </div>
                       ) : (
                         <div className="py-12 text-center space-y-3 px-4">
@@ -2830,6 +2842,12 @@ export default function AdminDashboard() {
                     {pastedImageUrl && (
                       <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden border border-[#DFB15B]/15 bg-[#140603]">
                         <img src={pastedImageUrl} alt="Pasted direct preview" className="w-full h-full object-cover" />
+                        {specsGenerating && (
+                          <>
+                            <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#DFB15B] to-transparent shadow-[0_0_12px_#DFB15B] z-20 animate-laser-scan pointer-events-none" />
+                            <div className="absolute inset-0 bg-[#DFB15B]/10 animate-pulse z-10 pointer-events-none" />
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -2847,6 +2865,12 @@ export default function AdminDashboard() {
                       {newProductImage ? (
                         <div className="relative aspect-[4/3] w-full">
                           <img src={newProductImage} alt="Cake preview lookup" className="w-full h-full object-cover" />
+                          {specsGenerating && (
+                            <>
+                              <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#DFB15B] to-transparent shadow-[0_0_12px_#DFB15B] z-20 animate-laser-scan pointer-events-none" />
+                              <div className="absolute inset-0 bg-[#DFB15B]/10 animate-pulse z-10 pointer-events-none" />
+                            </>
+                          )}
                           <div className="absolute inset-x-0 bottom-0 bg-black/80 backdrop-blur-md p-3 text-center border-t border-white/10">
                             <p className="text-[10px] text-[#DFB15B] font-bold italic flex items-center justify-center gap-1.5 leading-none">
                               <CheckIcon className="w-4 h-4 text-emerald-500" /> Image uploaded successfully!
