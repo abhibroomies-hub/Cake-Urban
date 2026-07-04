@@ -28,7 +28,7 @@ async function startServer() {
 
   // AI Image SEO Optimizer Endpoint
   app.post("/api/seo/optimize-image", async (req, res) => {
-    const { imageBase64, mimeType } = req.body;
+    const { imageBase64, mimeType, productName } = req.body;
     
     if (!imageBase64) {
       return res.status(400).json({ error: "Missing required image data" });
@@ -36,36 +36,59 @@ async function startServer() {
 
     try {
       let base64Data = imageBase64;
-      if (base64Data.includes(";base64,")) {
+      let finalMimeType = mimeType || "image/jpeg";
+
+      // If it's a remote URL, download and convert to base64
+      if (typeof base64Data === "string" && base64Data.startsWith("http")) {
+        try {
+          console.log(`[AI IMAGE AUTO-FILL] Downloading remote image: ${base64Data}`);
+          const imgResponse = await fetch(base64Data);
+          if (imgResponse.ok) {
+            const arrayBuffer = await imgResponse.arrayBuffer();
+            base64Data = Buffer.from(arrayBuffer).toString("base64");
+            finalMimeType = imgResponse.headers.get("content-type") || "image/jpeg";
+          } else {
+            console.error(`Failed to download image from URL. Status: ${imgResponse.status}`);
+          }
+        } catch (fetchError) {
+          console.error("Failed to fetch image from URL:", fetchError);
+        }
+      } else if (typeof base64Data === "string" && base64Data.includes(";base64,")) {
         base64Data = base64Data.split(";base64,").pop() || "";
       }
 
       const model = "gemini-3.5-flash";
       const systemInstruction = `
-        You are an expert AI SEO and Visual Marketing specialist for "Cake Urban", an elite custom online bakery operating in the Delhi National Capital Region (Faridabad, South Delhi, Noida, Gurgaon, Ghaziabad).
-        Your task is to analyze the uploaded cake image and generate a professional, high-performance SEO Optimization Package.
-        This package provides search tags, rich schemas, and highly persuasive social media referral content to rank the image at the top of Google Image Search and drive massive organic traffic to the Cake Urban website.
+        You are an expert AI master pâtissier and Visual SEO curator for "Cake Urban", an elite custom online bakery operating in the Delhi National Capital Region (Faridabad, South Delhi, Noida, Gurgaon, Ghaziabad).
+        Your task is to analyze the uploaded cake image along with any optionally provided product name, and generate a complete, premium digital catalog profile.
+        This includes highly persuasive copywriter product description, luxury Indian pricing (INR ₹899 to ₹4999), extra categories, matching flavor tags, ideal occasions, and a top-tier SEO/social metadata package.
       `;
 
       const prompt = `
-        Analyze this cake image in meticulous detail. Identify its styling, design theme (e.g. minimalist floral, gold foil, kid's cartoon character, metallic textures, multi-tiered wedding), icing type, colors, and potential flavor profile.
+        Analyze this cake image in meticulous detail. 
+        ${productName ? `The user typed the product name as: "${productName}". Match the visual details with this name or enrich it if needed.` : ''}
+        Identify its design theme (e.g. minimalist, floral, gold foil, cartoon character, multi-tiered wedding), icing type, colors, and potential flavor profile.
         
-        Generate the complete SEO bundle containing:
-        1. Brand Name: "Cake Urban"
-        2. Alluring product name for website.
-        3. A high-intent SEO metadata title (max 60 chars) targeting major search keywords and location tags (e.g., South Delhi, Faridabad, Noida, Gurgaon).
-        4. Lowercase search slug.
-        5. Descriptive, keyword-rich Alt Text explaining the physical composition, colors, and style (outstanding for search visual indices and accessibility).
-        6. A 150-160 character Google Meta Description incorporating a powerful Call-To-Action (CTA) to maximize search clicks.
-        7. A list of 10-15 high-value search keywords/tags.
-        8. A string representation of schema.org Product structured data (JSON-LD) with simulated premium ratings (e.g., 4.9 out of 5 stars) and standard INR pricing (e.g., ₹1199).
-        9. An Instagram caption with food-oriented local hashtags (such as #FaridabadBakeries, #DelhiNCRFoodie).
-        10. Pinterest pin outline (catchy title and rich description).
+        Generate the complete product and SEO bundle containing:
+        1. Alluring productName (refined and elegant).
+        2. Suggested premium price in INR (number, e.g. 1199, 1499, 1999) depending on complexity/design.
+        3. A rich, high-end descriptive product description (2-3 sentences) detailing the layers, frosting, taste notes, and decoration.
+        4. Comma-separated categories (e.g. "Cakes, Custom Cakes, Celebration Cakes").
+        5. Comma-separated flavor tags (e.g. "Belgian Dark Chocolate, Truffle fudge").
+        6. Comma-separated ideal occasions (e.g. "Birthday, Anniversary, Celebration").
+        7. A high-intent SEO metadata title (max 60 chars) targeting major search keywords and location tags (e.g., South Delhi, Faridabad, Noida, Gurgaon).
+        8. Lowercase search slug.
+        9. Descriptive, keyword-rich Alt Text explaining physical elements (colors, layers, design).
+        10. A 150-160 character Google Meta Description incorporating a powerful luxury Call-To-Action (CTA).
+        11. A list of 10-15 high-value search keywords/tags.
+        12. Raw Product structured LD-JSON schema details.
+        13. An irresistible boutique Instagram caption with hashtags.
+        14. Pinterest pin title and rich description.
       `;
 
       const imagePart = {
         inlineData: {
-          mimeType: mimeType || "image/jpeg",
+          mimeType: finalMimeType,
           data: base64Data
         }
       };
@@ -80,6 +103,11 @@ async function startServer() {
             type: Type.OBJECT,
             properties: {
               productName: { type: Type.STRING },
+              price: { type: Type.NUMBER },
+              description: { type: Type.STRING },
+              categories: { type: Type.STRING },
+              flavors: { type: Type.STRING },
+              occasions: { type: Type.STRING },
               seoTitle: { type: Type.STRING },
               slug: { type: Type.STRING },
               suggestedFilename: { type: Type.STRING },
@@ -100,9 +128,9 @@ async function startServer() {
               }
             },
             required: [
-              "productName", "seoTitle", "slug", "suggestedFilename", 
-              "altText", "metaDescription", "keywords", "structuredSchema", 
-              "instagramCaption", "pinterestPin"
+              "productName", "price", "description", "categories", "flavors", "occasions",
+              "seoTitle", "slug", "suggestedFilename", "altText", "metaDescription", 
+              "keywords", "structuredSchema", "instagramCaption", "pinterestPin"
             ]
           }
         }
