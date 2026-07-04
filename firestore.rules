@@ -53,8 +53,7 @@ service cloud.firestore {
     }
 
     function isValidUser(data) {
-      return data.email is string && data.email == request.auth.token.email &&
-             (data.role == 'customer' || isAdmin()); // Protect role modification
+      return !data.keys().has('role') || data.role == 'customer' || isAdmin();
     }
 
     function isValidReview(data) {

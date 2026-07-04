@@ -1,6 +1,6 @@
 {
   "name": "CakeUrban",
-  "description": "Premium cake shop for highly customized cakes in Faridabad, India. Features AI-driven search, admin dashboard, and full checkout flow.",
+  "description": "Premium authentication portal and profile control center integrated with Firebase Auth and Firestore database.",
   "requestFramePermissions": [
     "geolocation"
   ],

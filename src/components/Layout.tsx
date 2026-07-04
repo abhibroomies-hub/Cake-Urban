@@ -170,9 +170,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       
       <Header />
       <AISearchModal />
+
       <main className="flex-grow flex-1 flex flex-col relative z-10">
         {children}
       </main>
+      
       <Footer />
       <Toaster position="top-center" richColors />
     </div>

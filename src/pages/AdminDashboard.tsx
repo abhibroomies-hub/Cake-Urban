@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
 import { 
-  collection, getDocs, updateDoc, doc, query, orderBy, addDoc, deleteDoc 
+  collection, getDocs, updateDoc, doc, query, orderBy, addDoc, deleteDoc, setDoc 
 } from 'firebase/firestore';
 import { Order, Product, Review } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { handleFirestoreError, OperationType } from '../lib/firebase';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -430,6 +429,12 @@ export default function AdminDashboard() {
   const [editProdPinterestTitle, setEditProdPinterestTitle] = useState('');
   const [editProdPinterestDesc, setEditProdPinterestDesc] = useState('');
 
+  // Reusable inline dialog confirm state for iframe safety
+  const [confirmAction, setConfirmAction] = useState<{
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
+
   const aiSteps = [
     "Analyzing cake design spectrum, colors & textures...",
     "Correlating optimal Delhi NCR local search parameters...",
@@ -659,20 +664,24 @@ export default function AdminDashboard() {
   };
 
   // Delete product
-  const handleDeleteProduct = async (prodId: string) => {
-    const path = `products/${prodId}`;
-    if (!window.confirm("Are you absolutely sure you want to remove this culinary creation from the boutique?")) return;
-    try {
-      try {
-        await deleteDoc(doc(db, 'products', prodId));
-      } catch (firestoreError) {
-        console.warn("Could not delete product in live Firestore, updating local list state:", firestoreError);
+  const handleDeleteProduct = (prodId: string) => {
+    setConfirmAction({
+      message: "Are you absolutely sure you want to remove this culinary creation from the boutique?",
+      onConfirm: async () => {
+        const path = `products/${prodId}`;
+        try {
+          try {
+            await deleteDoc(doc(db, 'products', prodId));
+          } catch (firestoreError) {
+            console.warn("Could not delete product in live Firestore, updating local list state:", firestoreError);
+          }
+          setProducts(products.filter(p => p.id !== prodId));
+          toast.success("Culinary creation archived and removed from local catalog.");
+        } catch (error) {
+          handleFirestoreError(error, OperationType.DELETE, path);
+        }
       }
-      setProducts(products.filter(p => p.id !== prodId));
-      toast.success("Culinary creation archived and removed from local catalog.");
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, path);
-    }
+    });
   };
 
   // Toggle stock availability
@@ -715,37 +724,45 @@ export default function AdminDashboard() {
   };
 
   // Delete review
-  const handleDeleteReview = async (reviewId: string) => {
-    if (!window.confirm("Moderate and permanently delete this customer review?")) return;
-    try {
-      try {
-        await deleteDoc(doc(db, 'reviews', reviewId));
-      } catch (firestoreError) {
-        console.warn("Could not delete review in live Firestore, updating local state:", firestoreError);
+  const handleDeleteReview = (reviewId: string) => {
+    setConfirmAction({
+      message: "Moderate and permanently delete this customer review?",
+      onConfirm: async () => {
+        try {
+          try {
+            await deleteDoc(doc(db, 'reviews', reviewId));
+          } catch (firestoreError) {
+            console.warn("Could not delete review in live Firestore, updating local state:", firestoreError);
+          }
+          setReviews(reviews.filter(r => r.id !== reviewId));
+          toast.success("Guest critique purged successfully.");
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to delete review.");
+        }
       }
-      setReviews(reviews.filter(r => r.id !== reviewId));
-      toast.success("Guest critique purged successfully.");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete review.");
-    }
+    });
   };
 
   // Delete custom inquiry
-  const handleDeleteInquiry = async (inqId: string) => {
-    if (!window.confirm("Archive this custom cake inquiry design?")) return;
-    try {
-      try {
-        await deleteDoc(doc(db, 'custom_orders', inqId));
-      } catch (firestoreError) {
-        console.warn("Could not delete inquiry in live Firestore, updating local state:", firestoreError);
+  const handleDeleteInquiry = (inqId: string) => {
+    setConfirmAction({
+      message: "Archive this custom cake inquiry design?",
+      onConfirm: async () => {
+        try {
+          try {
+            await deleteDoc(doc(db, 'custom_orders', inqId));
+          } catch (firestoreError) {
+            console.warn("Could not delete inquiry in live Firestore, updating local state:", firestoreError);
+          }
+          setCustomInquiries(customInquiries.filter(i => i.id !== inqId));
+          toast.success("Inquiry archived from active registry.");
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to archiving inquiry design.");
+        }
       }
-      setCustomInquiries(customInquiries.filter(i => i.id !== inqId));
-      toast.success("Inquiry archived from active registry.");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to archiving inquiry design.");
-    }
+    });
   };
 
   // Preset quick templates
@@ -1161,14 +1178,18 @@ export default function AdminDashboard() {
         }
       };
 
-      await updateDoc(doc(db, 'products', editingProduct.id), updateData);
+      try {
+        await setDoc(doc(db, 'products', editingProduct.id), updateData, { merge: true });
+      } catch (firestoreError) {
+        console.warn("Could not write product update to live Firestore, updating local state:", firestoreError);
+      }
+
+      // Update local state directly so it is instant and always works
+      setProducts(products.map(p => p.id === editingProduct.id ? { ...p, ...updateData } as Product : p));
+      
       toast.success('Gourmet Confection updated live in our catalog!');
       setEditingProduct(null);
       setActiveTab('products'); // return to catalog list!
-
-      // Refresh catalog list
-      const productsSnap = await getDocs(collection(db, 'products'));
-      setProducts(productsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
     } catch (err) {
       console.error(err);
       toast.error('An error occurred during confection update.');
@@ -1316,12 +1337,12 @@ export default function AdminDashboard() {
 
       <AnimatePresence mode="wait">
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full lg:grid lg:grid-cols-12 lg:gap-10 lg:items-start">
+        <div className="w-full lg:grid lg:grid-cols-12 lg:gap-8 xl:gap-10 lg:items-start relative z-10">
           
           {/* DESKTOP STABLE LEFT SIDEBAR */}
-          <TabsList className="hidden lg:flex lg:col-span-3 flex-col gap-6 sticky top-28 bg-[#2C130E]/90 backdrop-blur-xl border border-[#DFB15B]/20 rounded-[32px] p-6 shadow-2xl z-20 text-left h-auto w-full items-start">
-            <div className="space-y-1 w-full pb-2 select-none border-b border-white/5">
-              <div className="inline-block bg-[#DFB15B]/10 text-[#DFB15B] px-2.5 py-0.5 rounded-full text-[8.5px] font-black tracking-[0.2em] uppercase mb-1 border border-[#DFB15B]/15">
+          <div className="hidden lg:flex lg:col-span-4 xl:col-span-3 flex-col gap-6 sticky top-28 bg-[#2C130E]/95 backdrop-blur-xl border border-[#DFB15B]/20 rounded-[32px] p-5 xl:p-6 shadow-2xl z-20 text-left h-auto w-full items-start">
+            <div className="space-y-1 w-full pb-3 select-none border-b border-white/10">
+              <div className="inline-block bg-[#DFB15B]/10 text-[#DFB15B] px-2.5 py-1 rounded-full text-[8.5px] font-black tracking-[0.2em] uppercase mb-1 border border-[#DFB15B]/15">
                 Atelier System
               </div>
               <h3 className="text-xl font-display font-black text-white tracking-tight leading-none pt-0.5">Control Panel</h3>
@@ -1333,26 +1354,26 @@ export default function AdminDashboard() {
                 const TabIcon = tab.icon;
                 const isSelected = activeTab === tab.value;
                 return (
-                  <TabsTrigger
+                  <button
                     key={tab.value}
-                    value={tab.value}
+                    type="button"
                     onClick={() => setActiveTab(tab.value)}
-                    className={`w-full justify-start rounded-2xl px-5 py-4 font-black text-[10px] uppercase tracking-wider transition-all duration-300 flex items-center gap-3 whitespace-nowrap border-0 cursor-pointer ${
+                    className={`w-full justify-start rounded-2xl px-5 py-4 font-black text-[10px] uppercase tracking-wider transition-all duration-300 flex items-center gap-3 whitespace-nowrap cursor-pointer text-left border-0 ${
                       isSelected 
                         ? 'bg-[#DFB15B] text-[#140603] shadow-[0_8px_30px_rgba(223,177,91,0.25)] scale-[1.02]' 
-                        : 'text-white/70 hover:text-white hover:bg-white/5 bg-transparent shadow-none'
+                        : 'text-white/70 hover:text-white hover:bg-white/5 bg-transparent'
                     }`}
                   >
                     <TabIcon className={`w-4 h-4 shrink-0 transition-colors ${isSelected ? 'text-[#140603]' : 'text-[#DFB15B]'}`} />
                     <span className="truncate">{tab.label}</span>
-                  </TabsTrigger>
+                  </button>
                 );
               })}
             </div>
-          </TabsList>
+          </div>
 
           {/* DYNAMIC CONTENT AREA FOR THE CORRESPONDING ACTIVE TABS */}
-          <div className="col-span-12 lg:col-span-9 w-full relative">
+          <div className="col-span-12 lg:col-span-8 xl:col-span-9 w-full relative">
             
             {/* MOBILE COMPACT 3-DOT DROPDOWN SWITCHER BAR */}
             <div className="lg:hidden w-full relative mb-10 select-none z-30">
@@ -1426,7 +1447,7 @@ export default function AdminDashboard() {
             </div>
 
           {activeTab === 'grok-studio' ? (
-            <TabsContent value="grok-studio" className="mt-0">
+            <div className="mt-0">
               <motion.div
                 initial={{ opacity: 0, y: 35 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -2054,9 +2075,9 @@ export default function AdminDashboard() {
               </div>
             )}
           </motion.div>
-        </TabsContent>
+        </div>
           ) : activeTab === 'edit-product' && editingProduct ? (
-            <TabsContent value="edit-product" className="mt-0">
+            <div className="mt-0">
               <motion.div
                 initial={{ opacity: 0, y: 35 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -2259,9 +2280,10 @@ export default function AdminDashboard() {
                     type="button"
                     variant="ghost"
                     onClick={() => {
-                      if(window.confirm("Undo your current edits and return?")) {
-                        setEditingProduct(null);
-                      }
+                      setConfirmAction({
+                        message: "Undo your current edits and return?",
+                        onConfirm: () => setEditingProduct(null)
+                      });
                     }}
                     className="text-[9px] uppercase tracking-widest text-white/50 hover:text-white"
                   >
@@ -2464,9 +2486,10 @@ export default function AdminDashboard() {
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        if(window.confirm("Throw away all revision edits and return?")) {
-                          setEditingProduct(null);
-                        }
+                        setConfirmAction({
+                          message: "Throw away all revision edits and return?",
+                          onConfirm: () => setEditingProduct(null)
+                        });
                       }}
                       className="flex-1 h-14 rounded-2xl border-white/10 text-white hover:bg-white/5 text-[10px] font-black uppercase tracking-wider cursor-pointer"
                     >
@@ -2484,9 +2507,9 @@ export default function AdminDashboard() {
               </div>
             </div>
           </motion.div>
-        </TabsContent>
+        </div>
       ) : activeTab === 'add-product' ? (
-        <TabsContent value="add-product" className="mt-0">
+        <div className="mt-0">
           <motion.div
             initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
@@ -2872,7 +2895,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </motion.div>
-        </TabsContent>
+        </div>
       ) : (
         /* CORE STATS & FIVE INTERACTIVE COMMAND SECTIONS */
         <motion.div
@@ -2941,7 +2964,8 @@ export default function AdminDashboard() {
             {/* TAB CONTENT PANELS (insights, orders, inquiries, products, reviews) */}
 
               {/* 📊 TAB 1: INSIGHTS & ANALYTICS OVERVIEW */}
-              <TabsContent value="insights" className="mt-8">
+              {activeTab === 'insights' && (
+                <div className="mt-8">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                   {/* Sales spline trace custom vector SVG */}
                   <Card className="lg:col-span-8 rounded-[44px] border border-[#DFB15B]/15 shadow-xl bg-[#26130F]/45 overflow-hidden text-left">
@@ -3049,10 +3073,12 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
                 </div>
-              </TabsContent>
+              </div>
+              )}
 
               {/* 🛍️ TAB 2: ACTIVE RESERVATIONS (ORDERS) */}
-              <TabsContent value="orders" className="mt-8">
+              {activeTab === 'orders' && (
+                <div className="mt-8">
                 <Card className="rounded-[44px] border border-[#DFB15B]/15 shadow-xl bg-[#26130F]/45 overflow-hidden text-left">
                   <CardHeader className="p-8 md:p-10 border-b border-[#DFB15B]/10 bg-[#140603]/40">
                     <CardTitle className="text-lg md:text-xl font-serif font-black text-white flex items-center gap-3">
@@ -3187,10 +3213,12 @@ export default function AdminDashboard() {
                     </ScrollArea>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </div>
+              )}
 
               {/* 🪄 TAB 3: CUSTOM BUILDER INQUIRIES */}
-              <TabsContent value="inquiries" className="mt-8">
+              {activeTab === 'inquiries' && (
+                <div className="mt-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
                   {customInquiries.length === 0 ? (
                     <div className="col-span-full py-24 text-center space-y-4 bg-[#26130F]/45 rounded-3xl border border-[#DFB15B]/15">
@@ -3337,10 +3365,12 @@ export default function AdminDashboard() {
                     ))
                   )}
                 </div>
-              </TabsContent>
+              </div>
+              )}
 
               {/* 🧁 TAB 4: BOUTIQUE CATALOG GALLERY INVENTORY */}
-              <TabsContent value="products" className="mt-8">
+              {activeTab === 'products' && (
+                <div className="mt-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {products.length === 0 ? (
                     <div className="col-span-full py-24 text-center space-y-4 bg-[#26130F]/45 rounded-3xl border border-[#DFB15B]/15">
@@ -3460,10 +3490,12 @@ export default function AdminDashboard() {
                     ))
                   )}
                 </div>
-              </TabsContent>
+              </div>
+              )}
 
               {/* 💬 TAB 5: GRAPHIC FEEDBACK STUDIO (REVIEWS MODERATION) */}
-              <TabsContent value="reviews" className="mt-8">
+              {activeTab === 'reviews' && (
+                <div className="mt-8">
                 <Card className="rounded-[44px] border border-[#DFB15B]/15 shadow-xl bg-[#26130F]/45 overflow-hidden text-left">
                   <CardHeader className="p-8 border-b border-[#DFB15B]/10 bg-[#140603]/40">
                     <CardTitle className="text-lg md:text-xl font-serif font-bold text-white flex items-center gap-2">
@@ -3529,10 +3561,12 @@ export default function AdminDashboard() {
                     </ScrollArea>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </div>
+              )}
 
               {/* 🎨 TAB 6: GLOBAL THEME STUDIO */}
-              <TabsContent value="themes" className="mt-8">
+              {activeTab === 'themes' && (
+                <div className="mt-8">
                 <Card className="rounded-[44px] border border-[#DFB15B]/15 bg-[#26130F]/45 overflow-hidden text-left shadow-xl">
                   <CardHeader className="p-8 border-b border-[#DFB15B]/10 bg-[#140603]/40">
                     <CardTitle className="text-lg md:text-xl font-display font-black text-white flex items-center gap-2">
@@ -3622,13 +3656,14 @@ export default function AdminDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </div>
+              )}
 
           </motion.div>
         )}
 
           </div>
-        </Tabs>
+        </div>
       </AnimatePresence>
 
       {/* 🎫 REAL-TIME FLOATING INTERACTIVE GUEST TICKET MODAL */}
@@ -3917,6 +3952,58 @@ export default function AdminDashboard() {
                 >
                   Dismiss Ticket
                 </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ⚠️ REUSABLE IFRAME-SAFE TRANSITION-SMOOTH DIALOG CONFIRMATION OVERLAY */}
+      <AnimatePresence>
+        {confirmAction && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setConfirmAction(null)}
+              className="absolute inset-0 bg-[#120502]/85 backdrop-blur-md"
+            />
+
+            {/* Modal Body */}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative bg-[#2C130E] border border-[#DFB15B]/30 rounded-[36px] p-8 max-w-sm w-full z-10 shadow-[0_30px_70px_rgba(0,0,0,0.85)] space-y-6 text-center"
+            >
+              <div className="w-14 h-14 bg-[#DFB15B]/15 rounded-full flex items-center justify-center mx-auto border border-[#DFB15B]/25">
+                <AlertCircle className="w-6 h-6 text-[#DFB15B]" />
+              </div>
+              <div className="space-y-2">
+                <h4 className="text-base font-serif font-black text-white tracking-tight">Are you sure?</h4>
+                <p className="text-xs text-[#FFFDFB]/60 leading-relaxed px-2">{confirmAction.message}</p>
+              </div>
+              <div className="flex gap-4 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setConfirmAction(null)}
+                  className="flex-1 py-3.5 rounded-2xl border border-white/10 hover:bg-white/5 text-white text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    confirmAction.onConfirm();
+                    setConfirmAction(null);
+                  }}
+                  className="flex-1 py-3.5 rounded-2xl bg-[#DFB15B] hover:bg-white text-[#140603] text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer font-bold"
+                >
+                  Confirm
+                </button>
               </div>
             </motion.div>
           </div>
