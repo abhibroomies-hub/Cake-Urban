@@ -44,10 +44,10 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
     restDelta: 0.0001
   });
 
-  // Track 1: Slides left-to-right as page scrolls down
-  const x1 = useTransform(smoothProgress, [0, 1], ["-15%", "15%"]);
+  // Track 1: Slides left-to-right as page scrolls down (adjusted wide for infinite repeated lists)
+  const x1 = useTransform(smoothProgress, [0, 1], ["-65%", "5%"]);
   // Track 2: Slides right-to-left as page scrolls down
-  const x2 = useTransform(smoothProgress, [0, 1], ["15%", "-15%"]);
+  const x2 = useTransform(smoothProgress, [0, 1], ["5%", "-65%"]);
   
   // Dynamic rotate/scale effects for elements based on scroll progress
   const rotate1 = useTransform(smoothProgress, [0, 1], [-6, 6]);
@@ -61,6 +61,14 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
   // If we don't have enough products, fall back to slicing the main array
   const row1 = showcaseRow1.length > 0 ? showcaseRow1 : products.slice(0, 5);
   const row2 = showcaseRow2.length > 0 ? showcaseRow2 : products.slice(5, 10);
+
+  // Create infinite-feeling arrays by repeating 4 times with unique keys
+  const row1Repeated = Array.from({ length: 4 }).flatMap((_, idx) => 
+    row1.map(item => ({ ...item, uniqueKey: `${item.id}-r1-${idx}` }))
+  );
+  const row2Repeated = Array.from({ length: 4 }).flatMap((_, idx) => 
+    row2.map(item => ({ ...item, uniqueKey: `${item.id}-r2-${idx}` }))
+  );
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
@@ -138,15 +146,22 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
           style={isTouchDevice ? undefined : { x: x1, rotate: rotate1 }} 
           className={`flex gap-6 sm:gap-10 will-change-transform ${isTouchDevice ? 'px-6 w-auto' : 'w-max px-[8%]'}`}
         >
-          {row1.map((product) => (
+          {row1Repeated.map((product) => (
             <Link 
               to={`/product/${product.id}`} 
-              key={product.id}
+              key={product.uniqueKey}
               onClick={playSlidePop}
               className={`block shrink-0 ${isTouchDevice ? 'snap-center' : ''}`}
             >
-              {/* Circular Premium Glassmorph Card */}
-              <div className="w-[280px] sm:w-[340px] aspect-square rounded-full bg-[#1C0A05]/75 backdrop-blur-xl border-2 border-[#DFB15B]/25 p-6 relative group transition-all duration-700 hover:border-[#DFB15B] hover:shadow-[0_0_50px_rgba(223,177,91,0.35)] flex flex-col items-center justify-center text-center overflow-hidden">
+              {/* Circular Premium Glassmorph Card with dynamic focal zoom */}
+              <motion.div 
+                initial={{ scale: 0.82, opacity: 0.45, filter: "blur(1px)" }}
+                whileInView={{ scale: 1.05, opacity: 1, filter: "blur(0px)" }}
+                viewport={{ once: false, amount: 0.45 }}
+                whileHover={{ scale: 1.12, zIndex: 10 }}
+                transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                className="w-[280px] sm:w-[340px] aspect-square rounded-full bg-[#1C0A05]/75 backdrop-blur-xl border-2 border-[#DFB15B]/25 p-6 relative group flex flex-col items-center justify-center text-center overflow-hidden"
+              >
                 
                 {/* Rotating Gold Dash Orbit Ring */}
                 <div className="absolute inset-3 rounded-full border border-dashed border-[#DFB15B]/30 group-hover:rotate-45 transition-transform duration-[8s] ease-out pointer-events-none" />
@@ -203,7 +218,7 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
 
                 {/* Frosted Circular glass rim shadow reflection effect */}
                 <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none group-hover:border-[#DFB15B]/40 transition-colors duration-500" />
-              </div>
+              </motion.div>
             </Link>
           ))}
         </motion.div>
@@ -215,15 +230,22 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
           style={isTouchDevice ? undefined : { x: x2, rotate: rotate2 }} 
           className={`flex gap-6 sm:gap-10 will-change-transform ${isTouchDevice ? 'px-6 w-auto' : 'w-max px-[8%]'}`}
         >
-          {row2.map((product) => (
+          {row2Repeated.map((product) => (
             <Link 
               to={`/product/${product.id}`} 
-              key={product.id}
+              key={product.uniqueKey}
               onClick={playSlidePop}
               className={`block shrink-0 ${isTouchDevice ? 'snap-center' : ''}`}
             >
-              {/* Circular Premium Glassmorph Card */}
-              <div className="w-[280px] sm:w-[340px] aspect-square rounded-full bg-[#180A08]/75 backdrop-blur-xl border-2 border-[#DFB15B]/20 p-6 relative group transition-all duration-700 hover:border-[#DFB15B] hover:shadow-[0_0_50px_rgba(223,177,91,0.35)] flex flex-col items-center justify-center text-center overflow-hidden">
+              {/* Circular Premium Glassmorph Card with dynamic focal zoom */}
+              <motion.div 
+                initial={{ scale: 0.82, opacity: 0.45, filter: "blur(1px)" }}
+                whileInView={{ scale: 1.05, opacity: 1, filter: "blur(0px)" }}
+                viewport={{ once: false, amount: 0.45 }}
+                whileHover={{ scale: 1.12, zIndex: 10 }}
+                transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                className="w-[280px] sm:w-[340px] aspect-square rounded-full bg-[#180A08]/75 backdrop-blur-xl border-2 border-[#DFB15B]/20 p-6 relative group flex flex-col items-center justify-center text-center overflow-hidden"
+              >
                 
                 {/* Rotating Gold Dash Orbit Ring */}
                 <div className="absolute inset-3 rounded-full border border-dashed border-[#DFB15B]/30 group-hover:rotate-45 transition-transform duration-[8s] ease-out pointer-events-none" />
@@ -246,7 +268,7 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
                     />
                     {product.rating && (
                       <span className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/75 backdrop-blur-md text-[#DFB15B] text-[7px] font-black tracking-widest px-2.5 py-1 rounded-full shadow-md flex items-center gap-0.5 border border-[#DFB15B]/20 leading-none">
-                        <Star className="w-2 h-2 fill-[#DFB15B] text-[#DFB15B]" />
+                        <Star className="w-2.5 h-2.5 fill-[#DFB15B] text-[#DFB15B]" />
                         <span>{product.rating}</span>
                       </span>
                     )}
@@ -281,7 +303,7 @@ export function ScrollParallaxShowcase({ products }: ScrollParallaxShowcaseProps
 
                 {/* Frosted Circular glass rim shadow reflection effect */}
                 <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none group-hover:border-[#DFB15B]/40 transition-colors duration-500" />
-              </div>
+              </motion.div>
             </Link>
           ))}
         </motion.div>

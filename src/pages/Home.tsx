@@ -92,74 +92,74 @@ export interface FestiveOccasion {
 
 export const FESTIVE_OCCASIONS: FestiveOccasion[] = [
   {
-    id: 'diwali',
-    name: 'Diwali Festive',
-    emoji: '🪔',
-    title: 'Festival of Lights Grand Celebration',
-    tagline: 'GOLD FLAKES & SAFFRON ELIXIR',
-    bannerMessage: 'Shubh Deepavali! Pure eggless fusion cakes crafted with real 24k edible Gold leaf, Saffron Pistachio mousse, and caramelized rose petals.',
-    bannerImage: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?q=80&w=1200&auto=format&fit=crop',
-    code: 'DIWALI15',
-    accentColor: '#FF9933',
-    accentBg: 'rgba(255, 153, 51, 0.15)',
-    filterKeywords: ['chocolate', 'truffle', 'royal', 'speculoos', 'gold', 'ferrero', 'hazelnut'],
-    flourishes: ['✨', '🪔', '🌟', '🏵️']
-  },
-  {
-    id: 'christmas',
-    name: 'Christmas Winter',
-    emoji: '🎄',
-    title: 'Winter Wonderland Baking Studio',
-    tagline: 'CRANBERRY COCOA & PLUM GLAZE',
-    bannerMessage: 'Merry Christmas! Experience winter joy with spiced red-velvet logs, snow-cream clouds, and chocolate-hazelnut peaks.',
-    bannerImage: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop',
-    code: 'SNOW15',
-    accentColor: '#EF4444',
-    accentBg: 'rgba(239, 68, 68, 0.15)',
-    filterKeywords: ['velvet', 'strawberry', 'chiffon', 'biscoff', 'speculoos', 'white'],
-    flourishes: ['❄️', '🎄', '🎁', '✨']
-  },
-  {
-    id: 'valentines',
-    name: "Valentine's Rose",
-    emoji: '💖',
-    title: 'Season of Sweet Amour & Petals',
-    tagline: 'CRIMSON VELVET & FRESH STRAWBERRY CREAM',
-    bannerMessage: 'Celebrate Love! Elegant crimson red velvet bouquets, whipped rose syrup sponges, and heart-shaped strawberry confections.',
-    bannerImage: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1200&auto=format&fit=crop',
-    code: 'LOVE15',
-    accentColor: '#EC4899',
-    accentBg: 'rgba(236, 72, 153, 0.15)',
-    filterKeywords: ['velvet', 'crimson', 'strawberry', 'macaron', 'blush'],
-    flourishes: ['💖', '🌹', '✨', '🎈']
-  },
-  {
-    id: 'halloween',
-    name: 'Spooky Carnival',
-    emoji: '🎃',
-    title: 'Midnight Witching Cocoa Brews',
-    tagline: 'DARK CHOCOLATE NOIR & CHARCOAL FUDGE',
-    bannerMessage: 'Trick or Treat! Witchy chocolate glazes, charcoal fudge cobwebs, and delicious blood-orange cream pastries.',
-    bannerImage: 'https://images.unsplash.com/photo-1508349082404-55310f5949ec?q=80&w=1200&auto=format&fit=crop',
-    code: 'BOO15',
-    accentColor: '#F97316',
-    accentBg: 'rgba(249, 115, 22, 0.15)',
-    filterKeywords: ['fudge', 'noir', 'truffle', 'espresso', 'caramel', 'cocoa'],
-    flourishes: ['🎃', '🦇', '👻', '🌌']
+    id: 'birthday',
+    name: 'Birthday Cake',
+    emoji: '🎂',
+    title: 'Grand Birthday Baking Studio',
+    tagline: 'CANDLES, SPARKLES & CUSTOM FLAVORS',
+    bannerMessage: 'Make birthdays unforgettable with premium multi-layered bakes, custom photo prints, and delectable cream cakes custom-designed under chef supervision.',
+    bannerImage: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1200&auto=format&fit=crop',
+    code: 'BDAY15',
+    accentColor: '#DFB15B',
+    accentBg: 'rgba(223, 177, 91, 0.15)',
+    filterKeywords: ['birthday', 'chocolate', 'strawberry'],
+    flourishes: ['🎂', '🎈', '✨', '🎉']
   },
   {
     id: 'anniversary',
-    name: 'Bespoke Milestone',
-    emoji: '👑',
-    title: 'Grand Milestone & Custom Design',
-    tagline: 'CUSTOM TIER MASTERPIECE & FLOWERS',
-    bannerMessage: 'Perfect Centerpieces! Royal designer tier cakes, luxury golden decorations, and handcrafted personalized models.',
+    name: 'Anniversary Cake',
+    emoji: '💑',
+    title: 'Elegant Anniversary & Love Confections',
+    tagline: 'BELGIAN GANACHE & CRIMSON RED VELVET',
+    bannerMessage: 'Celebrate timeless love with our flagship red velvet cakes, golden-finished chocolate ganaches, and multi-tier customized monuments.',
+    bannerImage: 'https://images.unsplash.com/photo-1535141192574-5d4897c13636?q=80&w=1200&auto=format&fit=crop',
+    code: 'FOREVER15',
+    accentColor: '#EC4899',
+    accentBg: 'rgba(236, 72, 153, 0.15)',
+    filterKeywords: ['anniversary', 'velvet', 'royal', 'heart'],
+    flourishes: ['💖', '🌹', '✨', '💍']
+  },
+  {
+    id: 'babyshower',
+    name: 'Baby Shower',
+    emoji: '🍼',
+    title: 'Adorable Baby Shower & Welcome Custom Cakes',
+    tagline: 'PASTEL DESIGNS & FLUFFY MOUSSE SHAPES',
+    bannerMessage: 'Welcome the little one with cute, hand-sculpted fondant characters, organic pastel layers, and 100% pure eggless vegetarian treats.',
     bannerImage: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=1200&auto=format&fit=crop',
-    code: 'ROYAL15',
-    accentColor: '#DFB15B',
-    accentBg: 'rgba(223, 177, 91, 0.15)',
-    filterKeywords: ['designer', 'custom', 'imperial', 'rocher', 'luxury'],
-    flourishes: ['✨', '👑', '🎉', '🌟']
+    code: 'BABY15',
+    accentColor: '#3B82F6',
+    accentBg: 'rgba(59, 130, 246, 0.15)',
+    filterKeywords: ['baby', 'designer', 'custom', 'white'],
+    flourishes: ['🍼', '🧸', '🎈', '✨']
+  },
+  {
+    id: 'regular',
+    name: 'Regular Cake',
+    emoji: '🍰',
+    title: 'Fresh Daily Delights & Anytime Classics',
+    tagline: 'EGGLESS TRUFFLES & FRUIT CHOP EXTRAVAGANZA',
+    bannerMessage: 'Craving something sweet? Enjoy our freshly baked classic pineapple gateaus, black forest toppings, and chocolate hazelnut logs anytime with 30-min express delivery in Faridabad.',
+    bannerImage: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=1200&auto=format&fit=crop',
+    code: 'DAILY15',
+    accentColor: '#10B981',
+    accentBg: 'rgba(16, 185, 129, 0.15)',
+    filterKeywords: ['regular', 'truffle', 'fruit', 'pineapple'],
+    flourishes: ['🍰', '🍓', '🍒', '✨']
+  },
+  {
+    id: 'custom',
+    name: 'Custom Cake',
+    emoji: '🎨',
+    title: 'Bespoke Creative Canvas Sculptures',
+    tagline: 'YOU IMAGINE, WE SHAPE & BAKE IT REAL',
+    bannerMessage: 'Got a photo or specific idea? Our lead pastry artist converts your vision, reference images, or custom requests into luxurious, edible, customized chef masterpieces.',
+    bannerImage: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?q=80&w=1200&auto=format&fit=crop',
+    code: 'CUSTOM15',
+    accentColor: '#F59E0B',
+    accentBg: 'rgba(245, 158, 11, 0.15)',
+    filterKeywords: ['custom', 'designer', 'biscoff', 'ferrero'],
+    flourishes: ['🎨', '🌟', '✨', '👑']
   }
 ];
 
@@ -332,12 +332,7 @@ export default function Home() {
 
   // Dynamic Festival calendar initialization (auto-detect based on calendar date system)
   const getInitialOccasion = () => {
-    const month = new Date().getMonth(); // 0 is Jan, 11 is Dec
-    if (month === 1) return 'valentines';
-    if (month === 9) return 'halloween';
-    if (month === 10) return 'diwali';
-    if (month === 11) return 'christmas';
-    return 'anniversary'; // default sweet celebration milestones
+    return 'birthday'; // Default to birthday cakes
   };
 
   const [selectedOccasionId, setSelectedOccasionId] = useState<string>(getInitialOccasion());
@@ -603,66 +598,72 @@ export default function Home() {
           {/* Active Particle Flourishes floating layer */}
           <FestiveParticles flourishes={activeOccasion.flourishes} />
 
-          {/* Interactive Event Timeline Select Bar */}
-          <div className="bg-[#26130F]/90 backdrop-blur-md rounded-[32px] p-4 sm:p-5 border border-[#DFB15B]/20 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
-            <div className="flex items-center gap-3 text-left">
-              <span className="text-2xl animate-pulse">📅</span>
-              <div>
-                <h4 className="text-xs sm:text-sm font-display font-black text-white leading-none uppercase tracking-wider">Atelier Festival Calendar & Vibe Simulator</h4>
-                <p className="text-[10px] text-zinc-400 font-medium italic mt-1">Select any celebration event to dynamically customize the menu and showcase relevant bakes!</p>
+          {/* Master Celebration Hub Card */}
+          <div className="bg-gradient-to-br from-[#1E0B07]/95 via-[#23100B]/90 to-[#120503]/95 backdrop-blur-xl rounded-[36px] p-6 sm:p-10 border border-[#DFB15B]/30 shadow-2xl relative overflow-hidden text-left text-white max-w-5xl mx-auto">
+            
+            {/* Header section inside the card */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-8 relative z-10">
+              <div className="space-y-1">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#DFB15B]">✨ CELEBRATION SERVICES ✨</span>
+                <h3 className="text-xl sm:text-2xl font-display font-black text-white leading-tight">Select Your Celebration Vibe</h3>
               </div>
+              <p className="text-zinc-400 text-[10px] sm:text-xs font-semibold italic max-w-md">
+                Choose an event to dynamically customize the menu, trigger interactive page bakes, and claim your promo code!
+              </p>
             </div>
 
-            {/* Selector Pills Slider */}
-            <div className="flex flex-wrap items-center gap-2 max-w-full pb-1 no-scrollbar shrink-0">
+            {/* Compact Selector Buttons Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8 relative z-10">
               {FESTIVE_OCCASIONS.map(occ => {
                 const isSelected = selectedOccasionId === occ.id;
                 return (
-                  <button
+                  <motion.button
                     key={occ.id}
+                    whileHover={{ y: -3, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => {
                       playSlidePop();
                       setSelectedOccasionId(occ.id);
                     }}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 border cursor-pointer select-none ${
+                    className={`flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border transition-all duration-300 cursor-pointer select-none ${
                       isSelected
-                        ? 'bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-[#140603] border-white/40 shadow-md scale-105'
-                        : 'bg-white/5 text-[#FFFDFB]/80 border-white/10 hover:bg-white/10'
+                        ? 'bg-gradient-to-r from-[#DFB15B] to-[#C99A43] text-[#140603] border-white/40 shadow-lg font-black'
+                        : 'bg-white/5 text-[#FFFDFB]/80 border-white/10 hover:bg-white/10 hover:text-white'
                     }`}
                   >
-                    <span>{occ.emoji}</span>
-                    <span>{occ.name}</span>
-                  </button>
+                    <span className="text-2xl mb-1 filter drop-shadow-md">{occ.emoji}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-center leading-none">
+                      {occ.name}
+                    </span>
+                  </motion.button>
                 );
               })}
             </div>
-          </div>
 
-          {/* Dynamic Festive Highlight Banner */}
-          <motion.div
-            key={activeOccasion.id}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="rounded-[40px] border border-[#DFB15B]/20 bg-[#26130F]/45 overflow-hidden text-left shadow-2xl relative min-h-[200px] flex flex-col justify-between"
-          >
-            {/* Ambient Background decoration specific to the event */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center opacity-[0.16] z-0 transition-all duration-700 pointer-events-none" 
-              style={{ backgroundImage: `url(${activeOccasion.bannerImage})` }}
-            />
-            {/* Radiant glow specific to the active festival color */}
-            <div 
-              className="absolute inset-0 opacity-[0.25] pointer-events-none z-0" 
-              style={{
-                background: `radial-gradient(circle 500px at right, ${activeOccasion.accentColor}, transparent)`
-              }}
-            />
+            {/* Dynamic Celebration Highlight Panel */}
+            <motion.div
+              key={activeOccasion.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="rounded-[24px] border border-[#DFB15B]/20 bg-[#26130F]/45 overflow-hidden text-left relative min-h-[180px] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+            >
+              {/* Ambient Background decoration specific to the event */}
+              <div 
+                className="absolute inset-0 bg-cover bg-center opacity-[0.14] z-0 transition-all duration-700 pointer-events-none" 
+                style={{ backgroundImage: `url(${activeOccasion.bannerImage})` }}
+              />
+              {/* Radiant glow specific to the active festival color */}
+              <div 
+                className="absolute inset-0 opacity-[0.25] pointer-events-none z-0" 
+                style={{
+                  background: `radial-gradient(circle 350px at right, ${activeOccasion.accentColor}, transparent)`
+                }}
+              />
 
-            <div className="p-6 sm:p-10 relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 w-full">
-              <div className="space-y-4 max-w-2xl text-left">
+              <div className="space-y-4 max-w-xl text-left relative z-10 flex-1">
                 <div 
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-black tracking-widest uppercase border"
+                  className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[8.5px] font-black tracking-widest uppercase border"
                   style={{
                     color: activeOccasion.accentColor,
                     borderColor: `${activeOccasion.accentColor}30`,
@@ -670,34 +671,33 @@ export default function Home() {
                   }}
                 >
                   <span>{activeOccasion.emoji}</span>
-                  <span>TODAY'S SEASONAL SPOTLIGHT</span>
+                  <span>{activeOccasion.tagline}</span>
                 </div>
                 
-                <h3 className="text-2xl sm:text-4xl font-display font-black text-white leading-tight">
+                <h3 className="text-lg sm:text-2xl font-display font-black text-white leading-tight">
                   {activeOccasion.title}
                 </h3>
                 
-                <p className="text-[#FFFDFB]/80 text-xs sm:text-sm md:text-base leading-relaxed font-semibold italic">
+                <p className="text-[#FFFDFB]/80 text-xs sm:text-sm leading-relaxed font-semibold italic">
                   {activeOccasion.bannerMessage}
                 </p>
                 
-                <div className="flex items-center gap-2.5 text-[10px] uppercase font-mono text-zinc-400">
+                <div className="flex items-center gap-2 text-[10px] uppercase font-mono text-zinc-400">
                   <Clock className="w-3.5 h-3.5 text-[#DFB15B]" />
-                  <span>SAME-DAY EXPRESS DELIVERIES NCR BOUND: <strong className="text-[#DFB15B]">ORDER BEFORE 4:00 PM</strong></span>
+                  <span>SAME-DAY DELIVERY IN FARIDABAD: <strong className="text-[#DFB15B]">ORDER BEFORE 4:00 PM</strong></span>
                 </div>
               </div>
 
               {/* Instant discount voucher card */}
-              <div className="w-full md:w-auto shrink-0 bg-white/5 border border-white/10 rounded-[30px] p-6 text-center space-y-4 relative overflow-hidden backdrop-blur-sm z-10">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-[#DFB15B]/10 rounded-full blur-xl" />
-                <span className="text-[10px] uppercase font-black tracking-widest text-[#DFB15B]">FESTIVAL PROMO CODE</span>
-                <div className="bg-black/50 border border-dashed border-[#DFB15B]/30 py-3 px-6 rounded-2xl">
-                  <span className="font-mono text-xl sm:text-2xl font-black text-white tracking-widest">{activeOccasion.code}</span>
+              <div className="w-full md:w-auto shrink-0 bg-black/40 border border-white/10 rounded-2xl p-5 text-center space-y-3 relative overflow-hidden backdrop-blur-sm z-10 md:min-w-[200px]">
+                <span className="text-[9px] uppercase font-black tracking-widest text-[#DFB15B]">FESTIVAL PROMO</span>
+                <div className="bg-black/60 border border-dashed border-[#DFB15B]/40 py-2.5 px-4 rounded-xl">
+                  <span className="font-mono text-lg font-black text-white tracking-widest">{activeOccasion.code}</span>
                 </div>
-                <p className="text-[10px] font-medium text-zinc-300">Apply during checkout for <strong className="text-white">15% Instant Off</strong></p>
+                <p className="text-[9px] font-medium text-zinc-300">Apply for <strong className="text-white">15% Instant Off</strong></p>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
         </div>
       </section>
