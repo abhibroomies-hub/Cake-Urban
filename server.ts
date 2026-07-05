@@ -26,6 +26,249 @@ async function startServer() {
     }
   });
 
+  // ==========================================
+  // ROBUST JSON REPAIR & FALLBACK UTILITIES
+  // ==========================================
+  function repairTruncatedJSON(json: string): string {
+    let clean = json.trim();
+    
+    // Track open quotes, brackets, and braces
+    let inString = false;
+    let escape = false;
+    const stack: string[] = [];
+    
+    let i = 0;
+    for (; i < clean.length; i++) {
+      const char = clean[i];
+      if (escape) {
+        escape = false;
+        continue;
+      }
+      if (char === '\\') {
+        escape = true;
+        continue;
+      }
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+      if (!inString) {
+        if (char === '{') {
+          stack.push('{');
+        } else if (char === '}') {
+          if (stack[stack.length - 1] === '{') {
+            stack.pop();
+          }
+        } else if (char === '[') {
+          stack.push('[');
+        } else if (char === ']') {
+          if (stack[stack.length - 1] === '[') {
+            stack.pop();
+          }
+        }
+      }
+    }
+
+    // If we ended inside a string, we need to close the string first
+    let repaired = clean;
+    if (inString) {
+      if (repaired.endsWith('\\')) {
+        repaired = repaired.slice(0, -1);
+      }
+      repaired += '"';
+    }
+
+    // Now close any remaining open structures in reverse order
+    while (stack.length > 0) {
+      const open = stack.pop();
+      if (open === '{') {
+        repaired += '}';
+      } else if (open === '[') {
+        repaired += ']';
+      }
+    }
+
+    return repaired;
+  }
+
+  function safeParseCakeJSON(responseText: string, fallbackObj: any = {}): any {
+    let cleaned = responseText.trim();
+    // Strip markdown block markers if present
+    if (cleaned.startsWith("```json")) {
+      cleaned = cleaned.replace(/^```json/, "").replace(/```$/, "").trim();
+    } else if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```/, "").replace(/```$/, "").trim();
+    }
+
+    try {
+      return JSON.parse(cleaned);
+    } catch (e) {
+      console.warn("[JSON PARSE WARNING] Initial parse failed, attempting truncation repair...", e);
+      try {
+        const repaired = repairTruncatedJSON(cleaned);
+        return JSON.parse(repaired);
+      } catch (repairErr) {
+        console.error("[JSON REPAIR CRITICAL ERROR] Repair also failed, extracting via regex...", repairErr);
+        // Extract values using regex as a robust fallback
+        const result: any = { ...fallbackObj };
+        
+        const extractString = (key: string) => {
+          const regex = new RegExp(`"${key}"\\s*:\\s*"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"`, 'i');
+          const match = cleaned.match(regex);
+          return match ? match[1].replace(/\\"/g, '"').replace(/\\\\/g, '\\') : null;
+        };
+
+        const extractNumber = (key: string) => {
+          const regex = new RegExp(`"${key}"\\s*:\\s*(\\d+)`, 'i');
+          const match = cleaned.match(regex);
+          return match ? parseInt(match[1], 10) : null;
+        };
+
+        const extractArray = (key: string) => {
+          const regex = new RegExp(`"${key}"\\s*:\\s*\\[([^\\]]*)\\]`, 'i');
+          const match = cleaned.match(regex);
+          if (match) {
+            return match[1].split(',').map(s => s.trim().replace(/^"/, '').replace(/"$/, ''));
+          }
+          return null;
+        };
+
+        // Fill extracted properties if found
+        const name = extractString("productName") || extractString("name");
+        if (name) result.productName = name;
+        
+        const price = extractNumber("price");
+        if (price) result.price = price;
+
+        const desc = extractString("description");
+        if (desc) result.description = desc;
+
+        const cats = extractString("categories");
+        if (cats) result.categories = cats;
+
+        const flavors = extractString("flavors");
+        if (flavors) result.flavors = flavors;
+
+        const occasions = extractString("occasions");
+        if (occasions) result.occasions = occasions;
+
+        const seoTitle = extractString("seoTitle");
+        if (seoTitle) result.seoTitle = seoTitle;
+
+        const slug = extractString("slug");
+        if (slug) result.slug = slug;
+
+        const altText = extractString("altText");
+        if (altText) result.altText = altText;
+
+        const metaDesc = extractString("metaDescription");
+        if (metaDesc) result.metaDescription = metaDesc;
+
+        const keywords = extractArray("keywords");
+        if (keywords) result.keywords = keywords;
+
+        const structuredSchema = extractString("structuredSchema");
+        if (structuredSchema) result.structuredSchema = structuredSchema;
+
+        const instagramCaption = extractString("instagramCaption");
+        if (instagramCaption) result.instagramCaption = instagramCaption;
+
+        return result;
+      }
+    }
+  }
+
+  function safeParseChatJSON(responseText: string): any {
+    let cleaned = responseText.trim();
+    if (cleaned.startsWith("```json")) {
+      cleaned = cleaned.replace(/^```json/, "").replace(/```$/, "").trim();
+    } else if (cleaned.startsWith("```")) {
+      cleaned = cleaned.replace(/^```/, "").replace(/```$/, "").trim();
+    }
+
+    try {
+      return JSON.parse(cleaned);
+    } catch (e) {
+      console.warn("[CHAT JSON PARSE WARNING] Initial parse failed, trying truncation repair...", e);
+      try {
+        const repaired = repairTruncatedJSON(cleaned);
+        return JSON.parse(repaired);
+      } catch (repairErr) {
+        console.error("[CHAT JSON REPAIR CRITICAL ERROR] Repair failed, extracting text/prompt via regex...", repairErr);
+        
+        const result: any = {
+          text: "Mafi chahta hoon! Gemini engine is facing some heavy traffic. But aapka design details secure hain.",
+          generatedImages: []
+        };
+
+        const extractString = (key: string) => {
+          const regex = new RegExp(`"${key}"\\s*:\\s*"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"`, 'i');
+          const match = cleaned.match(regex);
+          return match ? match[1].replace(/\\"/g, '"').replace(/\\\\/g, '\\') : null;
+        };
+
+        const textVal = extractString("text");
+        if (textVal) result.text = textVal;
+
+        const imgPromptVal = extractString("imagePrompt");
+        if (imgPromptVal) result.imagePrompt = imgPromptVal;
+
+        if (cleaned.includes("finalizedCake")) {
+          result.finalizedCake = {
+            productName: extractString("productName") || "Gourmet Concept",
+            price: 1499,
+            description: extractString("description") || "Bespoke custom creation.",
+            categories: extractString("categories") || "Cakes, Custom Cakes",
+            flavors: extractString("flavors") || "Belgian Chocolate",
+            occasions: extractString("occasions") || "Celebration"
+          };
+        }
+
+        return result;
+      }
+    }
+  }
+
+  const imageFallbackObj = {
+    productName: "Gourmet Custom Creation",
+    price: 1499,
+    description: "A luxury custom cake baked with premium ingredients, exquisite layering, and stunning artisanal decorations.",
+    categories: "Cakes, Custom Cakes",
+    flavors: "Belgian Chocolate",
+    occasions: "Celebration, Birthday, Anniversary",
+    seoTitle: "Custom Gourmet Cake Delivery | Cake Urban",
+    slug: "custom-gourmet-cake",
+    altText: "Artisanal custom gourmet cake",
+    metaDescription: "Order premium custom gourmet cakes from Cake Urban. Handcrafted luxury cakes for birthdays and anniversaries with delivery in Delhi NCR.",
+    keywords: ["custom cake", "gourmet cake", "cake delivery", "birthday cake", "anniversary cake"],
+    structuredSchema: "",
+    instagramCaption: "Indulge in pure luxury. ✨🍰 #CakeUrban #CustomCakes",
+    pinterestPin: {
+      title: "Luxury Custom Cake Creation",
+      description: "Elegant bespoke cake handcrafted for your special moments."
+    }
+  };
+
+  const specsFallbackObj = {
+    productName: "Premium Spec Creation",
+    price: 1499,
+    description: "Bespoke custom creation prepared by elite pâtissiers with exquisite premium layers.",
+    categories: "Cakes, Custom Cakes",
+    flavors: "Belgian Chocolate",
+    occasions: "Celebration, Birthday, Anniversary",
+    seoTitle: "Gourmet Customized Cake | Cake Urban",
+    slug: "gourmet-customized-cake",
+    altText: "Gourmet customized cake creation",
+    metaDescription: "Treat yourself to a luxury bespoke cake handcrafted by Cake Urban. Perfect for birthdays, anniversaries, and special events.",
+    keywords: ["gourmet cake", "bespoke cake", "custom cake delhi", "premium cake shop"],
+    structuredSchema: "",
+    instagramCaption: "Crafted to perfection. 🍰✨ #CakeUrban #BespokeLuxury",
+    pinterestPin: {
+      title: "Artisanal Custom Cake Design",
+      description: "Bespoke designer cake handcrafted by Cake Urban."
+    }
+  };
+
   // AI Image SEO Optimizer Endpoint
   app.post("/api/seo/optimize-image", async (req, res) => {
     const { imageBase64, mimeType, productName } = req.body;
@@ -62,6 +305,11 @@ async function startServer() {
         You are an expert AI master pâtissier and Visual SEO curator for "Cake Urban", an elite custom online bakery operating in the Delhi National Capital Region (Faridabad, South Delhi, Noida, Gurgaon, Ghaziabad).
         Your task is to analyze the uploaded cake image along with any optionally provided product name, and generate a complete, premium digital catalog profile.
         This includes highly persuasive copywriter product description, luxury Indian pricing (INR ₹899 to ₹4999), extra categories, matching flavor tags, ideal occasions, and a top-tier SEO/social metadata package.
+
+        CRITICAL LENGTH CONSTRAINTS:
+        Keep all text properties, descriptions, and captions highly elegant but VERY CONCISE.
+        Limit 'structuredSchema' to a simple single-line string of under 300 characters.
+        Never repeat content or generate massive outputs. This prevents output truncation.
       `;
 
       const prompt = `
@@ -81,7 +329,7 @@ async function startServer() {
         9. Descriptive, keyword-rich Alt Text explaining physical elements (colors, layers, design).
         10. A 150-160 character Google Meta Description incorporating a powerful luxury Call-To-Action (CTA).
         11. A list of 10-15 high-value search keywords/tags.
-        12. Raw Product structured LD-JSON schema details.
+        12. Raw Product structured LD-JSON schema details (STRICTLY single-line, minimal, under 300 characters).
         13. An irresistible boutique Instagram caption with hashtags.
         14. Pinterest pin title and rich description.
       `;
@@ -117,7 +365,7 @@ async function startServer() {
                 type: Type.ARRAY,
                 items: { type: Type.STRING }
               },
-              structuredSchema: { type: Type.STRING, description: "Raw stringified JSON-LD Product schema containing context and properties." },
+              structuredSchema: { type: Type.STRING, description: "Minimal single-line stringified JSON-LD Product schema under 300 characters." },
               instagramCaption: { type: Type.STRING },
               pinterestPin: {
                 type: Type.OBJECT,
@@ -141,7 +389,7 @@ async function startServer() {
         throw new Error("No response received from Gemini engine");
       }
 
-      res.json(JSON.parse(resultText));
+      res.json(safeParseCakeJSON(resultText, imageFallbackObj));
     } catch (error) {
       console.error("AI SEO Generation Error:", error);
       res.status(500).json({ error: error instanceof Error ? error.message : "Failed to analyze and optimize image for SEO" });
@@ -161,6 +409,11 @@ async function startServer() {
         You are an expert AI master pâtissier and visual curator for "Cake Urban", an elite custom online bakery in Delhi NCR (operating in Faridabad, South Delhi, Noida, Gurgaon, Ghaziabad).
         Your task is to take a short input description of a cake concept, like "chocolate truffle birthday cake" or "2 tier elegant gold wedding fondant sponge", and generate a complete, rich, ready-to-publish digital catalog profile.
         All generated details must capture the highest premium boutique tone and suggest realistic luxurious Indian pricing in Rupees (A general range of ₹899 to ₹2999 depending on the tier/complexity).
+
+        CRITICAL LENGTH CONSTRAINTS:
+        Keep all text properties, descriptions, and captions highly elegant but VERY CONCISE.
+        Limit 'structuredSchema' to a simple single-line string of under 300 characters.
+        Never repeat content or generate massive outputs. This prevents output truncation.
       `;
 
       const instructionPrompt = `
@@ -178,7 +431,7 @@ async function startServer() {
         9. Alt text describing its physical visuals for image accessibility.
         10. A compelling Google meta description (max 160 characters) with a luxury CTA.
         11. An array of 10-15 high volume search keywords.
-        12. Raw Product structured LD-JSON schema details.
+        12. Raw Product structured LD-JSON schema details (STRICTLY single-line, minimal, under 300 characters).
         13. An irresistible boutique Instagram caption with hashtags.
         14. Pinterest pin title and rich description.
       `;
@@ -206,7 +459,7 @@ async function startServer() {
                 type: Type.ARRAY,
                 items: { type: Type.STRING }
               },
-              structuredSchema: { type: Type.STRING },
+              structuredSchema: { type: Type.STRING, description: "Minimal single-line stringified JSON-LD Product schema under 300 characters." },
               instagramCaption: { type: Type.STRING },
               pinterestPin: {
                 type: Type.OBJECT,
@@ -230,7 +483,7 @@ async function startServer() {
         throw new Error("No response received from Gemini engine");
       }
 
-      res.json(JSON.parse(resultText));
+      res.json(safeParseCakeJSON(resultText, specsFallbackObj));
     } catch (error) {
       console.error("AI Spec Generation Error:", error);
       res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate spec sheet" });
@@ -261,6 +514,99 @@ async function startServer() {
     }
   });
 
+  // GEMINI INTERACTIVE CAKE CHAT ARCHITECT ENDPOINT
+  app.post("/api/chat/discuss-cake", async (req, res) => {
+    const { messages } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: "Messages array is required for the chat history." });
+    }
+
+    try {
+      const model = "gemini-3.5-flash";
+      const systemInstruction = `
+        You are "Cake Urban's" elite AI Confection Architect and Chef Chatbot. Your goal is to help the shop administrator design, discuss, refine, and instantly publish luxury cake creations.
+        Your tone is warm, professional, highly creative, and pastry-expert. Speak in a friendly blend of Hindi and English (Hinglish) as typical in Delhi NCR, or English, depending on user preference.
+        
+        Roles & Functions:
+        1. Discuss ideas: Suggest exquisite layer combinations, luxury frosting styles (e.g., velvet mist, glass mirror, gold brushstrokes), premium ingredients, and appropriate categories (e.g. Cakes, Premium Cakes, Anniversary Cakes).
+        2. Refine specifications: Recommend realistic luxury pricing in INR (usually ₹899 to ₹4999 depending on weights and design detail).
+        3. Image Generation: If the user requests an image, wants to see what the cake looks like, or if you both agree on a gorgeous concept, generate a stunning visual description in the 'imagePrompt' field. This prompt will automatically be sent to our Imagen engine.
+        4. Structured Specs: Whenever a cake concept is finalized, or the user says to add it, or you describe a complete cake, provide the 'finalizedCake' parameter populated with all product fields. 
+        
+        Important branding rule for 'imagePrompt':
+        The image prompt MUST describe the cake resting on a circular white or gold cardboard cake board, with the brand name "Cake Urban" elegantly written on the cardboard surface. Keep details clean, professional food commercial style, 8k resolution, with warm shallow depth of field.
+      `;
+
+      // Map incoming simplified messages array into the expected content structure
+      const formattedContents = messages.map(msg => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      }));
+
+      const response = await genAI.models.generateContent({
+        model,
+        contents: formattedContents,
+        config: {
+          systemInstruction,
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              text: { 
+                type: Type.STRING, 
+                description: "Your friendly, helpful conversational reply to the administrator in warm Hinglish." 
+              },
+              finalizedCake: {
+                type: Type.OBJECT,
+                description: "Populate this ONLY when a cake idea has been discussed, specified, or when the user wants to finalize/add it to the store.",
+                properties: {
+                  productName: { type: Type.STRING, description: "Descriptive premium name of the cake." },
+                  price: { type: Type.NUMBER, description: "Gourmet selling price in INR (e.g. 1499)." },
+                  description: { type: Type.STRING, description: "Irresistible, luxury copywriter description of the layers, flavors, and frosting." },
+                  categories: { type: Type.STRING, description: "Comma-separated list of collection categories, e.g. 'Cakes, Custom Cakes, Birthday Cakes'" },
+                  flavors: { type: Type.STRING, description: "Comma-separated list of delicious flavor tags, e.g. 'Belgian Truffle, Dark Chocolate'" },
+                  occasions: { type: Type.STRING, description: "Comma-separated list of suitable occasions, e.g. 'Birthday, Anniversary, Party'" },
+                  seoTitle: { type: Type.STRING, description: "Optimized Google SEO search title tag (max 60 chars)." },
+                  slug: { type: Type.STRING, description: "URL slug, lowercase, hyphen-separated." },
+                  metaDescription: { type: Type.STRING, description: "Compelling Google meta search description snippet (max 160 chars) with a strong CTA." },
+                  keywords: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING },
+                    description: "Array of 10-15 high volume search terms."
+                  },
+                  instagramCaption: { type: Type.STRING, description: "Irresistible Instagram caption with hashtags for boutique social publishing." },
+                  pinterestPin: {
+                    type: Type.OBJECT,
+                    properties: {
+                      title: { type: Type.STRING },
+                      description: { type: Type.STRING }
+                    }
+                  }
+                },
+                required: ["productName", "price", "description", "categories", "flavors", "occasions"]
+              },
+              imagePrompt: { 
+                type: Type.STRING, 
+                description: "Exquisite visual description for Imagen-3 to render this cake design. Include cardboard base with 'Cake Urban' written on it. Populate this if user asks to see/generate the cake." 
+              }
+            },
+            required: ["text"]
+          }
+        }
+      });
+
+      const responseText = response.text;
+      if (!responseText) {
+        throw new Error("No response text emitted from Gemini chat model.");
+      }
+
+      res.json(safeParseChatJSON(responseText));
+    } catch (error) {
+      console.error("AI Discuss Cake Chat Error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Failed to generate chat response" });
+    }
+  });
+
   // Mock Payment Verification (Don't expose secrets)
   app.post("/api/payments/verify", (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -274,7 +620,7 @@ async function startServer() {
   });
 
   // ==========================================
-  // GEMINI IMAGEN IMAGE GENERATION SECURE PROXY
+  // GEMINI NANO BANANA IMAGE GENERATION SECURE PROXY
   // ==========================================
   app.post("/api/grok/generate-images", async (req, res) => {
     const { prompt } = req.body;
@@ -289,26 +635,76 @@ async function startServer() {
     const enhancedPrompt = `${prompt}. ${brandEnrichment}`;
 
     try {
-      console.log(`[GEMINI IMAGEN ENGINE] Request received. Attempting to generate 3 candidates for: "${prompt}"`);
-      
-      const response = await genAI.models.generateImages({
-        model: 'imagen-3.0-generate-002',
-        prompt: enhancedPrompt,
-        config: {
-          numberOfImages: 3,
-          outputMimeType: 'image/jpeg',
-          aspectRatio: '1:1',
-        },
+      console.log(`[GEMINI NANO BANANA ENGINE] Request received. Generating 3 candidates using 'gemini-3.1-flash-lite-image' for: "${prompt}"`);
+
+      // We will perform 3 parallel calls to generate 3 unique image candidates
+      const imagePromises = Array.from({ length: 3 }).map(async (_, index) => {
+        try {
+          const response = await genAI.models.generateContent({
+            model: 'gemini-3.1-flash-lite-image',
+            contents: {
+              parts: [
+                {
+                  text: enhancedPrompt,
+                },
+              ],
+            },
+            config: {
+              imageConfig: {
+                aspectRatio: "1:1",
+              },
+            },
+          });
+
+          if (response.candidates?.[0]?.content?.parts) {
+            for (const part of response.candidates[0].content.parts) {
+              if (part.inlineData) {
+                return `data:image/png;base64,${part.inlineData.data}`;
+              }
+            }
+          }
+          return null;
+        } catch (singleErr) {
+          console.warn(`[GEMINI LITE IMAGE ERR] Candidate ${index + 1} failed. Trying gemini-3.1-flash-image fallback...`, singleErr);
+          try {
+            // Secondary fallback to gemini-3.1-flash-image
+            const fallbackResponse = await genAI.models.generateContent({
+              model: 'gemini-3.1-flash-image',
+              contents: {
+                parts: [
+                  {
+                    text: enhancedPrompt,
+                  },
+                ],
+              },
+              config: {
+                imageConfig: {
+                  aspectRatio: "1:1",
+                },
+              },
+            });
+            if (fallbackResponse.candidates?.[0]?.content?.parts) {
+              for (const part of fallbackResponse.candidates[0].content.parts) {
+                if (part.inlineData) {
+                  return `data:image/png;base64,${part.inlineData.data}`;
+                }
+              }
+            }
+          } catch (doubleErr) {
+            console.error(`[GEMINI PRO IMAGE ERR] Candidate ${index + 1} also failed:`, doubleErr);
+          }
+          return null;
+        }
       });
 
-      const imageUrls = response.generatedImages?.map((img: any) => {
-        const base64EncodeString = img.image.imageBytes;
-        return `data:image/jpeg;base64,${base64EncodeString}`;
-      }) || [];
+      const results = await Promise.all(imagePromises);
+      const imageUrls = results.filter((url): url is string => url !== null);
 
-      // If of some reason we got fewer than 3 images, pad with highly realistic unsplash bakery fallbacks to keep the 3 Card candidates fully populated
+      console.log(`[GEMINI NANO BANANA ENGINE] Successfully generated ${imageUrls.length} live images.`);
+
+      // If for some reason we got fewer than 3 images, pad with highly realistic unsplash bakery fallbacks to keep the 3 Card candidates fully populated
       while (imageUrls.length < 3) {
-        console.log(`[GEMINI IMAGEN ENGINE] Padding missing slot ${imageUrls.length + 1} of 3 with premium curation placeholder.`);
+        console.log(`[GEMINI NANO BANANA ENGINE] Padding missing slot ${imageUrls.length + 1} of 3 with premium curation placeholder.`);
         const fallbacks = [
           "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
           "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=800",
@@ -319,9 +715,9 @@ async function startServer() {
 
       res.json({ success: true, images: imageUrls, enhancedPrompt });
     } catch (err: any) {
-      console.error("[GEMINI IMAGEN CRITICAL ERROR]:", err);
+      console.error("[GEMINI IMAGE CRITICAL ERROR]:", err);
       // Fallback response with beautiful curation placeholders so testing and play remains completely pristine if the credit or API rate limits on user key happens!
-      console.log("[GEMINI IMAGEN ENGINE] Emitting highly realistic fallback simulation for testing continuity.");
+      console.log("[GEMINI NANO BANANA ENGINE] Emitting highly realistic fallback simulation for testing continuity.");
       const mockImages = [
         "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
         "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=800",

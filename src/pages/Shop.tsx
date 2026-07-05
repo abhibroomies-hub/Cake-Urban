@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { Product } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import { Button } from '../components/ui/button';
@@ -31,6 +31,9 @@ import SEO from '../components/SEO';
 const collectionIcons: Record<string, React.ComponentType<any>> = {
   'All': Sparkles,
   'Cakes': Cake,
+  'Birthday Cakes': Cake,
+  'Anniversary Cakes': Cake,
+  'Themed Cakes': ChefHat,
   'Pastries': Cookie,
   'Cupcakes': Cookie,
   'Brownies': Cookie,
@@ -57,7 +60,34 @@ export default function Shop() {
   // Controls collapsible advanced filters drawer/panel on mobile/desktop
   const [isFiltersDrawerOpen, setIsFiltersDrawerOpen] = useState(false);
 
-  const categories = ['All', 'Cakes', 'Pastries', 'Cupcakes', 'Brownies', 'Desserts', 'Hampers', 'Custom Cakes', 'Breads'];
+  const [categories, setCategories] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('cakeurban_categories_order');
+      if (saved) {
+        return ['All', ...JSON.parse(saved)];
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return ['All', 'Cakes', 'Birthday Cakes', 'Anniversary Cakes', 'Themed Cakes', 'Pastries', 'Cupcakes', 'Brownies', 'Desserts', 'Hampers', 'Custom Cakes', 'Breads'];
+  });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const catDoc = await getDoc(doc(db, 'settings', 'categories_config'));
+        if (catDoc.exists() && catDoc.data().categories) {
+          const list = catDoc.data().categories;
+          setCategories(['All', ...list]);
+          localStorage.setItem('cakeurban_categories_order', JSON.stringify(list));
+        }
+      } catch (err) {
+        console.warn("Could not fetch categories config from Firestore in Shop", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const flavors = ['All', 'Chocolate', 'Vanilla', 'Red Velvet', 'Strawberry', 'Butterscotch', 'Blueberry', 'Mixed'];
   const occasions = ['All', 'Birthday', 'Anniversary', 'Wedding', 'Festival', 'Kids Special'];
   const sorts = ['Popularity', 'Price: Low to High', 'Price: High to Low', 'Newest'];

@@ -4,8 +4,8 @@ import { FALLBACK_PRODUCTS } from './fallbackProducts';
 
 export async function seedProducts() {
   const path = 'products';
-  // Upgrade to v5 to force database re-seeding with the premium unique images
-  if (localStorage.getItem('cakeurban_seeded_v5') === 'true') {
+  // Upgrade to v6 to force database re-seeding with the premium unique images in the newly created database
+  if (localStorage.getItem('cakeurban_seeded_v6') === 'true') {
     return;
   }
 
@@ -29,12 +29,12 @@ export async function seedProducts() {
     }
     
     console.log("Seeding complete! 50+ fresh products with images loaded successfully.");
-    localStorage.setItem('cakeurban_seeded_v5', 'true');
+    localStorage.setItem('cakeurban_seeded_v6', 'true');
   } catch (error: any) {
     if (error?.code === 'permission-denied') {
       console.warn("Seeding skipped: Missing Firestore write permission.");
       // Set to true so we do not spam attempts in unauthenticated contexts
-      localStorage.setItem('cakeurban_seeded_v5', 'true');
+      localStorage.setItem('cakeurban_seeded_v6', 'true');
     } else {
       console.error("Critical seeding failure:", error);
     }

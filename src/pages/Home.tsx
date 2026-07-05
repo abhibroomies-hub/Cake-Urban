@@ -1187,10 +1187,86 @@ export default function Home() {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="overflow-hidden pt-3 border-t border-white/5 text-left"
+                  className="overflow-hidden pt-4 border-t border-white/5 text-left space-y-6"
                 >
-                  <p className="text-[10px] text-white/70 leading-relaxed italic font-medium">
-                    We specialize in: <strong>Custom cakes in Faridabad</strong> · <strong>Bestseller Red Velvet Pastry</strong> · Edible Photo Cakes Noida · Same Day Birthday Cakes Gurgaon · Pure Eggless Bakery Delhi NCR · French Macarons delivery · Belgian Chocolate Truffles · Pinata Smash Cakes · Double-Decker Wedding Tier cakes.
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-[10px] sm:text-[11px] font-sans">
+                    {/* Faridabad Column */}
+                    <div className="space-y-2">
+                      <span className="font-black text-[#DFB15B] uppercase tracking-wider block text-[9px]">Faridabad Hubs</span>
+                      <div className="flex flex-col gap-1 text-zinc-300">
+                        <Link to="/cake-delivery-faridabad-sector-31" className="hover:text-[#DFB15B] hover:underline transition">Sector 31 (15km radius)</Link>
+                        <Link to="/cake-delivery-faridabad-sector-15" className="hover:text-[#DFB15B] hover:underline transition">Sector 15 Faridabad</Link>
+                        <Link to="/best-cake-in-greenfield-faridabad" className="hover:text-[#DFB15B] hover:underline transition font-bold text-[#DFB15B]">Greenfield Colony</Link>
+                        <Link to="/cake-delivery-faridabad-sector-14" className="hover:text-[#DFB15B] hover:underline transition">Sector 14 Bakery</Link>
+                        <Link to="/cake-delivery-faridabad-sector-16" className="hover:text-[#DFB15B] hover:underline transition">Sector 16 Delivery</Link>
+                        <Link to="/cake-delivery-faridabad-sector-21" className="hover:text-[#DFB15B] hover:underline transition">Sector 21 Enclave</Link>
+                        <Link to="/cake-delivery-faridabad-sector-37" className="hover:text-[#DFB15B] hover:underline transition">Sector 37 Surprises</Link>
+                        <Link to="/cake-delivery-faridabad-sector-85" className="hover:text-[#DFB15B] hover:underline transition">Sector 85 Greater Fbd</Link>
+                        <Link to="/cake-delivery-faridabad-neharpar" className="hover:text-[#DFB15B] hover:underline transition">Neharpar Sector Hub</Link>
+                      </div>
+                    </div>
+
+                    {/* Noida Column */}
+                    <div className="space-y-2">
+                      <span className="font-black text-[#DFB15B] uppercase tracking-wider block text-[9px]">Noida Sectors</span>
+                      <div className="flex flex-col gap-1 text-zinc-300">
+                        <Link to="/cake-delivery-noida-sector-62" className="hover:text-[#DFB15B] hover:underline transition">Sector 62 IT Enclave</Link>
+                        <Link to="/cake-delivery-noida-sector-18" className="hover:text-[#DFB15B] hover:underline transition">Sector 18 Market</Link>
+                        <Link to="/cake-delivery-noida-sector-15" className="hover:text-[#DFB15B] hover:underline transition">Sector 15 Noida</Link>
+                        <Link to="/cake-delivery-noida-sector-50" className="hover:text-[#DFB15B] hover:underline transition">Sector 50 Residential</Link>
+                        <Link to="/cake-delivery-noida-sector-137" className="hover:text-[#DFB15B] hover:underline transition">Sector 137 High-rises</Link>
+                        <Link to="/cake-delivery-noida-sector-150" className="hover:text-[#DFB15B] hover:underline transition">Sector 150 Luxury</Link>
+                        <Link to="/cake-delivery-noida-extension" className="hover:text-[#DFB15B] hover:underline transition font-bold text-[#DFB15B]">Noida Extension</Link>
+                      </div>
+                    </div>
+
+                    {/* Gurgaon Column */}
+                    <div className="space-y-2">
+                      <span className="font-black text-[#DFB15B] uppercase tracking-wider block text-[9px]">Gurgaon Enclaves</span>
+                      <div className="flex flex-col gap-1 text-zinc-300">
+                        <Link to="/cake-delivery-gurgaon-dlf" className="hover:text-[#DFB15B] hover:underline transition">DLF Phase 1-5 Enclaves</Link>
+                        <Link to="/cake-delivery-gurgaon-golf-course-road" className="hover:text-[#DFB15B] hover:underline transition">Golf Course Road</Link>
+                        <Link to="/cake-delivery-gurgaon-golf-course-ext" className="hover:text-[#DFB15B] hover:underline transition">Golf Course Ext Road</Link>
+                        <Link to="/cake-delivery-gurgaon-sohna-road" className="hover:text-[#DFB15B] hover:underline transition">Sohna Road Hub</Link>
+                        <Link to="/cake-delivery-gurgaon-cyber-city" className="hover:text-[#DFB15B] hover:underline transition">Cyber City Corporates</Link>
+                        <Link to="/cake-delivery-gurgaon-sushant-lok" className="hover:text-[#DFB15B] hover:underline transition">Sushant Lok Premium</Link>
+                      </div>
+                    </div>
+
+                    {/* Delhi Column */}
+                    <div className="space-y-2">
+                      <span className="font-black text-[#DFB15B] uppercase tracking-wider block text-[9px]">Delhi Neighborhoods</span>
+                      <div className="flex flex-col gap-1 text-zinc-300">
+                        <Link to="/cake-delivery-delhi-dwarka" className="hover:text-[#DFB15B] hover:underline transition">Dwarka Sectors</Link>
+                        <Link to="/cake-delivery-delhi-south-delhi" className="hover:text-[#DFB15B] hover:underline transition font-bold text-[#DFB15B]">South Delhi Boutique</Link>
+                        <Link to="/cake-delivery-delhi-saket" className="hover:text-[#DFB15B] hover:underline transition">Saket & Enclaves</Link>
+                        <Link to="/cake-delivery-delhi-greater-kailash" className="hover:text-[#DFB15B] hover:underline transition">Greater Kailash I & II</Link>
+                        <Link to="/cake-delivery-delhi-janakpuri" className="hover:text-[#DFB15B] hover:underline transition">Janakpuri West Delhi</Link>
+                        <Link to="/cake-delivery-delhi-punjabi-bagh" className="hover:text-[#DFB15B] hover:underline transition">Punjabi Bagh Club Road</Link>
+                        <Link to="/cake-delivery-delhi-rohini" className="hover:text-[#DFB15B] hover:underline transition">Rohini North Delhi</Link>
+                        <Link to="/cake-delivery-delhi-pitampura" className="hover:text-[#DFB15B] hover:underline transition">Pitampura & Enclaves</Link>
+                      </div>
+                    </div>
+
+                    {/* Specialty Bakes Column */}
+                    <div className="space-y-2">
+                      <span className="font-black text-[#DFB15B] uppercase tracking-wider block text-[9px]">Specialty Bakes</span>
+                      <div className="flex flex-col gap-1 text-zinc-300">
+                        <Link to="/belgian-chocolate-truffle-cake" className="hover:text-[#DFB15B] hover:underline transition">Belgian Truffle Cake</Link>
+                        <Link to="/lotus-biscoff-cake" className="hover:text-[#DFB15B] hover:underline transition">Lotus Biscoff Cake</Link>
+                        <Link to="/chocolate-hazelnut-cake" className="hover:text-[#DFB15B] hover:underline transition">Hazelnut Crunch Cake</Link>
+                        <Link to="/eggless-red-velvet-cake" className="hover:text-[#DFB15B] hover:underline transition">Red Velvet Cake</Link>
+                        <Link to="/pinata-cake-with-hammer" className="hover:text-[#DFB15B] hover:underline transition font-bold text-[#DFB15B]">Pinata Cake & Hammer</Link>
+                        <Link to="/bento-cake-delivery" className="hover:text-[#DFB15B] hover:underline transition">Lunchbox Bento Cakes</Link>
+                        <Link to="/edible-photo-print-cake" className="hover:text-[#DFB15B] hover:underline transition">High-Res Photo Cakes</Link>
+                        <Link to="/pull-me-up-cake" className="hover:text-[#DFB15B] hover:underline transition">Pull Me Up Cascades</Link>
+                        <Link to="/sugar-free-healthy-cake" className="hover:text-[#DFB15B] hover:underline transition">Sugar Free Diabetic Cakes</Link>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] text-zinc-400 leading-relaxed font-semibold italic text-center pt-3 border-t border-white/5">
+                    All listed micro-landing portals map automatically to our <strong>100% certified eggless baking lines</strong>. Handcrafted using high-cocoa-butter chocolate and pasture dairy cream. Immediate priority shipping or midnight announcements dispatched daily.
                   </p>
                 </motion.div>
               )}

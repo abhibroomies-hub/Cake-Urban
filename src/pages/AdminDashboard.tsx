@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../lib/firebase';
 import { 
-  collection, getDocs, updateDoc, doc, query, orderBy, addDoc, deleteDoc, setDoc 
+  collection, getDocs, updateDoc, doc, query, orderBy, addDoc, deleteDoc, setDoc, getDoc 
 } from 'firebase/firestore';
 import { Order, Product, Review } from '../types';
 import { useAuth } from '../hooks/useAuth';
@@ -16,8 +16,8 @@ import {
   Search, Tag, Copy, Check, Instagram, Share2, FileText, 
   CheckCircle2, AlertCircle, ArrowLeft, Check as CheckIcon, Loader2,
   Trash2, Star, Eye, Calendar, User, Mail, Plus, ToggleLeft, ToggleRight,
-  Sparkle, Award, MessageSquare, Coffee, Trash, Phone, Palette,
-  Play, Pause, SkipForward
+  Sparkle, Award, MessageSquare, Coffee, Trash, Phone, Palette, Settings,
+  Play, Pause, SkipForward, Send
 } from 'lucide-react';
 import { ScrollArea } from '../components/ui/scroll-area';
 import { toast } from 'sonner';
@@ -340,6 +340,21 @@ export default function AdminDashboard() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Custom Category & Bulk Action States
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [categoriesList, setCategoriesList] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('cakeurban_categories_order');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error("Local storage categories parse error:", e);
+    }
+    return ['Cakes', 'Birthday Cakes', 'Anniversary Cakes', 'Themed Cakes', 'Pastries', 'Cupcakes', 'Brownies', 'Desserts', 'Hampers', 'Custom Cakes'];
+  });
+
   // Add Product form states
   const [activeTab, setActiveTab] = useState<string>('insights');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -433,6 +448,229 @@ export default function AdminDashboard() {
   const [editProdPinterestTitle, setEditProdPinterestTitle] = useState('');
   const [editProdPinterestDesc, setEditProdPinterestDesc] = useState('');
 
+  // GEMINI CO-CURATOR CHATBOT SYSTEM STATES
+  const [chatMessages, setChatMessages] = useState<Array<{
+    role: 'user' | 'assistant',
+    content: string,
+    finalizedCake?: any,
+    imagePrompt?: string,
+    generatedImages?: string[]
+  }>>([
+    {
+      role: 'assistant',
+      content: "Namaste Curator! Main hoon aapka Gemini Confection Chat Architect. 🎂\n\nYahan hum milkar nayi premium cakes discuss aur design kar sakte hain. Aap apni idea likhiye—jaise 'Chocolate drip cake with gold brushstrokes and fresh berries'—aur main uske detailed specifications, pricing, SEO details auto-generate karunga. Aap simple click se details ko form me auto-fill kar sakte hain, image generate kar sakte hain, ya direct publish bhi kar sakte hain! Let's build something delicious."
+    }
+  ]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatSending, setIsChatSending] = useState(false);
+  const [isChatGeneratingImages, setIsChatGeneratingImages] = useState<number | null>(null);
+
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto scroll chat box to bottom
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  const handleSendChatMessage = async () => {
+    if (!chatInput.trim() || isChatSending) return;
+
+    const userMsg = chatInput.trim();
+    setChatInput('');
+    
+    // 1. Add user message to history
+    const updatedMessages = [...chatMessages, { role: 'user' as const, content: userMsg }];
+    setChatMessages(updatedMessages);
+    setIsChatSending(true);
+
+    try {
+      // 2. Map chatMessages to server required structure (keeping only role and content)
+      const simplifiedHistory = updatedMessages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      // 3. Post to our new endpoint
+      const response = await fetch('/api/chat/discuss-cake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: simplifiedHistory })
+      });
+
+      if (!response.ok) {
+        throw new Error("Chat assistant proxy returned an error");
+      }
+
+      const data = await response.json();
+      
+      // 4. Add assistant response
+      setChatMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: data.text,
+          finalizedCake: data.finalizedCake || undefined,
+          imagePrompt: data.imagePrompt || undefined,
+          generatedImages: []
+        }
+      ]);
+    } catch (error: any) {
+      console.error("Chat assistant error:", error);
+      toast.error("Bhai, chat failed! Ensure your backend is running properly.");
+      setChatMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: "Oops! Technical error came while contacting Gemini. Please try again in some time."
+        }
+      ]);
+    } finally {
+      setIsChatSending(false);
+    }
+  };
+
+  const handleChatGenerateImages = async (msgIndex: number, imagePrompt: string) => {
+    setIsChatGeneratingImages(msgIndex);
+    toast.loading("🎨 Gemini is drawing luxury cake concepts...", { id: "chat-image-gen" });
+    
+    try {
+      const response = await fetch('/api/grok/generate-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: imagePrompt })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate image candidates");
+      }
+
+      const data = await response.json();
+      
+      // Update chat message with generated images
+      setChatMessages(prev => {
+        const copy = [...prev];
+        if (copy[msgIndex]) {
+          copy[msgIndex].generatedImages = data.images;
+        }
+        return copy;
+      });
+
+      toast.success("✨ Crafted 3 stunning AI product concepts!", { id: "chat-image-gen" });
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Image generation failed: " + err.message, { id: "chat-image-gen" });
+    } finally {
+      setIsChatGeneratingImages(null);
+    }
+  };
+
+  const populateFormFromSpecs = (specs: any) => {
+    if (!specs) return;
+    setProdName(specs.productName || specs.name || '');
+    setProdPrice(specs.price ? specs.price.toString() : '1499');
+    setProdDescription(specs.description || '');
+    
+    if (specs.categories) {
+      const catsStr = typeof specs.categories === 'string' 
+        ? specs.categories 
+        : Array.isArray(specs.categories) ? specs.categories.join(', ') : '';
+      const firstCat = catsStr.split(',')[0]?.trim() || 'Cakes';
+      setSelectedCategory(firstCat);
+      const remaining = catsStr.split(',').slice(1).map((c: string) => c.trim()).filter(Boolean).join(', ');
+      setProdCategories(remaining || 'Custom Cakes');
+    }
+
+    const flavorsStr = typeof specs.flavors === 'string'
+      ? specs.flavors
+      : Array.isArray(specs.flavors) ? specs.flavors.join(', ') : 'Belgian Chocolate';
+    setProdFlavors(flavorsStr);
+
+    const occasionsStr = typeof specs.occasions === 'string'
+      ? specs.occasions
+      : Array.isArray(specs.occasions) ? specs.occasions.join(', ') : 'Anniversary, Birthday';
+    setProdOccasions(occasionsStr);
+
+    setProdSeoTitle(specs.seoTitle || '');
+    setProdSeoSlug(specs.slug || '');
+    setProdSeoMetaDescription(specs.metaDescription || '');
+    setProdSeoKeywords(specs.keywords || []);
+    setProdSeoSchema(specs.structuredSchema || '');
+    setProdInstagram(specs.instagramCaption || '');
+    setProdPinterestTitle(specs.pinterestPin?.title || '');
+    setProdPinterestDesc(specs.pinterestPin?.description || '');
+    
+    toast.success("📥 Form fields populated from chat specifications successfully!");
+  };
+
+  const handleDirectPublishFromChat = async (specs: any, imgUrl: string) => {
+    if (!specs || !imgUrl) {
+      toast.error("Bhai, pehle specs aur image dono ready hona chahiye publish karne ke liye!");
+      return;
+    }
+    
+    toast.loading("🚀 Publishing cake live to boutique Catalog...", { id: "direct-publish" });
+    try {
+      const finalPrice = parseFloat(specs.price || '1499');
+      
+      // Process categories split
+      const catsStr = typeof specs.categories === 'string' ? specs.categories : Array.isArray(specs.categories) ? specs.categories.join(', ') : '';
+      const firstCat = catsStr.split(',')[0]?.trim() || 'Cakes';
+      const remainingCats = catsStr.split(',').slice(1).map((c: any) => c.trim()).filter((c: any) => c && c !== firstCat);
+      const mergedCategories = [firstCat, ...remainingCats];
+
+      const flavorsArray = typeof specs.flavors === 'string'
+        ? specs.flavors.split(',').map((f: any) => f.trim()).filter(Boolean)
+        : Array.isArray(specs.flavors) ? specs.flavors : ['Belgian Chocolate'];
+
+      const occasionsArray = typeof specs.occasions === 'string'
+        ? specs.occasions.split(',').map((o: any) => o.trim()).filter(Boolean)
+        : Array.isArray(specs.occasions) ? specs.occasions : ['Birthday', 'Anniversary'];
+
+      const prodNameVal = specs.productName || specs.name || 'Gourmet Custom Creation';
+      const descVal = specs.description || 'Bespoke custom cake generated with Gemini AI.';
+
+      await addDoc(collection(db, 'products'), {
+        name: prodNameVal,
+        description: descVal,
+        price: finalPrice,
+        categories: mergedCategories,
+        flavors: flavorsArray,
+        occasions: occasionsArray,
+        images: [imgUrl],
+        stockStatus: 'in-stock',
+        isCustomizable: true,
+        weights: [0.5, 1, 2],
+        dietary: ['Eggless'],
+        seoTitle: specs.seoTitle || `${prodNameVal} - Cake Urban`,
+        seoSlug: specs.slug || prodNameVal.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        seoKeywords: specs.keywords && specs.keywords.length ? specs.keywords : [prodNameVal.toLowerCase()],
+        seoMetaDescription: specs.metaDescription || descVal,
+        seoSchema: specs.structuredSchema || '',
+        instagramCaption: specs.instagramCaption || '',
+        pinterestPin: {
+          title: specs.pinterestPin?.title || prodNameVal,
+          description: specs.pinterestPin?.description || descVal
+        },
+        createdAt: new Date().toISOString()
+      });
+
+      toast.success(`🎉 '${prodNameVal}' has been successfully Approved & Published live in your shop collection!`, { id: "direct-publish" });
+      
+      // Reset chatbot image states or form states if desired
+      setPastedImageUrl('');
+      setNewProductImage(null);
+      
+      // Refresh catalog
+      await fetchAllData();
+      
+      // Relocate to inventory tab
+      setActiveTab('products');
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to publish from chat: " + error.message, { id: "direct-publish" });
+    }
+  };
+
   // Reusable inline dialog confirm state for iframe safety
   const [confirmAction, setConfirmAction] = useState<{
     message: string;
@@ -489,7 +727,7 @@ export default function AdminDashboard() {
       }
       setCustomInquiries(customList);
 
-      // 4. Fetch Reviews with safe fallback
+          // 4. Fetch Reviews with safe fallback
       let reviewsList: Review[] = [];
       try {
         const reviewsSnap = await getDocs(collection(db, 'reviews'));
@@ -501,6 +739,18 @@ export default function AdminDashboard() {
         reviewsList = MOCK_REVIEWS;
       }
       setReviews(reviewsList);
+
+      // 5. Fetch Custom Categories config
+      try {
+        const catDoc = await getDoc(doc(db, 'settings', 'categories_config'));
+        if (catDoc.exists() && catDoc.data().categories) {
+          const list = catDoc.data().categories;
+          setCategoriesList(list);
+          localStorage.setItem('cakeurban_categories_order', JSON.stringify(list));
+        }
+      } catch (err) {
+        console.warn("Failed to fetch custom categories order", err);
+      }
 
     } catch (globalErr) {
       console.error("Critical error in secondary data fetch dispatcher", globalErr);
@@ -745,6 +995,103 @@ export default function AdminDashboard() {
           toast.success("Culinary creation archived and removed from local catalog.");
         } catch (error) {
           handleFirestoreError(error, OperationType.DELETE, path);
+        }
+      }
+    });
+  };
+
+  // Save Category list to Firestore & local storage
+  const saveCategoriesList = async (newList: string[]) => {
+    setCategoriesList(newList);
+    localStorage.setItem('cakeurban_categories_order', JSON.stringify(newList));
+    try {
+      await setDoc(doc(db, 'settings', 'categories_config'), { categories: newList }, { merge: true });
+      toast.success("Category sequence synchronized successfully!");
+    } catch (err) {
+      console.warn("Could not save categories config to Firestore", err);
+    }
+  };
+
+  // Move Category with Up / Down buttons
+  const handleMoveCategory = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === categoriesList.length - 1) return;
+
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    const updatedList = [...categoriesList];
+    const temp = updatedList[index];
+    updatedList[index] = updatedList[targetIndex];
+    updatedList[targetIndex] = temp;
+
+    saveCategoriesList(updatedList);
+  };
+
+  // Move Category with Dropdown position select (which category at which position number)
+  const handleReorderCategorySelect = (currentIndex: number, newPositionStr: string) => {
+    const targetIndex = parseInt(newPositionStr, 10);
+    if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= categoriesList.length) return;
+    if (currentIndex === targetIndex) return;
+
+    const updatedList = [...categoriesList];
+    const item = updatedList.splice(currentIndex, 1)[0];
+    updatedList.splice(targetIndex, 0, item);
+
+    saveCategoriesList(updatedList);
+  };
+
+  // Add custom category
+  const handleAddCategory = () => {
+    const trimmed = newCategoryName.trim();
+    if (!trimmed) {
+      toast.error("Please enter a category name first.");
+      return;
+    }
+    if (categoriesList.includes(trimmed)) {
+      toast.error("This category already exists.");
+      return;
+    }
+    const updated = [...categoriesList, trimmed];
+    setNewCategoryName('');
+    saveCategoriesList(updated);
+    toast.success(`Category "${trimmed}" successfully added!`);
+  };
+
+  // Remove category option
+  const handleRemoveCategory = (catName: string) => {
+    setConfirmAction({
+      message: `Are you sure you want to remove "${catName}" category? Products belonging to this category will not be deleted, but they won't have this preset selected.`,
+      onConfirm: async () => {
+        const updated = categoriesList.filter(c => c !== catName);
+        saveCategoriesList(updated);
+        toast.success(`Category "${catName}" removed.`);
+      }
+    });
+  };
+
+  // Bulk deletion
+  const handleBulkDelete = () => {
+    if (selectedProductIds.length === 0) {
+      toast.error("Please select at least one confection to delete.");
+      return;
+    }
+    setConfirmAction({
+      message: `Are you absolutely sure you want to delete all ${selectedProductIds.length} selected confections from the boutique? This action is irreversible.`,
+      onConfirm: async () => {
+        toast.loading(`Bulk deleting ${selectedProductIds.length} confections...`, { id: "bulk-delete-load" });
+        try {
+          for (const prodId of selectedProductIds) {
+            try {
+              await deleteDoc(doc(db, 'products', prodId));
+            } catch (firestoreError) {
+              console.warn(`Could not delete product ${prodId} in Firestore, removing from local state:`, firestoreError);
+            }
+          }
+          setProducts(products.filter(p => !selectedProductIds.includes(p.id)));
+          setSelectedProductIds([]);
+          toast.success("Successfully deleted confections in bulk.", { id: "bulk-delete-load" });
+        } catch (error) {
+          console.error("Bulk delete error:", error);
+          toast.error("An error occurred during bulk deletion.", { id: "bulk-delete-load" });
         }
       }
     });
@@ -2289,22 +2636,17 @@ export default function AdminDashboard() {
                 {/* Primary Category Selector */}
                 <div className="space-y-2.5 mb-6">
                   <label className="text-[10px] uppercase font-black tracking-widest text-white/50 block">Primary Boutique Category *</label>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {['Cakes', 'Pastries', 'Cupcakes', 'Brownies', 'Desserts', 'Hampers', 'Custom Cakes'].map(category => (
-                      <button
-                        type="button"
-                        key={category}
-                        onClick={() => setEditSelectedCategory(category)}
-                        className={`text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border transition-all duration-300 cursor-pointer ${
-                          editSelectedCategory === category 
-                            ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B] shadow-lg shadow-[#DFB15B]/10 scale-105'
-                            : 'bg-[#140603]/80 border-white/10 text-white/50 hover:bg-[#140603] hover:text-white'
-                        }`}
-                      >
+                  <select
+                    value={editSelectedCategory}
+                    onChange={e => setEditSelectedCategory(e.target.value)}
+                    className="h-14 w-full rounded-xl bg-[#140603]/80 border border-[#DFB15B]/15 px-4 text-xs font-bold text-white focus:border-[#DFB15B]/40 focus:ring-1 focus:ring-[#DFB15B]/40 cursor-pointer"
+                  >
+                    {categoriesList.map(category => (
+                      <option key={category} value={category} className="bg-[#140603] text-white">
                         {category}
-                      </button>
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
                 {/* Cake Type Selector */}
@@ -2695,10 +3037,184 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -35 }}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-10"
+            className="grid grid-cols-1 xl:grid-cols-12 gap-8"
           >
-            {/* LEFT COLUMN: PRIMARY INPUT FIELDS FOR VELOCITY ACTIONS */}
-            <div className="lg:col-span-5 space-y-8 text-left">
+            {/* COLUMN 1: INTERACTIVE GEMINI CHATBOT (xl:col-span-4 col-span-12) */}
+            <div className="xl:col-span-4 col-span-12 space-y-6 text-left">
+              <div className="bg-[#26130F]/45 backdrop-blur-md border border-[#DFB15B]/15 rounded-[36px] p-6 shadow-xl flex flex-col h-[700px] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#DFB15B]/5 rounded-full blur-2xl -z-10" />
+                
+                {/* Chat Header */}
+                <div className="flex items-center gap-3 border-b border-white/10 pb-4 mb-4">
+                  <div className="p-2.5 bg-[#DFB15B]/15 text-[#DFB15B] rounded-xl border border-[#DFB15B]/25">
+                    <Sparkles className="w-5 h-5 animate-pulse text-[#DFB15B]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-widest text-[#DFB15B] leading-none mb-1">
+                      Gemini Co-Curator v2.5
+                    </h3>
+                    <p className="text-[10px] text-white/50 font-medium italic leading-none">
+                      Bhai, discuss details & auto-add cakes!
+                    </p>
+                  </div>
+                </div>
+
+                {/* Chat Messages */}
+                <div className="flex-1 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-[#DFB15B]/10 scrollbar-track-transparent">
+                  {chatMessages.map((msg, idx) => {
+                    const isAssistant = msg.role === 'assistant';
+                    return (
+                      <div key={idx} className="space-y-3">
+                        <div className={`flex ${isAssistant ? 'justify-start' : 'justify-end'}`}>
+                          <div className={`p-4 rounded-[22px] text-xs leading-relaxed max-w-[85%] ${
+                            isAssistant 
+                              ? 'bg-[#140603]/85 border border-white/5 text-white/90 rounded-tl-none text-left' 
+                              : 'bg-[#DFB15B]/10 border border-[#DFB15B]/25 text-white rounded-tr-none text-left'
+                          }`}>
+                            <p className="whitespace-pre-line font-medium text-[11px]">{msg.content}</p>
+                          </div>
+                        </div>
+
+                        {/* ATTACHMENT CARD FOR FINALIZED SPECS */}
+                        {isAssistant && msg.finalizedCake && (
+                          <div className="bg-[#140603]/90 border border-[#DFB15B]/20 rounded-2xl p-4 space-y-3 max-w-[90%] text-left animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <div className="flex items-center gap-2 border-b border-[#DFB15B]/15 pb-2">
+                              <Award className="w-4 h-4 text-[#DFB15B]" />
+                              <span className="text-[10px] uppercase tracking-widest font-black text-[#DFB15B]">Proposed Cake Specs</span>
+                            </div>
+                            <div className="space-y-1.5 font-sans text-[11px] text-white/70">
+                              <p><strong className="text-white/90">Name:</strong> {msg.finalizedCake.productName}</p>
+                              <p><strong className="text-white/90">Price:</strong> ₹{msg.finalizedCake.price}</p>
+                              <p><strong className="text-white/90">Flavors:</strong> {msg.finalizedCake.flavors}</p>
+                              <p><strong className="text-white/90">Categories:</strong> {msg.finalizedCake.categories}</p>
+                            </div>
+                            <div className="flex gap-2 pt-1.5">
+                              <Button
+                                type="button"
+                                onClick={() => populateFormFromSpecs(msg.finalizedCake)}
+                                className="h-9 px-3 rounded-lg bg-[#DFB15B]/10 hover:bg-[#DFB15B] text-[#DFB15B] hover:text-[#140603] border border-[#DFB15B]/20 text-[9px] font-black uppercase tracking-wider transition-all"
+                              >
+                                📥 Auto-Fill Form
+                              </Button>
+                              <Button
+                                type="button"
+                                onClick={() => {
+                                  const activeImg = imageUrlMode === 'url' ? pastedImageUrl : newProductImage;
+                                  if (!activeImg) {
+                                    toast.error("Bhai, pehle image generate kijiye ya form me select kijiye!");
+                                  } else {
+                                    handleDirectPublishFromChat(msg.finalizedCake, activeImg);
+                                  }
+                                }}
+                                className="h-9 px-3 rounded-lg bg-[#DFB15B] hover:bg-white text-[#140603] text-[9px] font-black uppercase tracking-wider transition-all"
+                              >
+                                🚀 Publish Live
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* ATTACHMENT CARD FOR IMAGE GENERATION */}
+                        {isAssistant && msg.imagePrompt && (
+                          <div className="bg-[#140603]/90 border border-white/5 rounded-2xl p-4 space-y-3 max-w-[90%] text-left animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                              <Sparkles className="w-4 h-4 text-[#DFB15B]" />
+                              <span className="text-[10px] uppercase tracking-widest font-black text-[#DFB15B]">Visual Concept Prompt</span>
+                            </div>
+                            <p className="text-[10px] text-white/60 italic leading-relaxed">{msg.imagePrompt}</p>
+                            
+                            {!msg.generatedImages || msg.generatedImages.length === 0 ? (
+                              <Button
+                                type="button"
+                                onClick={() => handleChatGenerateImages(idx, msg.imagePrompt || '')}
+                                disabled={isChatGeneratingImages !== null}
+                                className="w-full h-10 rounded-xl bg-[#DFB15B] hover:bg-white text-[#140603] text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all"
+                              >
+                                {isChatGeneratingImages === idx ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 animate-spin text-[#140603]" />
+                                    <span className="text-[#140603]">Rendering visuals...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Sparkles className="w-4 h-4 text-[#140603]" />
+                                    <span>Paint Concept with Imagen</span>
+                                  </>
+                                )}
+                              </Button>
+                            ) : (
+                              <div className="space-y-3">
+                                <p className="text-[9px] uppercase tracking-widest text-emerald-500 font-bold flex items-center gap-1">
+                                  <CheckIcon className="w-3.5 h-3.5 text-emerald-500" /> Concept Render Complete!
+                                </p>
+                                <div className="grid grid-cols-3 gap-2">
+                                  {msg.generatedImages.map((img, iIndex) => {
+                                    const isSelected = pastedImageUrl === img && imageUrlMode === 'url';
+                                    return (
+                                      <div 
+                                        key={iIndex} 
+                                        onClick={() => {
+                                          setPastedImageUrl(img);
+                                          setImageUrlMode('url');
+                                          toast.success("🎯 Concept image active in boutique configuration!");
+                                        }}
+                                        className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
+                                          isSelected ? 'border-[#DFB15B] scale-105 shadow-lg' : 'border-transparent hover:border-white/25'
+                                        }`}
+                                      >
+                                        <img src={img} alt="AI Concept render" className="w-full h-full object-cover" />
+                                        {isSelected && (
+                                          <div className="absolute inset-0 bg-[#DFB15B]/15 flex items-center justify-center">
+                                            <div className="p-1 bg-[#140603] rounded-full border border-[#DFB15B]/30">
+                                              <CheckIcon className="w-3 h-3 text-[#DFB15B] font-bold" />
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                <p className="text-[9px] text-white/40 italic leading-none text-center">Click a concept thumbnail to load it in the editor.</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  <div ref={chatEndRef} />
+                </div>
+
+                {/* Chat Input */}
+                <div className="mt-4 pt-4 border-t border-white/10 flex gap-2">
+                  <Input
+                    placeholder="Describe cake idea or talk to Gemini..."
+                    value={chatInput}
+                    onChange={e => setChatInput(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleSendChatMessage();
+                    }}
+                    disabled={isChatSending}
+                    className="h-12 rounded-xl bg-[#140603]/80 border border-white/10 px-4 text-xs font-bold placeholder-white/20 text-white focus:border-[#DFB15B]/30 focus:ring-1 focus:ring-[#DFB15B]/30"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleSendChatMessage}
+                    disabled={isChatSending || !chatInput.trim()}
+                    className="h-12 w-12 rounded-xl bg-[#DFB15B] hover:bg-white text-[#140603] flex items-center justify-center transition-all shrink-0"
+                  >
+                    {isChatSending ? (
+                      <Loader2 className="w-5 h-5 animate-spin text-[#140603]" />
+                    ) : (
+                      <Send className="w-4 h-4 text-[#140603]" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* COLUMN 2: CULINARY BASIC VALUES & IMAGE (xl:col-span-4 lg:col-span-6 col-span-12) */}
+            <div className="xl:col-span-4 lg:col-span-6 col-span-12 space-y-8 text-left">
               
               {/* CORE FIELDS: NAME, CATEGORY, TYPE, AVAILABLE WEIGHTS */}
               <div className="bg-[#26130F]/45 backdrop-blur-md border border-[#DFB15B]/15 rounded-[36px] p-8 shadow-xl relative overflow-hidden">
@@ -2723,22 +3239,17 @@ export default function AdminDashboard() {
                 {/* Categories Selection */}
                 <div className="space-y-2.5 mb-6">
                   <label className="text-[10px] uppercase font-black tracking-widest text-[#FFFDFB]/60 block">Select Category *</label>
-                  <div className="flex flex-wrap gap-2">
-                    {['Cakes', 'Pastries', 'Cupcakes', 'Brownies', 'Desserts', 'Hampers', 'Custom Cakes'].map(category => (
-                      <button
-                        type="button"
-                        key={category}
-                        onClick={() => setSelectedCategory(category)}
-                        className={`text-[10px] font-black uppercase tracking-wider px-3.5 py-2.5 rounded-xl border transition-all duration-300 cursor-pointer ${
-                          selectedCategory === category 
-                            ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B] shadow-lg shadow-[#DFB15B]/10 scale-105 font-extrabold'
-                            : 'bg-[#140603]/80 border-white/10 text-white/50 hover:bg-[#140603] hover:text-white'
-                        }`}
-                      >
+                  <select
+                    value={selectedCategory}
+                    onChange={e => setSelectedCategory(e.target.value)}
+                    className="h-14 w-full rounded-xl bg-[#140603]/80 border border-[#DFB15B]/15 px-4 text-xs font-bold text-white focus:border-[#DFB15B]/40 focus:ring-1 focus:ring-[#DFB15B]/40 cursor-pointer"
+                  >
+                    {categoriesList.map(category => (
+                      <option key={category} value={category} className="bg-[#140603] text-white">
                         {category}
-                      </button>
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
                 {/* Cake Type Selector */}
@@ -2904,8 +3415,8 @@ export default function AdminDashboard() {
 
             </div>
 
-            {/* RIGHT COLUMN: CORE SEC SPECIFICATIONS FORM */}
-            <div className="lg:col-span-7">
+            {/* COLUMN 3: CORE SEC SPECIFICATIONS FORM (xl:col-span-4 lg:col-span-6 col-span-12) */}
+            <div className="xl:col-span-4 lg:col-span-6 col-span-12">
               <div className="bg-[#26130F]/45 backdrop-blur-md border border-[#DFB15B]/15 rounded-[44px] p-8 md:p-11 shadow-xl text-left space-y-8">
                 
                 {/* AI MAGIC SINGLE CLICK BULK CONFIGURATION */}
@@ -3555,18 +4066,155 @@ export default function AdminDashboard() {
               {/* 🧁 TAB 4: BOUTIQUE CATALOG GALLERY INVENTORY */}
               {activeTab === 'products' && (
                 <div className="mt-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {products.length === 0 ? (
-                    <div className="col-span-full py-24 text-center space-y-4 bg-[#26130F]/45 rounded-3xl border border-[#DFB15B]/15">
-                      <Package className="w-12 h-12 text-[#DFB15B]/20 mx-auto" />
-                      <p className="text-xs text-[#FFFDFB]/60 font-semibold italic">No active confections in catalog.</p>
+                  {/* Category Sequence Reordering Studio & Bulk Actions Manager */}
+                  <div className="flex flex-col gap-6 mb-8 p-6 bg-[#26130F]/45 rounded-[32px] border border-[#DFB15B]/15 text-white/90 text-left">
+                    {/* Section 1: Dynamic Category Manager & Reordering */}
+                    <div className="space-y-4">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                          <h3 className="font-serif font-black text-white text-lg tracking-tight italic flex items-center gap-2">
+                            <Settings className="w-5 h-5 text-[#DFB15B]" /> Category Reordering & Sequence Studio
+                          </h3>
+                          <p className="text-[10px] text-white/50">
+                            Rearrange and control how your boutique collections appear in the shop. Select a position number or use the arrow buttons.
+                          </p>
+                        </div>
+                        {/* Add custom category */}
+                        <div className="flex gap-2 w-full md:w-auto max-w-md shrink-0">
+                          <Input 
+                            placeholder="Add Category (e.g. Birthday Cakes)"
+                            value={newCategoryName}
+                            onChange={e => setNewCategoryName(e.target.value)}
+                            className="h-10 bg-[#140603]/80 border-white/10 text-xs text-white rounded-xl focus:border-[#DFB15B]/40"
+                          />
+                          <Button 
+                            onClick={handleAddCategory}
+                            className="bg-[#DFB15B] hover:bg-white text-[#140603] text-xs font-black uppercase px-4 h-10 rounded-xl cursor-pointer font-bold shrink-0 transition"
+                          >
+                            Add
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Categories reorder grid list */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pt-2">
+                        {categoriesList.map((cat, idx) => (
+                          <div key={cat} className="flex items-center justify-between p-3 rounded-2xl bg-[#140603]/60 border border-white/5 text-xs hover:border-[#DFB15B]/25 transition duration-300">
+                            <div className="truncate pr-2">
+                              <span className="text-white/40 font-mono font-bold mr-1.5">{idx + 1}.</span>
+                              <span className="font-semibold text-white">{cat}</span>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              {/* Position Dropdown Select */}
+                              <select
+                                value={idx}
+                                onChange={e => handleReorderCategorySelect(idx, e.target.value)}
+                                className="bg-[#140603] text-[#DFB15B] text-[10px] border border-white/10 rounded-lg px-1.5 py-1 h-7 cursor-pointer font-bold focus:border-[#DFB15B]/40"
+                              >
+                                {categoriesList.map((_, pIdx) => (
+                                  <option key={pIdx} value={pIdx}>
+                                    Pos {pIdx + 1}
+                                  </option>
+                                ))}
+                              </select>
+
+                              {/* Move Up Button */}
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveCategory(idx, 'up')}
+                                className="text-white/60 hover:text-[#DFB15B] disabled:opacity-20 disabled:hover:text-white/60 h-7 w-7 flex items-center justify-center rounded-lg bg-[#140603] border border-white/10"
+                                title="Move Up"
+                              >
+                                ↑
+                              </button>
+
+                              {/* Move Down Button */}
+                              <button
+                                type="button"
+                                disabled={idx === categoriesList.length - 1}
+                                onClick={() => handleMoveCategory(idx, 'down')}
+                                className="text-white/60 hover:text-[#DFB15B] disabled:opacity-20 disabled:hover:text-white/60 h-7 w-7 flex items-center justify-center rounded-lg bg-[#140603] border border-white/10"
+                                title="Move Down"
+                              >
+                                ↓
+                              </button>
+
+                              {/* Remove Button */}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveCategory(cat)}
+                                className="text-rose-400 hover:text-rose-500 h-7 w-7 flex items-center justify-center rounded-lg bg-rose-500/10 border border-rose-500/20"
+                                title="Remove Category"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ) : (
-                    products.map(p => (
-                      <Card key={p.id} className="rounded-[44px] border border-[#DFB15B]/15 overflow-hidden bg-[#26130F]/45 shadow-xl flex flex-col justify-between text-left">
-                        
-                        <div className="aspect-[4/3] relative p-3 bg-[#140603]/40">
-                          <img src={p.images?.[0]} className="w-full h-full object-cover rounded-[32px]" alt={p.name} />
+
+                    {/* Section 2: Bulk Actions Control Bar */}
+                    <div className="border-t border-white/10 pt-5 flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          id="selectAllProducts"
+                          checked={products.length > 0 && selectedProductIds.length === products.length}
+                          onChange={e => {
+                            if (e.target.checked) {
+                              setSelectedProductIds(products.map(p => p.id));
+                            } else {
+                              setSelectedProductIds([]);
+                            }
+                          }}
+                          className="w-5 h-5 rounded-md border-[#DFB15B]/30 text-[#DFB15B] focus:ring-[#DFB15B]/30 bg-[#140603] cursor-pointer"
+                        />
+                        <label htmlFor="selectAllProducts" className="text-xs font-bold uppercase tracking-wider text-white/70 cursor-pointer select-none">
+                          Select All Products ({selectedProductIds.length} of {products.length} selected)
+                        </label>
+                      </div>
+
+                      {selectedProductIds.length > 0 && (
+                        <Button
+                          onClick={handleBulkDelete}
+                          className="bg-rose-600 hover:bg-rose-700 text-white font-black uppercase text-xs px-5 h-10 rounded-xl shadow-lg flex items-center gap-2 cursor-pointer transition-all duration-300 transform hover:scale-105"
+                        >
+                          <Trash2 className="w-4 h-4" /> Bulk Delete Selected ({selectedProductIds.length})
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {products.length === 0 ? (
+                      <div className="col-span-full py-24 text-center space-y-4 bg-[#26130F]/45 rounded-3xl border border-[#DFB15B]/15">
+                        <Package className="w-12 h-12 text-[#DFB15B]/20 mx-auto" />
+                        <p className="text-xs text-[#FFFDFB]/60 font-semibold italic">No active confections in catalog.</p>
+                      </div>
+                    ) : (
+                      products.map(p => (
+                        <Card key={p.id} className="rounded-[44px] border border-[#DFB15B]/15 overflow-hidden bg-[#26130F]/45 shadow-xl flex flex-col justify-between text-left">
+                          
+                          <div className="aspect-[4/3] relative p-3 bg-[#140603]/40">
+                            {/* Individual Checkbox Selection */}
+                            <div className="absolute top-6 left-6 z-10">
+                              <input
+                                type="checkbox"
+                                checked={selectedProductIds.includes(p.id)}
+                                onChange={e => {
+                                  if (e.target.checked) {
+                                    setSelectedProductIds([...selectedProductIds, p.id]);
+                                  } else {
+                                    setSelectedProductIds(selectedProductIds.filter(id => id !== p.id));
+                                  }
+                                }}
+                                className="w-6 h-6 rounded-lg border-2 border-[#DFB15B]/40 bg-[#140603]/80 text-[#DFB15B] focus:ring-[#DFB15B]/40 cursor-pointer shadow-lg transition-transform duration-200 active:scale-95"
+                              />
+                            </div>
+
+                            <img src={p.images?.[0]} className="w-full h-full object-cover rounded-[32px]" alt={p.name} />
                           
                           <div className="absolute top-6 right-6 flex flex-col gap-1.5 items-end">
                             {/* Stock Toggle status Badge click */}
