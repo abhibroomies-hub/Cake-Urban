@@ -61,8 +61,12 @@ async function testConnection() {
     await getDocFromServer(doc(db, 'test', 'connection'));
     console.log("Firebase Connected Successfully");
   } catch (error) {
-    if(error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration. Client is offline.");
+    if (error instanceof Error) {
+      if (error.message.includes('the client is offline')) {
+        console.warn("Firebase Connection Warning: The client is offline or database hasn't been initialized. Please make sure you have enabled the 'Firestore Database' (click 'Create Database') in your Firebase Console for project 'cakeurban-3257c'.");
+      } else {
+        console.warn("Firebase connection test notice:", error.message);
+      }
     }
   }
 }
