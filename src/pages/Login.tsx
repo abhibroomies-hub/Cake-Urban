@@ -24,7 +24,7 @@ import {
   Phone
 } from 'lucide-react';
 
-type AuthMode = 'login' | 'register' | 'otp' | 'forgot';
+type AuthMode = 'login' | 'register' | 'otp' | 'forgot' | 'google-details';
 
 export default function Login() {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -53,6 +53,9 @@ export default function Login() {
   const [pendingUserData, setPendingUserData] = useState<any>(null);
 
   const [loading, setLoading] = useState(false);
+  
+  // Temp user state for google detail completion
+  const [googleUser, setGoogleUser] = useState<any>(null);
   
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -84,21 +87,27 @@ export default function Login() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      // Upsert user profile in firestore
       const userRef = doc(db, 'users', user.uid);
       const snap = await getDoc(userRef);
-      if (!snap.exists()) {
-        await setDoc(userRef, {
-          email: user.email,
-          displayName: user.displayName || 'Artisan Collector',
-          role: 'customer',
-          createdAt: new Date().toISOString()
+      if (snap.exists() && snap.data()?.phoneNumber) {
+        secureSetItem('cakeurban_local_user', {
+          uid: user.uid,
+          email: user.email || '',
+          displayName: snap.data()?.displayName || user.displayName || 'Artisan Collector',
+          role: snap.data()?.role || 'customer',
+          phoneNumber: snap.data()?.phoneNumber || ''
         });
+        playSuccessChime();
+        toast.success("Welcome back to Cakehouse!");
+        navigate(redirect);
+      } else {
+        // First-time or incomplete details: show details form
+        setGoogleUser(user);
+        setFullName(user.displayName || '');
+        setRegisterPhone('');
+        setMode('google-details');
+        toast.info("Aapka profile completion form open ho gaya hai, please phone number complete kijiye!");
       }
-      
-      playSuccessChime();
-      toast.success("Welcome back to Cakehouse!");
-      navigate(redirect);
     } catch (error: any) {
       console.error("Google Auth error info:", error);
       const errorCode = error?.code || '';
@@ -108,6 +117,11 @@ export default function Login() {
          toast.error("Another sign-in request is already in progress. Please retry.");
       } else if (errorCode === 'auth/popup-closed-by-user' || errorMessage.includes('popup-closed-by-user')) {
          toast.error("Sign-in prompt closed. Please try again.");
+      } else if (errorCode === 'auth/operation-not-allowed') {
+         toast.error(
+           "Google Sign-In is NOT enabled in your Firebase Console! Please go to Firebase Console > Build > Authentication > Sign-in method, click 'Add new provider', choose Google, and enable it. Save configurations before retrying.",
+           { duration: 15000 }
+         );
       } else if (errorCode === 'auth/popup-blocked' || errorMessage.includes('popup-blocked')) {
          toast.error("Popups are blocked by your browser. Please permit popups for Cakehouse.");
       } else if (errorCode === 'auth/unauthorized-domain' || errorMessage.includes('unauthorized-domain')) {
@@ -128,6 +142,46 @@ export default function Login() {
       } else {
          toast.error(`Google Secure Sign-In failed: ${errorCode || error.message || 'Check firebase console'}`);
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCompleteGoogleDetails = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading || !googleUser) return;
+    if (!registerPhone || registerPhone.trim().length !== 10) {
+      toast.error("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    setLoading(true);
+    playBtnTap();
+    try {
+      const userRef = doc(db, 'users', googleUser.uid);
+      const finalProfile = {
+        uid: googleUser.uid,
+        email: googleUser.email || '',
+        displayName: fullName.trim() || googleUser.displayName || 'Artisan Collector',
+        phoneNumber: registerPhone.trim(),
+        role: 'customer',
+        createdAt: new Date().toISOString()
+      };
+      await setDoc(userRef, finalProfile, { merge: true });
+      
+      secureSetItem('cakeurban_local_user', {
+        uid: googleUser.uid,
+        email: googleUser.email || '',
+        displayName: fullName.trim() || googleUser.displayName || 'Artisan Collector',
+        role: 'customer',
+        phoneNumber: registerPhone.trim()
+      });
+
+      playSuccessChime();
+      toast.success("Welcome to Cakehouse! Registration complete.");
+      navigate(redirect);
+    } catch (err: any) {
+      console.error("Failed to complete Google profile details:", err);
+      toast.error(err.message || "Failed to save profile details.");
     } finally {
       setLoading(false);
     }
@@ -1263,6 +1317,101 @@ export default function Login() {
                     className="flex-[2] h-14 rounded-2xl bg-[#3D140B] text-white font-black uppercase text-xs tracking-widest shadow-md"
                   >
                     {loading ? 'Transmitting...' : 'TRANSMIT LINK'}
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          )}
+
+          {mode === 'google-details' && (
+            <motion.div
+              key="google-details"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex flex-col text-left"
+            >
+              <div className="flex items-center mb-0.5">
+                <button
+                  onClick={() => { playSlidePop(); setMode('login'); }}
+                  className="w-8 h-8 rounded-full bg-[#FFFDFB] hover:bg-[#DE9088]/10 border border-[#E8DDD7] flex items-center justify-center text-[#3B1F17] transition-all active:scale-90"
+                >
+                  <ArrowLeft className="w-4 h-4 text-[#3B1F17]" />
+                </button>
+              </div>
+
+              <LogoAndCake />
+
+              <h2 className="text-3xl font-serif font-black tracking-tight text-[#3B1F17] flex items-center gap-1.5">
+                Almost There! <span className="text-[#DFB15B] text-xl">✦</span>
+              </h2>
+              <p className="text-xs text-[#3B1F17]/65 font-medium mt-1 mb-8">
+                Please complete your Cakehouse registration details. Phone number is compulsory.
+              </p>
+
+              <form onSubmit={handleCompleteGoogleDetails} className="space-y-6">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                    Email Address
+                  </label>
+                  <Input
+                    type="email"
+                    disabled
+                    value={googleUser?.email || ''}
+                    className="h-14 rounded-2xl border border-[#E8DDD7] pl-4 bg-zinc-100 text-xs font-semibold text-zinc-400 cursor-not-allowed"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                    Full Name
+                  </label>
+                  <div className="relative flex items-center">
+                    <User className="absolute left-4 w-4 h-4 text-[#3B1F17]/35" />
+                    <Input
+                      type="text"
+                      placeholder="Your full name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      className="h-14 rounded-2xl border border-[#E8DDD7] pl-11 pr-4 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.25em] text-[#3B1F17]">
+                    Phone Number (Compulsory)
+                  </label>
+                  <div className="relative flex items-center">
+                    <span className="absolute left-4 text-xs font-bold text-zinc-500 font-mono">+91</span>
+                    <Input
+                      type="tel"
+                      placeholder="99999 99999"
+                      maxLength={10}
+                      value={registerPhone}
+                      onChange={(e) => setRegisterPhone(e.target.value.replace(/\D/g, ''))}
+                      required
+                      className="h-14 rounded-2xl border border-[#E8DDD7] pl-12 pr-4 bg-[#FFFDFB] text-xs font-semibold focus-visible:ring-1 focus-visible:ring-[#DFB15B] text-[#3C2117] tracking-wider font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setMode('login')}
+                    className="flex-1 h-14 rounded-2xl border-[#E8DDD7] text-[10px] font-black uppercase tracking-widest"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-[2] h-14 rounded-2xl bg-[#3D140B] text-white font-black uppercase text-xs tracking-widest shadow-md"
+                  >
+                    {loading ? 'Saving...' : 'COMPLETE SIGNUP'}
                   </Button>
                 </div>
               </form>

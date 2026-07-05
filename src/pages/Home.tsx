@@ -15,6 +15,7 @@ import SEO from '../components/SEO';
 import { useUI } from '../lib/store';
 import { FALLBACK_PRODUCTS } from '../lib/fallbackProducts';
 import { playBtnTap, playSlidePop } from '../lib/sound';
+import { seedProducts } from '../lib/seed';
 
 // 3D spotlight targets for Apple-style fluid layout carousel with rich shiny brown gold dark backdrops
 const HERO_SHOWCASED_CONFECTIONS = [
@@ -284,6 +285,9 @@ export default function Home() {
     const fetchProducts = async () => {
       const path = 'products';
       try {
+        // Trigger automatic seeding for the newly configured custom Firestore project
+        await seedProducts();
+        
         const snap = await getDocs(query(collection(db, path)));
         let allProds = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
         

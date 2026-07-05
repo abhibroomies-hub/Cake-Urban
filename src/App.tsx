@@ -9,6 +9,7 @@ import { Layout } from './components/Layout';
 import { AnimatePresence } from 'motion/react';
 import { Loader2 } from 'lucide-react';
 import { ThemeProvider } from './lib/theme';
+import { seedProducts } from './lib/seed';
 
 // Lazy load all pages for peak performance
 const Home = lazy(() => import('./pages/Home'));
@@ -80,6 +81,10 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
+  useEffect(() => {
+    seedProducts().catch(err => console.error("Auto-seeding failure on startup:", err));
+  }, []);
+
   return (
     <ThemeProvider>
       <Router>

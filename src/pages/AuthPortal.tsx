@@ -45,7 +45,8 @@ import {
 } from 'lucide-react';
 import { playSuccessChime, playBtnTap, playSlidePop } from '../lib/sound';
 
-type AuthViewMode = 'login' | 'signup' | 'forgot';
+
+type AuthViewMode = 'login' | 'signup' | 'forgot' | 'google-details';
 
 export default function AuthPortal() {
   const navigate = useNavigate();
@@ -86,13 +87,41 @@ export default function AuthPortal() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       if (user) {
-        // Fetch Firestore Profile
-        fetchUserProfile(user.uid);
-        
-        // Auto-redirect if on login/signup pages
-        const path = window.location.pathname;
-        if (path === '/login' || path === '/signup') {
-          navigate(redirectTo);
+        setFetchingProfile(true);
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const docSnap = await getDoc(userRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setUserProfile(data);
+            // Fill edit fields
+            setFullName(data.displayName || user.displayName || '');
+            setPhone(data.phoneNumber || '');
+            setCity(data.city || '');
+            setBio(data.bio || '');
+
+            if (data.phoneNumber) {
+              // User has completed details, so we can safely redirect
+              const path = window.location.pathname;
+              if (path === '/login' || path === '/signup') {
+                navigate(redirectTo);
+              }
+            } else {
+              // Missing compulsory details (e.g., phone number)
+              setAuthMode('google-details');
+            }
+          } else {
+            // First time Google / social sign-in: show details completion form
+            setAuthMode('google-details');
+            setFullName(user.displayName || '');
+            setPhone('');
+            setCity('');
+            setBio('Authenticated securely via Google Identity Single Sign-On.');
+          }
+        } catch (err) {
+          console.error("Auth status sync error:", err);
+        } finally {
+          setFetchingProfile(false);
         }
       } else {
         setUserProfile(null);
@@ -114,6 +143,10 @@ export default function AuthPortal() {
         setPhone(data.phoneNumber || '');
         setCity(data.city || '');
         setBio(data.bio || '');
+        
+        if (!data.phoneNumber) {
+          setAuthMode('google-details');
+        }
       } else {
         // Create initial default profile in firestore if it doesn't exist yet
         const initialProfile = {
@@ -128,6 +161,7 @@ export default function AuthPortal() {
         };
         await setDoc(userRef, initialProfile);
         setUserProfile(initialProfile);
+        setAuthMode('google-details');
       }
     } catch (err: any) {
       console.error("Error fetching user profile:", err);
@@ -245,38 +279,75 @@ export default function AuthPortal() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      // Upsert Firestore profile info securely
       const userRef = doc(db, 'users', user.uid);
       const snap = await getDoc(userRef);
-      if (!snap.exists()) {
-        const initialProfile = {
-          uid: user.uid,
-          email: user.email || '',
-          displayName: user.displayName || 'Google Premium User',
-          phoneNumber: user.phoneNumber || '',
-          city: '',
-          bio: 'Authenticated securely via Google Identity Single Sign-On.',
-          role: 'customer',
-          createdAt: new Date().toISOString()
-        };
-        await setDoc(userRef, initialProfile);
-        setUserProfile(initialProfile);
-      } else {
+      if (snap.exists() && snap.data()?.phoneNumber) {
         setUserProfile(snap.data());
+        playSuccessChime();
+        toast.success("Signed in with Google authentication successfully!");
+        navigate(redirectTo);
+      } else {
+        // First-time or incomplete details: request fields
+        setFullName(user.displayName || '');
+        setPhone('');
+        setCity('');
+        setBio('Authenticated securely via Google Identity Single Sign-On.');
+        setAuthMode('google-details');
+        toast.info("Aapka account detail form active ho gaya hai, please phone number enter kijiye!");
       }
-      
-      playSuccessChime();
-      toast.success("Signed in with Google authentication successfully!");
-      navigate(redirectTo);
     } catch (err: any) {
       console.error("Google login failure:", err);
       if (err.code === 'auth/popup-closed-by-user') {
         toast.error("Sign-in popup was closed before completion.");
+      } else if (err.code === 'auth/operation-not-allowed') {
+        toast.error(
+          "Google Sign-In is NOT enabled in your Firebase Console! Please navigate to Firebase Console > Build > Authentication > Sign-in method, click 'Add new provider', choose Google, and enable it. Save configurations before retrying.",
+          { duration: 15000 }
+        );
+      } else if (err.code === 'auth/unauthorized-domain' || err.message?.includes('unauthorized-domain')) {
+        toast.error(
+          "Domain Not Authorized! Please add '" + window.location.hostname + "' in Firebase Console > Authentication > Settings > Authorized Domains",
+          { duration: 15000 }
+        );
       } else if (err.code === 'auth/web-storage-unsupported' || err.message?.includes('third-party cookies')) {
         toast.error("Iframe browser block: Please click the 'Open in New Tab' button in the upper right to enable safe Google Sign-in!", { duration: 8000 });
       } else {
         toast.error(err.message || "Failed to authenticate via Google.");
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCompleteGoogleDetails = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loading || !currentUser) return;
+    if (!phone || phone.trim().length !== 10) {
+      toast.error("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    setLoading(true);
+    playBtnTap();
+    try {
+      const userRef = doc(db, 'users', currentUser.uid);
+      const finalProfile = {
+        uid: currentUser.uid,
+        email: currentUser.email || '',
+        displayName: fullName.trim() || currentUser.displayName || 'Google Collector',
+        phoneNumber: phone.trim(),
+        city: city.trim(),
+        bio: bio.trim() || 'Authenticated securely via Google Identity Single Sign-On.',
+        role: 'customer',
+        createdAt: new Date().toISOString()
+      };
+      await setDoc(userRef, finalProfile);
+      setUserProfile(finalProfile);
+      playSuccessChime();
+      toast.success("Account registration completed successfully!");
+      navigate(redirectTo);
+    } catch (err: any) {
+      console.error("Failed to complete Google profile details:", err);
+      toast.error(err.message || "Failed to save profile details. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -410,7 +481,7 @@ export default function AuthPortal() {
         {/* Right Forms Content Column */}
         <div className="w-full md:w-7/12 flex flex-col">
           <AnimatePresence mode="wait">
-            {!currentUser ? (
+            {(!currentUser || authMode === 'google-details') ? (
               /* =======================================================
                  UNAUTHENTICATED VIEWS: LOGIN / SIGNUP / FORGOT PASSWORD
                  ======================================================= */
@@ -757,6 +828,111 @@ export default function AuthPortal() {
                         className="text-xs text-amber-600 font-black uppercase tracking-widest hover:underline"
                       >
                         ← Back to Login
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* View 4: GOOGLE DETAILS COMPLETION */}
+                {authMode === 'google-details' && (
+                  <motion.div
+                    key="google-details-view"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
+                    <div className="mb-6">
+                      <h2 className="text-2xl sm:text-3xl font-serif font-black tracking-tight text-[#1C0F0E] flex items-center gap-1.5">
+                        Almost There! <span className="text-[#DFB15B] text-xl">✦</span>
+                      </h2>
+                      <p className="text-xs text-zinc-500 mt-1">
+                        Please complete your Cakehouse registration details. A phone number is compulsory.
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleCompleteGoogleDetails} className="space-y-4">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1C0F0E]">
+                          Email Address (Google verified)
+                        </label>
+                        <input
+                          type="email"
+                          disabled
+                          value={currentUser?.email || ''}
+                          className="w-full h-12 rounded-2xl border border-zinc-200 pl-4 bg-zinc-100 text-xs font-semibold text-zinc-400 cursor-not-allowed"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1C0F0E]">
+                          Full Name
+                        </label>
+                        <div className="relative flex items-center">
+                          <UserIcon className="absolute left-4 w-4 h-4 text-zinc-400" />
+                          <input
+                            type="text"
+                            required
+                            placeholder="Your full name"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            className="w-full h-12 rounded-2xl border border-zinc-200 pl-11 pr-4 bg-zinc-50 text-xs font-semibold focus:outline-none focus:border-[#DFB15B] focus:ring-1 focus:ring-[#DFB15B] text-zinc-800"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1C0F0E]">
+                          Phone Number (Compulsory)
+                        </label>
+                        <div className="relative flex items-center">
+                          <span className="absolute left-4 text-xs font-bold text-zinc-500">+91</span>
+                          <input
+                            type="tel"
+                            required
+                            placeholder="99999 99999"
+                            maxLength={10}
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                            className="w-full h-12 rounded-2xl border border-zinc-200 pl-12 pr-4 bg-zinc-50 text-xs font-semibold focus:outline-none focus:border-[#DFB15B] focus:ring-1 focus:ring-[#DFB15B] text-zinc-800 tracking-wider font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1C0F0E]">
+                          City / Location (Optional)
+                        </label>
+                        <div className="relative flex items-center">
+                          <MapPin className="absolute left-4 w-4 h-4 text-zinc-400" />
+                          <input
+                            type="text"
+                            placeholder="Delhi NCR, Gurgaon, etc."
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            className="w-full h-12 rounded-2xl border border-[#DFB15B]/30 focus:border-[#DFB15B] pl-11 pr-4 bg-zinc-50 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#DFB15B] text-zinc-800"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full h-12 mt-4 rounded-2xl bg-[#1C0F0E] hover:bg-[#DFB15B]/90 text-white hover:text-zinc-950 transition-all font-black tracking-[0.2em] text-xs uppercase flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
+                      >
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'SAVE DETAILS & START SHOPPING'}
+                      </button>
+                    </form>
+
+                    <div className="text-center mt-6 pt-2 border-t border-zinc-100">
+                      <button
+                        onClick={async () => {
+                          playBtnTap();
+                          await signOut(auth);
+                          setAuthMode('login');
+                        }}
+                        className="text-xs text-zinc-500 hover:text-zinc-800 font-bold uppercase tracking-wider"
+                      >
+                        ← Cancel & Sign Out
                       </button>
                     </div>
                   </motion.div>
