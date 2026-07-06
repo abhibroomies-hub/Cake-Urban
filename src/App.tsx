@@ -24,6 +24,7 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Blog = lazy(() => import('./pages/Blog'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const SeoStudio = lazy(() => import('./pages/SeoStudio'));
+const SeoDirectory = lazy(() => import('./pages/SeoDirectory'));
 const LocationSEOPage = lazy(() => import('./pages/LocationSEOPage'));
 const Legal = lazy(() => import('./pages/Legal'));
 const AuthPortal = lazy(() => import('./pages/AuthPortal'));
@@ -65,6 +66,7 @@ function AnimatedRoutes() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/seo-studio" element={<SeoStudio />} />
+        <Route path="/seo-directory" element={<SeoDirectory />} />
         <Route path="/legal" element={<Legal />} />
 
         {/* Authentication Routes */}

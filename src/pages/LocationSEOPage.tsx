@@ -495,14 +495,26 @@ export function generateDynamicSEO(slug: string): LocationDetails {
   // 5. Eggless status Check
   const isEgglessExplicit = cleanSlug.includes('eggless') || cleanSlug.includes('veg') || cleanSlug.includes('vegetarian');
 
+  // Check if it's a Hamper / Gift Box or Artisanal Bakery / Bread
+  const isHamper = cleanSlug.includes('hamper') || cleanSlug.includes('gift box') || cleanSlug.includes('gift-box') || cleanSlug.includes('casket') || cleanSlug.includes('basket') || cleanSlug.includes('cookie tray') || cleanSlug.includes('cookie-tray') || cleanSlug.includes('gifting') || cleanSlug.includes('gift pack') || cleanSlug.includes('praline box');
+  const isBakeryItem = cleanSlug.includes('sourdough') || cleanSlug.includes('bread') || cleanSlug.includes('focaccia') || cleanSlug.includes('baguette') || cleanSlug.includes('brioche') || cleanSlug.includes('muffin') || cleanSlug.includes('scone') || cleanSlug.includes('bakery') || cleanSlug.includes('bakeries') || cleanSlug.includes('pastries');
+
   // Let's programmatically construct standard text:
   // Build a highly-engaging title
   let titleParts = [];
   if (isEgglessExplicit) titleParts.push('100% Eggless');
+
+  let productType = 'Cake';
+  if (isHamper) {
+    productType = cleanSlug.includes('box') || cleanSlug.includes('tray') ? 'Gourmet Gift Box' : 'Luxury Gifting Hamper';
+  } else if (isBakeryItem) {
+    productType = cleanSlug.includes('bread') || cleanSlug.includes('focaccia') || cleanSlug.includes('sourdough') ? 'Artisanal Fresh Bread' : 'Oven-Fresh Bakery Item';
+  }
+
   if (styleName) titleParts.push(styleName);
   if (flavor) titleParts.push(flavor);
   if (occasion) titleParts.push(occasion);
-  titleParts.push('Cake');
+  titleParts.push(productType);
   
   if (cleanSlug.includes('delivery')) {
     titleParts.push('Home Delivery');
@@ -515,7 +527,7 @@ export function generateDynamicSEO(slug: string): LocationDetails {
   titleParts.push(`in ${city}`);
 
   let title = titleParts.join(' ');
-  // clean up repeated 'Cake' patterns
+  // clean up repeated product names
   title = title.replace(/\s+Cake\s+Cake\b/gi, ' Cake');
   
   // Crop title if it becomes extremely long
@@ -525,7 +537,11 @@ export function generateDynamicSEO(slug: string): LocationDetails {
 
   // Now, let's create custom description, heroText, subText:
   let heroText = '';
-  if (flavor && styleName) {
+  if (isHamper) {
+    heroText = `Premium Luxury Gift Hampers & Gourmet Gift Boxes in ${city}`;
+  } else if (isBakeryItem) {
+    heroText = `Oven-Fresh Artisanal Breads & Premium Bakery in ${city}`;
+  } else if (flavor && styleName) {
     heroText = `Premium ${isEgglessExplicit ? 'Eggless ' : ''}${styleName} ${flavor} Cakes in ${city}`;
   } else if (flavor) {
     heroText = `Oven-Fresh ${isEgglessExplicit ? 'Eggless ' : ''}${flavor} Cake in ${city}`;
@@ -537,9 +553,21 @@ export function generateDynamicSEO(slug: string): LocationDetails {
     heroText = `Best ${isEgglessExplicit ? 'Eggless ' : ''}Bakery & Cake Delivery in ${city}`;
   }
 
-  let description = `Order premium ${isEgglessExplicit ? '100% eggless ' : ''}${styleCategory || 'designer'} ${flavor ? flavor + ' ' : ''}cakes online in ${city} with Cake Urban. From birthday themes to luxury anniversaries, enjoy fresh bakes, custom decorations & rapid hand-delivery.`;
+  let description = '';
+  if (isHamper) {
+    description = `Order premium ${isEgglessExplicit ? '100% eggless ' : ''}gifting hampers, chocolate caskets, high-tea baskets, and gourmet cookie trays in ${city} with Cake Urban. Same-day safe shipping.`;
+  } else if (isBakeryItem) {
+    description = `Buy oven-fresh sourdough boules, garlic bread, herbed focaccia, warm croissants, and sweet scones online in ${city} with Cake Urban. 100% vegetarian-certified bakery.`;
+  } else {
+    description = `Order premium ${isEgglessExplicit ? '100% eggless ' : ''}${styleCategory || 'designer'} ${flavor ? flavor + ' ' : ''}cakes online in ${city} with Cake Urban. From birthday themes to luxury anniversaries, enjoy fresh bakes, custom decorations & rapid hand-delivery.`;
+  }
 
   let subText = `Treat your family to unparalleled culinary mastery in ${city}. No synthetic vegetable fats or cheap syrups — we use pure dairy cream, genuine Belgian couverture, and organic sweeteners. Safe climate-controlled delivery right to your residential society or workplace.`;
+  if (isHamper) {
+    subText = `Elevate your gifting standards in ${city} with hand-wrapped luxury hampers. Packed with premium eggless chocolate chip cookies, imported praline truffles, gourmet dessert jars, and tea-party essentials. Perfect for birthday surprises, weddings, and corporate events.`;
+  } else if (isBakeryItem) {
+    subText = `Savor true crusty, warm goodness baked fresh daily in ${city}. Prepared with natural wild yeast cultures, high-protein flour, and zero chemical preservatives. From crispy French baguettes to buttery brioche burger buns, delivered fresh from the oven to your table.`;
+  }
 
   // Customize dynamic FAQ list based on what is in the slug
   let faqs = [
@@ -557,7 +585,25 @@ export function generateDynamicSEO(slug: string): LocationDetails {
     }
   ];
 
-  if (cleanSlug.includes('bento')) {
+  if (isHamper) {
+    faqs[0] = {
+      q: `What kinds of items are included in Cake Urban's luxury gift hampers in ${city}?`,
+      a: `Our premium gift hampers and festive boxes feature a curated selection of handmade eggless cookies, premium hazelnut chocolate truffles, organic herbal teas, english scones with fresh strawberry jam, fudge brownies, and gourmet jar cakes. All beautifully housed in reusable wicker baskets or velvet-finish caskets.`
+    };
+    faqs[1] = {
+      q: `Do you support corporate bulk orders and custom branding on hampers in ${city}?`,
+      a: `Yes, we specialize in corporate hampers with custom-designed boxes, corporate colors, and customized chocolate plaque engravings featuring your brand logo. Please contact our Chef studio to coordinate customized bulk shipments across Gurgaon, Noida, Delhi, and Faridabad.`
+    };
+  } else if (isBakeryItem) {
+    faqs[0] = {
+      q: `Are your artisanal breads made with genuine active sourdough starter culture?`,
+      a: `Yes, 100%. Our signature Sourdough Boules and Baguettes are slow-fermented over 24-36 hours using our in-house wild yeast starter culture. This produces a wonderfully chewy texture, crisp dark crust, and complex, nutritious tang that is incredibly gut-friendly.`
+    };
+    faqs[1] = {
+      q: `How long do these freshly baked breads and bakery items stay fresh?`,
+      a: `Since we do not add any chemical preservatives, artificial softeners, or mold inhibitors, our breads are best consumed within 2-3 days when stored in an airtight container at room temperature, or up to a week when sliced and frozen.`
+    };
+  } else if (cleanSlug.includes('bento')) {
     faqs[0] = {
       q: "What is the weight and size of Cake Urban's Bento cakes?",
       a: "Our Japanese-style Bento cakes (lunchbox cakes) are typically 250-350 grams (approx 4 inches in diameter), perfect for small celebrations of 1 to 2 people. They come beautifully nested in elegant, eco-friendly customized containers."
@@ -575,6 +621,12 @@ export function generateDynamicSEO(slug: string): LocationDetails {
   }
 
   let keywords = `${slug.replace(/-/g, ' ')}, cake delivery in ${city}, best cake shop ${city}, eggless cakes ${city}, online cake order ${city}`;
+  if (isHamper) {
+    keywords = `${slug.replace(/-/g, ' ')}, gift hamper delivery in ${city}, best gift boxes ${city}, eggless luxury hampers ${city}, corporate gifts ${city}`;
+  } else if (isBakeryItem) {
+    keywords = `${slug.replace(/-/g, ' ')}, fresh bread delivery in ${city}, best bakery ${city}, sourdough delivery ${city}, eggless croissants ${city}`;
+  }
+
   let deliveryTime = cleanSlug.includes('midnight') ? 'Guaranteed 11:30 PM - Midnight surprise delivery' : '30-45 minutes rapid transit';
   let charge = 'Free home delivery for orders above ₹499';
 
@@ -603,7 +655,44 @@ export default function LocationSEOPage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   // Filter 4 relevant products to display on the location landing page to encourage instant conversions
-  const relevantProducts = FALLBACK_PRODUCTS.slice(0, 4);
+  const relevantProducts = React.useMemo(() => {
+    const slugLower = routeKey.toLowerCase();
+    
+    // 1. Hampers & Gift Boxes
+    if (slugLower.includes('hamper') || slugLower.includes('gift-box') || slugLower.includes('casket') || slugLower.includes('basket') || slugLower.includes('cookie-tray') || slugLower.includes('gifting')) {
+      const filtered = FALLBACK_PRODUCTS.filter(p => p.categories.includes("Hampers"));
+      if (filtered.length > 0) return filtered.slice(0, 4);
+    }
+    
+    // 2. Bakery & Artisanal Breads
+    if (slugLower.includes('sourdough') || slugLower.includes('bread') || slugLower.includes('focaccia') || slugLower.includes('baguette') || slugLower.includes('brioche') || slugLower.includes('muffin') || slugLower.includes('bakery')) {
+      const filtered = FALLBACK_PRODUCTS.filter(p => p.categories.includes("Breads") || p.categories.includes("Breads"));
+      if (filtered.length > 0) return filtered.slice(0, 4);
+    }
+
+    // 3. Specific Flavors (e.g. Chocolate, Red Velvet, Butterscotch)
+    if (slugLower.includes('chocolate') || slugLower.includes('truffle') || slugLower.includes('ferrero') || slugLower.includes('hazelnut')) {
+      const chocolateProducts = FALLBACK_PRODUCTS.filter(p => 
+        p.flavors?.some(f => f.toLowerCase().includes('chocolate')) ||
+        p.name.toLowerCase().includes('chocolate') ||
+        p.name.toLowerCase().includes('truffle')
+      );
+      if (chocolateProducts.length > 0) return chocolateProducts.slice(0, 4);
+    }
+    
+    if (slugLower.includes('velvet')) {
+      const velvetProducts = FALLBACK_PRODUCTS.filter(p => p.name.toLowerCase().includes('velvet'));
+      if (velvetProducts.length > 0) return velvetProducts.slice(0, 4);
+    }
+
+    if (slugLower.includes('bento')) {
+      const bentoProducts = FALLBACK_PRODUCTS.filter(p => p.name.toLowerCase().includes('bento') || p.description.toLowerCase().includes('bento'));
+      if (bentoProducts.length > 0) return bentoProducts.slice(0, 4);
+    }
+
+    // Default Mix of Bestsellers
+    return FALLBACK_PRODUCTS.filter(p => p.isBestseller).slice(0, 4);
+  }, [routeKey]);
 
   return (
     <motion.div
@@ -670,6 +759,15 @@ export default function LocationSEOPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-20">
         
+        {/* SEMANTIC BREADCRUMBS (On-Page / E-commerce SEO) */}
+        <nav aria-label="Breadcrumb" className="text-left py-3 border-b border-white/5 flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#FFFDFB]/40">
+          <Link to="/" className="hover:text-[#DFB15B] transition-colors">Home</Link>
+          <span className="text-[#DFB15B]/20">/</span>
+          <Link to="/seo-directory" className="hover:text-[#DFB15B] transition-colors">Sectors & Sitemaps</Link>
+          <span className="text-[#DFB15B]/20">/</span>
+          <span className="text-[#DFB15B] truncate max-w-[200px]">{data.city}</span>
+        </nav>
+
         {/* CONVERSION CATEGORIES */}
         <section className="text-center space-y-10">
           <div className="space-y-3">
@@ -863,6 +961,36 @@ export default function LocationSEOPage() {
                 <p className="text-[11px] text-[#FFFDFB]/85 leading-relaxed font-semibold italic">
                   "Recommendation Engine Verdict: Verified Cake Urban bakes contain no artificial preservatives, stabilizers, or cheap bread fillers. Perfect safety and organic baking texture score." — Semantic Crawler Index Update
                 </p>
+              </div>
+            </div>
+
+            {/* LOCAL CITATION NAP & LOCATION CARD (Local SEO Pillar) */}
+            <div className="mt-8 bg-[#26130F]/45 border border-[#DFB15B]/10 rounded-3xl p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <div className="space-y-3 text-left">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] font-bold uppercase tracking-wider border border-emerald-500/15">
+                  Verified Local Outlet Profile
+                </span>
+                <h4 className="text-lg font-black text-white">Cake Urban Premium Bakery Studio</h4>
+                <div className="space-y-1.5 text-xs text-[#FFFDFB]/85 font-medium">
+                  <p><strong className="text-[#DFB15B]">Address:</strong> Sector 16, Faridabad, Haryana, 121002, India</p>
+                  <p><strong className="text-[#DFB15B]">Oven Phone:</strong> +91 73185 31953 (Direct Hot-dispatch)</p>
+                  <p><strong className="text-[#DFB15B]">Coordinates:</strong> 28.4089° N, 77.3178° E</p>
+                  <p><strong className="text-[#DFB15B]">FSSAI License:</strong> 20824003001948 (100% certified veg)</p>
+                </div>
+              </div>
+              
+              <div className="bg-[#140603] p-4 rounded-2xl border border-white/5 space-y-2 text-center">
+                <p className="text-[10px] font-mono text-gray-500 font-bold uppercase tracking-widest">Active Dispatch Coverage</p>
+                <p className="text-xs text-[#DFB15B] font-black leading-snug">
+                  Gurgaon, South Delhi, Noida, Noida Extension, Faridabad, Ghaziabad, and NIT regions.
+                </p>
+                <div className="pt-2">
+                  <Link to="/seo-directory">
+                    <button className="h-9 px-4 rounded-xl bg-[#DFB15B]/10 hover:bg-[#DFB15B] hover:text-[#140603] text-[9px] font-black uppercase text-[#DFB15B] transition-colors border border-[#DFB15B]/20">
+                      Explore All Local Sectors
+                    </button>
+                  </Link>
+                </div>
               </div>
             </div>
 

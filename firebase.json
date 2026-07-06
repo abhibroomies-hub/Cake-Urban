@@ -1,0 +1,8 @@
+{
+  "firestore": [
+    {
+      "database": "ai-studio-cakeurban-9e732168-61b8-475b-89f5-37b1e865019e",
+      "rules": "firestore.rules"
+    }
+  ]
+}
