@@ -1,9 +1,10 @@
 {
   "projectId": "cakeurban-3257c",
-  "appId": "1:458976849823:web:1a7e3640e6b192203357aa",
+  "appId": "1:458976849823:web:de2b9fa01c0cac663357aa",
   "apiKey": "AIzaSyCB2L7xIZrfEy0OSlZP8zrziUhuv5xmhCA",
   "authDomain": "cakeurban-3257c.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-cakeurban-9e732168-61b8-475b-89f5-37b1e865019e",
   "storageBucket": "cakeurban-3257c.firebasestorage.app",
   "messagingSenderId": "458976849823",
-  "measurementId": "G-1Y4C8CDBKN"
+  "measurementId": ""
 }

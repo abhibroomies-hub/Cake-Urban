@@ -587,6 +587,30 @@ export default function AuthPortal() {
                       </span>
                     </div>
 
+                    {typeof window !== 'undefined' && window.self !== window.top && (
+                      <div className="mb-4 p-4 rounded-2xl border border-amber-500/30 bg-amber-50/50 text-left">
+                        <div className="flex items-start gap-2.5">
+                          <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-black tracking-wider text-amber-800 uppercase">
+                              Iframe Security Sandbox Warning
+                            </p>
+                            <p className="text-[11px] font-medium leading-relaxed text-zinc-600">
+                              Browsers block Google popups inside iframe panels. If sign-in doesn't load or closes immediately, click the link below to open directly:
+                            </p>
+                            <a
+                              href={window.location.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-black text-amber-700 hover:text-amber-950 uppercase tracking-wider underline active:scale-95 transition-transform"
+                            >
+                              Open App in New Tab to Login ↗
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <button
                       type="button"
                       onClick={handleGoogleSignIn}
