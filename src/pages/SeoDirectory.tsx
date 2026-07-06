@@ -28,7 +28,8 @@ import {
   CheckCircle2,
   AlertCircle,
   FileCode,
-  Server
+  Server,
+  Download
 } from 'lucide-react';
 import SEO from '../components/SEO';
 
@@ -1351,6 +1352,264 @@ export function generateDynamicSEO(slug: string) {
                 )}
               </motion.div>
             </AnimatePresence>
+          </div>
+        </section>
+
+        {/* GOOGLE SEARCH CONSOLE INTEGRATION & SITEMAP EXPORT SUITE */}
+        <section className="bg-black/40 border border-[#DFB15B]/10 rounded-[36px] p-6 sm:p-10 shadow-2xl text-left space-y-8 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-[#DE9088]/5 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-white/5 pb-6">
+            <div className="space-y-2">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-amber-500/10 text-[#DFB15B] text-[10px] font-black uppercase tracking-widest border border-[#DFB15B]/20">
+                Google Console Ready
+              </span>
+              <h3 className="text-xl sm:text-3xl font-display font-black text-white">
+                Google Search Console <span className="text-[#DFB15B] font-serif font-light italic">Sitemaps Hub</span>
+              </h3>
+              <p className="text-xs text-gray-400 font-medium">
+                Submit our premium, modular XML Sitemaps to index all core, sector-specific, and dynamic combination pages.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  fetch('/sitemap.xml')
+                    .then(response => response.text())
+                    .then(xmlText => {
+                      const blob = new Blob([xmlText], { type: 'application/xml' });
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'sitemap.xml';
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      window.URL.revokeObjectURL(url);
+                    });
+                }}
+                className="h-11 px-5 rounded-2xl bg-[#DFB15B] hover:bg-[#DE9088] text-[#140603] hover:text-white transition-all duration-300 font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" /> Download Master Index
+              </button>
+            </div>
+          </div>
+
+          {/* CRITICAL GOOGLE SEARCH CONSOLE CLARIFICATION CORNER */}
+          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-5 sm:p-6 space-y-3">
+            <h4 className="text-xs sm:text-sm font-black text-red-400 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" /> Why did GSC show "1 Error" for robots.txt and llms.txt?
+            </h4>
+            <p className="text-xs text-gray-300 leading-relaxed font-semibold">
+              The <strong className="text-[#FFFDFB]">"Add a new sitemap"</strong> box in Google Search Console <strong className="text-red-400">ONLY accepts XML Sitemap files</strong>. Entering plain text files (like <code className="text-red-400 font-mono">robots.txt</code> or <code className="text-red-400 font-mono">llms.txt</code>) or entering the homepage URL itself will cause Google to throw an error. 
+              <br className="mb-1" />
+              <span className="text-emerald-400">✔ Correction:</span> Please <strong className="text-white">Delete</strong> the incorrect <code className="text-red-400 font-mono">robots.txt</code> and <code className="text-red-400 font-mono">llms.txt</code> lines from the "Submitted sitemaps" list in your Google Search Console, and <strong className="text-emerald-400">only submit the valid XML Sitemaps listed below</strong>.
+            </p>
+          </div>
+
+          {/* Sitemaps List */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-[#DFB15B]">Copy & Submit These XML URLs:</h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              
+              {/* Sitemap 1: Master Index */}
+              <div className="bg-[#26130F]/45 border border-[#DFB15B]/20 p-5 rounded-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#DFB15B]/20 flex items-center justify-center text-[#DFB15B]">
+                      <FileCode className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white">01. Sitemap Master Index</h4>
+                      <p className="text-[8px] text-[#DFB15B] font-bold uppercase font-mono">Autolinks all sub-sitemaps</p>
+                    </div>
+                  </div>
+                  <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded uppercase font-bold tracking-wider">Success</span>
+                </div>
+                
+                <div className="bg-black/45 p-3 rounded-xl border border-white/5 font-mono text-[10px] text-[#DFB15B] break-all select-all flex items-center justify-between gap-2">
+                  <span>sitemap.xml</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText('sitemap.xml');
+                      setCopiedKey('sitemap_xml');
+                      setTimeout(() => setCopiedKey(null), 2000);
+                    }}
+                    className="text-gray-400 hover:text-white shrink-0"
+                  >
+                    {copiedKey === 'sitemap_xml' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 leading-relaxed font-semibold">
+                  This is the main index. Submitting this single file allows Google to automatically read and index all sub-sitemaps below!
+                </p>
+              </div>
+
+              {/* Sitemap 2: Core Static Pages */}
+              <div className="bg-[#26130F]/30 border border-white/5 p-5 rounded-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                      <FileCode className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white">02. Core Routes & Hubs</h4>
+                      <p className="text-[8px] text-gray-500 font-bold uppercase font-mono">Main navigation links</p>
+                    </div>
+                  </div>
+                  <span className="text-[8px] bg-[#DFB15B]/10 text-[#DFB15B] px-2 py-0.5 rounded uppercase font-bold tracking-wider">Active</span>
+                </div>
+                
+                <div className="bg-black/45 p-3 rounded-xl border border-white/5 font-mono text-[10px] text-[#DFB15B] break-all select-all flex items-center justify-between gap-2">
+                  <span>sitemap_core.xml</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText('sitemap_core.xml');
+                      setCopiedKey('sitemap_core');
+                      setTimeout(() => setCopiedKey(null), 2000);
+                    }}
+                    className="text-gray-400 hover:text-white shrink-0"
+                  >
+                    {copiedKey === 'sitemap_core' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 leading-relaxed font-semibold">
+                  Contains all static structural pages: Home, Shop, Custom Orders, About Us, Contact, Blog and legal policies.
+                </p>
+              </div>
+
+              {/* Sitemap 3: Local Sectors & Colonies */}
+              <div className="bg-[#26130F]/30 border border-white/5 p-5 rounded-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
+                      <FileCode className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white">03. Local Sectors & Colonies</h4>
+                      <p className="text-[8px] text-gray-500 font-bold uppercase font-mono">Targeted neighborhoods</p>
+                    </div>
+                  </div>
+                  <span className="text-[8px] bg-[#DFB15B]/10 text-[#DFB15B] px-2 py-0.5 rounded uppercase font-bold tracking-wider">Active</span>
+                </div>
+                
+                <div className="bg-black/45 p-3 rounded-xl border border-white/5 font-mono text-[10px] text-[#DFB15B] break-all select-all flex items-center justify-between gap-2">
+                  <span>sitemap_sectors.xml</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText('sitemap_sectors.xml');
+                      setCopiedKey('sitemap_sectors');
+                      setTimeout(() => setCopiedKey(null), 2000);
+                    }}
+                    className="text-gray-400 hover:text-white shrink-0"
+                  >
+                    {copiedKey === 'sitemap_sectors' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 leading-relaxed font-semibold">
+                  Contains all location targets in Noida (Sectors 62/150), Gurgaon (DLF), Faridabad (Sector 15/31) and Delhi (Dwarka).
+                </p>
+              </div>
+
+              {/* Sitemap 4: Specialties & Flavors */}
+              <div className="bg-[#26130F]/30 border border-white/5 p-5 rounded-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400">
+                      <FileCode className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white">04. Specialties & Flavors</h4>
+                      <p className="text-[8px] text-gray-500 font-bold uppercase font-mono">Signature categories</p>
+                    </div>
+                  </div>
+                  <span className="text-[8px] bg-[#DFB15B]/10 text-[#DFB15B] px-2 py-0.5 rounded uppercase font-bold tracking-wider">Active</span>
+                </div>
+                
+                <div className="bg-black/45 p-3 rounded-xl border border-white/5 font-mono text-[10px] text-[#DFB15B] break-all select-all flex items-center justify-between gap-2">
+                  <span>sitemap_specialties.xml</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText('sitemap_specialties.xml');
+                      setCopiedKey('sitemap_specialties');
+                      setTimeout(() => setCopiedKey(null), 2000);
+                    }}
+                    className="text-gray-400 hover:text-white shrink-0"
+                  >
+                    {copiedKey === 'sitemap_specialties' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 leading-relaxed font-semibold">
+                  Contains high-ranking category terms: Belgian Truffle, Lotus Biscoff, Pinata cakes, Bento boxes and Pull Me Up designs.
+                </p>
+              </div>
+
+              {/* Sitemap 5: Long-Tail Combos */}
+              <div className="bg-[#26130F]/30 border border-white/5 p-5 rounded-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                      <FileCode className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white">05. Long-Tail Combos</h4>
+                      <p className="text-[8px] text-gray-500 font-bold uppercase font-mono">Programmatic SEO gems</p>
+                    </div>
+                  </div>
+                  <span className="text-[8px] bg-[#DFB15B]/10 text-[#DFB15B] px-2 py-0.5 rounded uppercase font-bold tracking-wider">Active</span>
+                </div>
+                
+                <div className="bg-black/45 p-3 rounded-xl border border-white/5 font-mono text-[10px] text-[#DFB15B] break-all select-all flex items-center justify-between gap-2">
+                  <span>sitemap_combinations.xml</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText('sitemap_combinations.xml');
+                      setCopiedKey('sitemap_combos');
+                      setTimeout(() => setCopiedKey(null), 2000);
+                    }}
+                    className="text-gray-400 hover:text-white shrink-0"
+                  >
+                    {copiedKey === 'sitemap_combos' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 leading-relaxed font-semibold">
+                  Contains highly lucrative custom long-tail combinations e.g., <code className="text-gray-300">belgian-chocolate-birthday-cake-in-sector-15-faridabad</code>.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Step-by-Step Submission Console Tutorial */}
+          <div className="bg-black/25 rounded-2xl border border-white/5 p-6 space-y-4">
+            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#DFB15B]" /> Step-by-Step Google Search Console Submission Guide
+            </h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-semibold">
+              <div className="space-y-1 text-left">
+                <p className="text-[#DFB15B] font-black uppercase text-[9px] tracking-wider font-mono">Step 01: Clear Old Errors</p>
+                <p className="text-gray-300">
+                  Open GSC, click your error files (e.g., <code className="text-red-400">robots.txt</code>) in Sitemaps list, click the 3-dots menu on the right, and select <strong className="text-white">Remove Sitemap</strong> to keep your profile clean.
+                </p>
+              </div>
+
+              <div className="space-y-1 text-left">
+                <p className="text-[#DFB15B] font-black uppercase text-[9px] tracking-wider font-mono">Step 02: Submit Master Index</p>
+                <p className="text-gray-300">
+                  Under "Add a new sitemap", type <code className="text-[#DFB15B] bg-black/45 px-1 py-0.5 rounded font-mono">sitemap.xml</code> and click <strong className="text-white">Submit</strong>. Google will fetch it successfully and find all sub-sitemaps!
+                </p>
+              </div>
+
+              <div className="space-y-1 text-left">
+                <p className="text-[#DFB15B] font-black uppercase text-[9px] tracking-wider font-mono">Step 03: Fast-Track Indexing</p>
+                <p className="text-gray-300">
+                  For immediate Crawl priority, you can also paste each sub-sitemap (e.g. <code className="text-[#DFB15B] bg-black/45 px-1 py-0.5 rounded font-mono">sitemap_sectors.xml</code>) directly and submit them one-by-one!
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
