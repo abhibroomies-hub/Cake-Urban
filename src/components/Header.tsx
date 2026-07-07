@@ -183,6 +183,10 @@ const NAVIGATION_MENU: MenuItem[] = [
         { label: 'Health & Baking Tips', href: '/blog', desc: 'Gluten-free & allergen protocols' },
       ]
     }
+  },
+  {
+    label: 'Customer Love',
+    href: '/reviews'
   }
 ];
 

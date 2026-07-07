@@ -438,16 +438,73 @@ export default function SeoDirectory() {
     return urls;
   }, []);
 
-  // Filter and paginate the generated URL catalog
+  // Filter and paginate the generated URL catalog with a highly-intelligent keyword-relevance ranking engine
   const filteredUrls = useMemo(() => {
-    return allGeneratedUrls.filter(item => {
-      const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            item.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            item.description.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      if (activeTab === 'all') return matchesSearch;
-      return item.category === activeTab && matchesSearch;
-    });
+    if (!searchQuery.trim()) {
+      return allGeneratedUrls.filter(item => {
+        if (activeTab === 'all') return true;
+        return item.category === activeTab;
+      });
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    const queryWords = query.split(/\s+/).filter(w => w.length > 1 || /\d/.test(w));
+
+    const scored = allGeneratedUrls
+      .map(item => {
+        const titleLower = item.title.toLowerCase();
+        const descLower = item.description.toLowerCase();
+        const pathLower = item.path.toLowerCase();
+
+        // 1. Direct contiguous match
+        const exactTitle = titleLower.includes(query);
+        const exactPath = pathLower.includes(query.replace(/\s+/g, '-')) || pathLower.includes(query.replace(/\s+/g, ''));
+        const exactDesc = descLower.includes(query);
+
+        // 2. All words match check
+        const allWordsInTitle = queryWords.every(word => titleLower.includes(word));
+        const allWordsInItem = queryWords.every(word => titleLower.includes(word) || descLower.includes(word) || pathLower.includes(word));
+
+        if (!allWordsInItem && !exactTitle && !exactPath) {
+          return { item, score: 0 };
+        }
+
+        let score = 0;
+        if (exactTitle) score += 10000;
+        if (exactPath) score += 8000;
+        if (exactDesc) score += 5000;
+        
+        if (allWordsInTitle) score += 4000;
+        if (allWordsInItem) score += 2000;
+
+        // Count how many words of the query are in the title
+        const wordMatchesInTitle = queryWords.filter(word => titleLower.includes(word)).length;
+        score += wordMatchesInTitle * 600;
+
+        // Custom boost if the query contains specific locality references like "sector 31"
+        if (query.includes('sector 31') || query.includes('sector-31')) {
+          if (titleLower.includes('sector 31') || titleLower.includes('sector-31')) {
+            score += 8000; // Heavy boost for sector 31 matches when searched
+          }
+        } else {
+          // General boost for matching locality name if mentioned in the query
+          const matchedLocality = LOCALITIES.find(loc => query.includes(loc.name.toLowerCase()));
+          if (matchedLocality && (titleLower.includes(matchedLocality.name.toLowerCase()) || pathLower.includes(matchedLocality.slug))) {
+            score += 3000;
+          }
+        }
+
+        // Penalty for extremely long title so shorter, cleaner keywords (like "Eggless Cake in Sector 31") rank first
+        score -= titleLower.length * 2;
+
+        return { item, score };
+      })
+      .filter(x => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(x => x.item);
+
+    if (activeTab === 'all') return scored;
+    return scored.filter(item => item.category === activeTab);
   }, [allGeneratedUrls, activeTab, searchQuery]);
 
   // Paginated urls slice

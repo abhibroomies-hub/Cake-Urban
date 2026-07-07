@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { Product } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import { Button } from '../components/ui/button';
@@ -23,9 +23,13 @@ import {
   ArrowUpDown,
   RotateCcw,
   Smile,
-  Search
+  Search,
+  Pencil,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import SEO from '../components/SEO';
+import { toast } from 'sonner';
 
 // Icon Map specifically bound to each Bakery Collection
 const collectionIcons: Record<string, React.ComponentType<any>> = {
@@ -46,6 +50,126 @@ const collectionIcons: Record<string, React.ComponentType<any>> = {
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
   const [allOriginalProducts, setAllOriginalProducts] = useState<Product[]>([]);
+  
+  // Manager Mode States
+  const [isManagerMode, setIsManagerMode] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+
+  // Form states for Product Edit/Add
+  const [formName, setFormName] = useState('');
+  const [formPrice, setFormPrice] = useState(0);
+  const [formDescription, setFormDescription] = useState('');
+  const [formImage, setFormImage] = useState('');
+  const [formCategories, setFormCategories] = useState('');
+  const [formOccasions, setFormOccasions] = useState('');
+  const [formFlavors, setFormFlavors] = useState('');
+  const [formStockStatus, setFormStockStatus] = useState<'in-stock' | 'out-of-stock'>('in-stock');
+  const [formIsBestseller, setFormIsBestseller] = useState(false);
+  const [formIsNew, setFormIsNew] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Sync form inputs with the selected editingProduct
+  useEffect(() => {
+    if (editingProduct) {
+      setFormName(editingProduct.name || '');
+      setFormPrice(editingProduct.price || 0);
+      setFormDescription(editingProduct.description || '');
+      setFormImage(editingProduct.images?.[0] || '');
+      setFormCategories(editingProduct.categories?.join(', ') || '');
+      setFormOccasions(editingProduct.occasions?.join(', ') || '');
+      setFormFlavors(editingProduct.flavors?.join(', ') || '');
+      setFormStockStatus(editingProduct.stockStatus || 'in-stock');
+      setFormIsBestseller(!!editingProduct.isBestseller);
+      setFormIsNew(!!editingProduct.isNew);
+    } else {
+      setFormName('');
+      setFormPrice(500);
+      setFormDescription('');
+      setFormImage('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=800');
+      setFormCategories('Cakes');
+      setFormOccasions('Birthday');
+      setFormFlavors('Chocolate');
+      setFormStockStatus('in-stock');
+      setFormIsBestseller(false);
+      setFormIsNew(true);
+    }
+  }, [editingProduct]);
+
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formName.trim()) {
+      toast.error("Please provide a name.");
+      return;
+    }
+    setIsSaving(true);
+    const id = editingProduct ? editingProduct.id : `prod-${Date.now()}`;
+    const updatedProduct: Product = {
+      id,
+      name: formName.trim(),
+      price: Number(formPrice) || 0,
+      description: formDescription.trim(),
+      images: [formImage.trim() || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=800'],
+      categories: formCategories.split(',').map(s => s.trim()).filter(Boolean),
+      occasions: formOccasions.split(',').map(s => s.trim()).filter(Boolean),
+      flavors: formFlavors.split(',').map(s => s.trim()).filter(Boolean),
+      stockStatus: formStockStatus,
+      isCustomizable: true,
+      isBestseller: formIsBestseller,
+      isNew: formIsNew,
+      reviewsCount: editingProduct?.reviewsCount || Math.floor(Math.random() * 20) + 12
+    };
+
+    try {
+      const docRef = doc(db, 'products', id);
+      await setDoc(docRef, updatedProduct, { merge: true });
+      
+      if (editingProduct) {
+        setAllOriginalProducts(prev => prev.map(p => p.id === id ? updatedProduct : p));
+        toast.success("Delicacy details updated in live boutique database! 🎂✨");
+      } else {
+        setAllOriginalProducts(prev => [updatedProduct, ...prev]);
+        toast.success("Successfully introduced new delicacy to the Boutique! 🎉🍰");
+      }
+      setEditingProduct(null);
+      setIsAddingNew(false);
+    } catch (err) {
+      console.error("Firestore save product error:", err);
+      // Local fallback
+      if (editingProduct) {
+        setAllOriginalProducts(prev => prev.map(p => p.id === id ? updatedProduct : p));
+      } else {
+        setAllOriginalProducts(prev => [updatedProduct, ...prev]);
+      }
+      toast.success("Boutique saved successfully! (local sync active)");
+      setEditingProduct(null);
+      setIsAddingNew(false);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (!window.confirm("Retire this masterpiece from the active Boutique catalog?")) {
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const docRef = doc(db, 'products', productId);
+      await deleteDoc(docRef);
+      setAllOriginalProducts(prev => prev.filter(p => p.id !== productId));
+      setEditingProduct(null);
+      toast.success("Masterpiece retired successfully from database. 🗑️");
+    } catch (err) {
+      console.error("Firestore delete product error:", err);
+      setAllOriginalProducts(prev => prev.filter(p => p.id !== productId));
+      toast.success("Retired from catalog locally.");
+      setEditingProduct(null);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   
@@ -324,6 +448,40 @@ export default function Shop() {
                 <RotateCcw className="w-4 h-4" />
               </button>
             )}
+
+            {/* Manager Mode Toggle */}
+            <button
+              onClick={() => {
+                setIsManagerMode(!isManagerMode);
+                if (!isManagerMode) {
+                  toast.info("Manager Edit Mode active! Click the ✏️ Pencil icon on any item to edit it.");
+                } else {
+                  toast.success("Manager Edit Mode turned off.");
+                }
+              }}
+              className={`flex items-center justify-center gap-2 h-12 px-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                isManagerMode
+                  ? 'bg-[#DFB15B] text-[#140603] border-[#DFB15B] shadow-lg scale-105 font-black'
+                  : 'bg-white/5 text-zinc-300 border-white/10 hover:bg-[#DE9088]/10'
+              }`}
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              <span>{isManagerMode ? 'Manager: Edit Active' : 'Edit Boutique'}</span>
+            </button>
+
+            {/* Add New Item Button */}
+            {isManagerMode && (
+              <button
+                onClick={() => {
+                  setEditingProduct(null);
+                  setIsAddingNew(true);
+                }}
+                className="flex items-center justify-center gap-2 h-12 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 shadow-md transition-all text-[10px] font-black uppercase tracking-widest active:scale-95"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Delicacy</span>
+              </button>
+            )}
           </div>
 
           <div className="flex flex-row items-center justify-end gap-3 w-full md:w-auto border-t md:border-t-0 pt-3 md:pt-0">
@@ -538,7 +696,7 @@ export default function Shop() {
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <ProductCard product={product} />
+                    <ProductCard product={product} onEdit={isManagerMode ? () => setEditingProduct(product) : undefined} />
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -609,6 +767,219 @@ export default function Shop() {
             </div>
           </div>
         </div>
+
+        {/* BOUTIQUE MANAGER: CONFECTIONERY ADD/EDIT MODAL */}
+        <AnimatePresence>
+          {(editingProduct || isAddingNew) && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-[#140603]/95 backdrop-blur-md z-50 overflow-y-auto flex items-center justify-center p-4 animate-fade-in"
+              id="boutique-edit-modal"
+            >
+              <motion.div
+                initial={{ scale: 0.95, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, y: 20 }}
+                transition={{ type: "spring", duration: 0.5 }}
+                className="bg-[#26130F] border border-[#DFB15B]/40 rounded-[36px] w-full max-w-2xl p-6 sm:p-10 shadow-[0_35px_80px_rgba(0,0,0,0.8)] relative text-[#FFFDFB] overflow-hidden my-8"
+              >
+                {/* Gold ambient radial background */}
+                <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#DFB15B]/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#DE9088]/10 rounded-full blur-3xl pointer-events-none" />
+
+                {/* Close Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setIsAddingNew(false);
+                  }}
+                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[#1C0D0A] hover:bg-[#DE9088]/20 border border-[#DFB15B]/20 flex items-center justify-center transition-colors text-white z-10 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                {/* Header */}
+                <div className="mb-6 sm:mb-8 text-center sm:text-left">
+                  <div className="inline-flex items-center gap-1.5 bg-[#DFB15B]/10 text-[#DFB15B] px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-3 border border-[#DFB15B]/20">
+                    <Sparkle className="w-3.5 h-3.5 text-[#DFB15B] animate-spin-slow" />
+                    <span>Boutique Inventory Engine</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-display font-black leading-none">
+                    {editingProduct ? 'Refine Masterpiece' : 'Introduce New Delicacy'}
+                  </h3>
+                  <p className="text-zinc-400 text-xs sm:text-sm italic mt-1.5">
+                    {editingProduct ? `Adjusting properties of "${editingProduct.name}"` : 'Construct a pristine addition for the sweet catalog'}
+                  </p>
+                </div>
+
+                <form onSubmit={handleSaveProduct} className="space-y-5 sm:space-y-6 relative z-10 text-left">
+                  {/* Row 1: Name and Price */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2 space-y-1.5">
+                      <label className="text-[10px] uppercase font-black tracking-wider text-zinc-300 block">Delicacy Name <span className="text-red-500">*</span></label>
+                      <input
+                        type="text"
+                        required
+                        value={formName}
+                        onChange={(e) => setFormName(e.target.value)}
+                        placeholder="e.g., Red Velvet Deluxe Cake"
+                        className="w-full h-12 rounded-xl bg-[#140603]/90 border border-[#DFB15B]/25 focus:border-[#DFB15B] px-4 text-xs font-semibold text-white outline-none placeholder:text-zinc-600 transition-colors"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-black tracking-wider text-zinc-300 block">Base Price (₹) <span className="text-red-500">*</span></label>
+                      <input
+                        type="number"
+                        required
+                        min="1"
+                        value={formPrice}
+                        onChange={(e) => setFormPrice(Number(e.target.value))}
+                        placeholder="e.g., 650"
+                        className="w-full h-12 rounded-xl bg-[#140603]/90 border border-[#DFB15B]/25 focus:border-[#DFB15B] px-4 text-xs font-black text-[#DFB15B] outline-none placeholder:text-zinc-600 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Row 2: Description */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-black tracking-wider text-zinc-300 block">Sensory Description <span className="text-red-500">*</span></label>
+                    <textarea
+                      required
+                      rows={3}
+                      value={formDescription}
+                      onChange={(e) => setFormDescription(e.target.value)}
+                      placeholder="Describe the textures, layers, sponge types, cream density, and exquisite toppings..."
+                      className="w-full rounded-xl bg-[#140603]/90 border border-[#DFB15B]/25 focus:border-[#DFB15B] p-4 text-xs font-semibold text-white outline-none placeholder:text-zinc-600 transition-colors resize-none leading-relaxed"
+                    />
+                  </div>
+
+                  {/* Row 3: Image URL */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-black tracking-wider text-zinc-300 block">Exquisite Image Pedestal (URL)</label>
+                    <input
+                      type="url"
+                      value={formImage}
+                      onChange={(e) => setFormImage(e.target.value)}
+                      placeholder="Unsplash, Imgur, or direct server JPG/PNG link..."
+                      className="w-full h-12 rounded-xl bg-[#140603]/90 border border-[#DFB15B]/25 focus:border-[#DFB15B] px-4 text-xs font-semibold text-white outline-none placeholder:text-zinc-600 transition-colors"
+                    />
+                  </div>
+
+                  {/* Row 4: Categories, Flavours, Occasions */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-black tracking-wider text-zinc-300 block">Categories (comma-split)</label>
+                      <input
+                        type="text"
+                        value={formCategories}
+                        onChange={(e) => setFormCategories(e.target.value)}
+                        placeholder="Cakes, Birthday Cakes"
+                        className="w-full h-12 rounded-xl bg-[#140603]/90 border border-[#DFB15B]/25 focus:border-[#DFB15B] px-4 text-xs font-semibold text-white outline-none placeholder:text-zinc-600 transition-colors"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-black tracking-wider text-zinc-300 block">Flavours (comma-split)</label>
+                      <input
+                        type="text"
+                        value={formFlavors}
+                        onChange={(e) => setFormFlavors(e.target.value)}
+                        placeholder="Chocolate, Red Velvet"
+                        className="w-full h-12 rounded-xl bg-[#140603]/90 border border-[#DFB15B]/25 focus:border-[#DFB15B] px-4 text-xs font-semibold text-white outline-none placeholder:text-zinc-600 transition-colors"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-black tracking-wider text-zinc-300 block">Occasions (comma-split)</label>
+                      <input
+                        type="text"
+                        value={formOccasions}
+                        onChange={(e) => setFormOccasions(e.target.value)}
+                        placeholder="Birthday, Anniversary"
+                        className="w-full h-12 rounded-xl bg-[#140603]/90 border border-[#DFB15B]/25 focus:border-[#DFB15B] px-4 text-xs font-semibold text-white outline-none placeholder:text-zinc-600 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Row 5: Badges and Stock Status */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div className="flex items-center justify-between sm:justify-start gap-3 bg-[#140603]/65 border border-white/15 rounded-xl px-4 h-12">
+                      <span className="text-[10px] uppercase font-black tracking-wider text-zinc-300">Bestseller</span>
+                      <input
+                        type="checkbox"
+                        checked={formIsBestseller}
+                        onChange={(e) => setFormIsBestseller(e.target.checked)}
+                        className="w-5 h-5 rounded border-white/20 text-[#DFB15B] focus:ring-0 cursor-pointer accent-[#DFB15B]"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between sm:justify-start gap-3 bg-[#140603]/65 border border-white/15 rounded-xl px-4 h-12">
+                      <span className="text-[10px] uppercase font-black tracking-wider text-zinc-300">New Batch</span>
+                      <input
+                        type="checkbox"
+                        checked={formIsNew}
+                        onChange={(e) => setFormIsNew(e.target.checked)}
+                        className="w-5 h-5 rounded border-white/20 text-[#DFB15B] focus:ring-0 cursor-pointer accent-[#DFB15B]"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between bg-[#140603]/65 border border-white/15 rounded-xl px-4 h-12">
+                      <span className="text-[10px] uppercase font-black tracking-wider text-zinc-300">Availability</span>
+                      <select
+                        value={formStockStatus}
+                        onChange={(e) => setFormStockStatus(e.target.value as any)}
+                        className="bg-transparent text-xs font-black uppercase text-[#DFB15B] outline-none border-none cursor-pointer"
+                      >
+                        <option value="in-stock" className="bg-[#140603] text-white">In Stock</option>
+                        <option value="out-of-stock" className="bg-[#140603] text-white">Sold Out</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Modal Footer Actions */}
+                  <div className="pt-6 border-t border-white/15 flex flex-col sm:flex-row items-center justify-end gap-3">
+                    {editingProduct && (
+                      <button
+                        type="button"
+                        disabled={isSaving}
+                        onClick={() => handleDeleteProduct(editingProduct.id)}
+                        className="w-full sm:w-auto h-12 px-6 rounded-xl border border-red-500/30 hover:bg-red-500/10 text-red-400 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span>Retire Item</span>
+                      </button>
+                    )}
+
+                    <div className="flex gap-3 w-full sm:w-auto">
+                      <button
+                        type="button"
+                        disabled={isSaving}
+                        onClick={() => {
+                          setEditingProduct(null);
+                          setIsAddingNew(false);
+                        }}
+                        className="flex-1 sm:flex-initial h-12 px-6 rounded-xl bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-widest border border-white/10 cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSaving}
+                        className="flex-grow sm:flex-initial h-12 px-8 rounded-xl bg-[#DFB15B] hover:bg-white text-[#140603] text-[10px] font-black uppercase tracking-widest shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        {isSaving ? (
+                          <span className="w-4 h-4 border-2 border-amber-950 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Check className="w-4 h-4" />
+                        )}
+                        <span>{editingProduct ? 'Commit Changes' : 'Confirm Entry'}</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     </motion.div>

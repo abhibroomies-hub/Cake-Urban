@@ -1313,6 +1313,16 @@ export default function Home() {
               From surprise corporate gatherings in Cyber City to sweet first birthday moments in Faridabad, over 14,200+ cakes have been shaped with pure organic dairy products and premium gourmet cocoa.
             </p>
 
+            <div className="pt-1.5 text-left">
+              <Link 
+                to="/reviews" 
+                className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#DFB15B] hover:text-white transition-all underline underline-offset-4 decoration-[#DFB15B]/30"
+              >
+                <span>Browse Photo Reviews Gallery</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#DFB15B]" />
+              </Link>
+            </div>
+
             <div className="space-y-4 pt-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-[#DFB15B] border border-white/10">

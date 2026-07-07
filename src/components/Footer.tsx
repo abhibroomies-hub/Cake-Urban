@@ -62,6 +62,7 @@ export function Footer() {
             <Link to="/" className="block hover:text-[#DE9088] transition">Home</Link>
             <Link to="/shop" className="block hover:text-[#DE9088] transition">Shop Boutique</Link>
             <Link to="/custom-order" className="block hover:text-[#DE9088] transition">Custom Studio</Link>
+            <Link to="/reviews" className="block hover:text-[#DE9088] transition font-bold text-[#DFB15B]">❤️ Customer's Love Gallery</Link>
             <Link to="/blog" className="block hover:text-[#DE9088] transition flex items-center gap-1"><BookOpen className="w-3.5 h-3.5 text-[#DE9088]" />The Cake Diaries</Link>
             <Link to="/about" className="block hover:text-[#DE9088] transition">Our Story</Link>
             <Link to="/contact" className="block hover:text-[#DE9088] transition">Contact Chef</Link>

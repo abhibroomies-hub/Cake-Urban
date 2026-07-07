@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Eye, Star, X, Check, ArrowRight, Sparkles, AlertCircle, Heart, Sparkle } from 'lucide-react';
+import { ShoppingCart, Eye, Star, X, Check, ArrowRight, Sparkles, AlertCircle, Heart, Sparkle, Pencil } from 'lucide-react';
 import { Button } from './ui/button';
 import { useCart } from '../lib/store';
 import { Product } from '../types';
@@ -9,7 +9,7 @@ import { playSuccessChime, playSlidePop, playBtnTap } from '../lib/sound';
 import { toast } from 'sonner';
 import { handleImageError } from '../lib/utils';
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, onEdit }: { product: Product; onEdit?: () => void }) {
   const { addItem } = useCart();
   const navigate = useNavigate();
   
@@ -131,17 +131,32 @@ export function ProductCard({ product }: { product: Product }) {
                 <span className="text-[8px] sm:text-[9.5px] font-black text-[#FFFDFB]/50 uppercase">({product.reviewsCount || 42})</span>
               </div>
               
-              {/* WISHLIST HEART */}
-              <button 
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#1C0D0A]/90 hover:bg-[#DE9088]/25 text-[#FFFDFB] hover:text-[#DE9088] transition-all flex items-center justify-center border border-white/15 shrink-0 active:scale-90"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  playBtnTap();
-                  toast.success(`Savour later! Added ${product.name} to wishlist.`);
-                }}
-              >
-                <Heart className="w-3.5 h-3.5" />
-              </button>
+              {/* WISHLIST HEART & EDIT OPTION */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                {onEdit && (
+                  <button 
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#DFB15B] hover:bg-white text-black hover:text-[#140603] transition-all flex items-center justify-center border border-[#DFB15B]/30 active:scale-90"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      playBtnTap();
+                      onEdit();
+                    }}
+                    title="Edit Item Details"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <button 
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#1C0D0A]/90 hover:bg-[#DE9088]/25 text-[#FFFDFB] hover:text-[#DE9088] transition-all flex items-center justify-center border border-white/15 active:scale-90"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    playBtnTap();
+                    toast.success(`Savour later! Added ${product.name} to wishlist.`);
+                  }}
+                >
+                  <Heart className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
 
