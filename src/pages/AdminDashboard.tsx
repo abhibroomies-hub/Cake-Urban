@@ -17,13 +17,14 @@ import {
   CheckCircle2, AlertCircle, ArrowLeft, Check as CheckIcon, Loader2,
   Trash2, Star, Eye, Calendar, User, Mail, Plus, ToggleLeft, ToggleRight,
   Sparkle, Award, MessageSquare, Coffee, Trash, Phone, Palette, Settings,
-  Play, Pause, SkipForward, Send
+  Play, Pause, SkipForward, Send, BarChart3
 } from 'lucide-react';
 import { ScrollArea } from '../components/ui/scroll-area';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
 import SEO from '../components/SEO';
 import { FALLBACK_PRODUCTS } from '../lib/fallbackProducts';
+import SeoAnalyticsDashboard from '../components/SeoAnalyticsDashboard';
 import { useTheme, THEME_PRESETS } from '../lib/theme';
 
 const MOCK_ORDERS: Order[] = [
@@ -1803,6 +1804,7 @@ export default function AdminDashboard() {
 
   const navigationTabs = [
     { value: 'insights', label: 'Performance', icon: LayoutDashboard },
+    { value: 'seo-analytics', label: 'SEO Analytics', icon: BarChart3 },
     { value: 'orders', label: `active Reservations (${orders.length})`, icon: Clock },
     { value: 'inquiries', label: `Builder Inquiries (${customInquiries.length})`, icon: Sparkles },
     { value: 'grok-studio', label: 'Gemini Pro Studio ✦', icon: Sparkle },
@@ -4489,6 +4491,13 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               </div>
+              )}
+
+              {/* 📈 TAB 7: LIVE GOOGLE SEO ANALYTICS DASHBOARD */}
+              {activeTab === 'seo-analytics' && (
+                <div className="mt-8">
+                  <SeoAnalyticsDashboard products={products} />
+                </div>
               )}
 
           </motion.div>

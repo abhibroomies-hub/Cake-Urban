@@ -17,31 +17,86 @@ if (!fs.existsSync(PUBLIC_DIR)) {
 const CITIES = ["Delhi", "Noida", "Gurgaon", "Faridabad", "Ghaziabad"];
 
 const LOCALITIES = [
+  // Faridabad
   { name: "Sector 31", city: "Faridabad", slug: "sector-31" },
   { name: "Sector 15", city: "Faridabad", slug: "sector-15" },
   { name: "Sector 14", city: "Faridabad", slug: "sector-14" },
   { name: "Sector 21", city: "Faridabad", slug: "sector-21" },
   { name: "Greenfield Colony", city: "Faridabad", slug: "greenfield" },
   { name: "NIT Faridabad", city: "Faridabad", slug: "nit" },
+  { name: "Sector 16", city: "Faridabad", slug: "sector-16" },
+  { name: "Sector 17", city: "Faridabad", slug: "sector-17" },
+  { name: "Sector 19", city: "Faridabad", slug: "sector-19" },
+  { name: "Sector 28", city: "Faridabad", slug: "sector-28" },
+  { name: "Sector 29", city: "Faridabad", slug: "sector-29" },
+  { name: "Sector 35", city: "Faridabad", slug: "sector-35" },
+  { name: "Sector 37", city: "Faridabad", slug: "sector-37" },
+  { name: "Sector 46", city: "Faridabad", slug: "sector-46" },
+  { name: "Sector 85", city: "Faridabad", slug: "sector-85" },
+  { name: "Sector 86", city: "Faridabad", slug: "sector-86" },
+  { name: "Sector 89", city: "Faridabad", slug: "sector-89" },
+  { name: "Neharpar", city: "Faridabad", slug: "neharpar" },
+  { name: "Ashoka Enclave", city: "Faridabad", slug: "ashoka-enclave" },
+  { name: "Sarai Khawaja", city: "Faridabad", slug: "sarai" },
+  { name: "Surajkund", city: "Faridabad", slug: "surajkund" },
+  { name: "Charmwood", city: "Faridabad", slug: "charmwood" },
+
+  // Noida
   { name: "Sector 62", city: "Noida", slug: "sector-62" },
   { name: "Sector 15", city: "Noida", slug: "sector-15-noida" },
   { name: "Sector 18", city: "Noida", slug: "sector-18" },
   { name: "Sector 50", city: "Noida", slug: "sector-50" },
   { name: "Sector 137", city: "Noida", slug: "sector-137" },
   { name: "Sector 150", city: "Noida", slug: "sector-150" },
+  { name: "Sector 63", city: "Noida", slug: "sector-63" },
+  { name: "Sector 75", city: "Noida", slug: "sector-75" },
+  { name: "Sector 76", city: "Noida", slug: "sector-76" },
+  { name: "Sector 78", city: "Noida", slug: "sector-78" },
+  { name: "Noida Extension", city: "Noida", slug: "noida-extension" },
+  { name: "Greater Noida", city: "Noida", slug: "greater-noida" },
+  { name: "Gaur City", city: "Noida", slug: "gaur-city" },
+
+  // Gurgaon
   { name: "DLF Phase 1-5", city: "Gurgaon", slug: "dlf-phase" },
   { name: "Golf Course Road", city: "Gurgaon", slug: "golf-course-road" },
   { name: "Sohna Road", city: "Gurgaon", slug: "sohna-road" },
   { name: "Cyber City", city: "Gurgaon", slug: "cyber-city" },
+  { name: "Golf Course Ext", city: "Gurgaon", slug: "golf-course-ext" },
+  { name: "MG Road", city: "Gurgaon", slug: "mg-road" },
+  { name: "Sushant Lok", city: "Gurgaon", slug: "sushant-lok" },
+  { name: "Sector 56", city: "Gurgaon", slug: "sector-56-gurgaon" },
+  { name: "Sector 82", city: "Gurgaon", slug: "sector-82-gurgaon" },
+  { name: "Sector 45", city: "Gurgaon", slug: "sector-45-gurgaon" },
+
+  // Delhi
   { name: "Dwarka", city: "Delhi", slug: "dwarka" },
   { name: "South Delhi", city: "Delhi", slug: "south-delhi" },
   { name: "West Delhi", city: "Delhi", slug: "west-delhi" },
   { name: "Punjabi Bagh", city: "Delhi", slug: "punjabi-bagh" },
   { name: "Rohini", city: "Delhi", slug: "rohini" },
   { name: "Janakpuri", city: "Delhi", slug: "janakpuri" },
+  { name: "Saket", city: "Delhi", slug: "saket" },
+  { name: "Pitampura", city: "Delhi", slug: "pitampura" },
+  { name: "Karol Bagh", city: "Delhi", slug: "karol-bagh" },
+  { name: "Connaught Place", city: "Delhi", slug: "connaught-place" },
+  { name: "Greater Kailash", city: "Delhi", slug: "greater-kailash" },
+  { name: "Vasant Kunj", city: "Delhi", slug: "vasant-kunj" },
+  { name: "Hauz Khas", city: "Delhi", slug: "hauz-khas" },
+  { name: "Malviya Nagar", city: "Delhi", slug: "malviya-nagar" },
+  { name: "Rajouri Garden", city: "Delhi", slug: "rajouri-garden" },
+  { name: "Model Town", city: "Delhi", slug: "model-town" },
+  { name: "Civil Lines", city: "Delhi", slug: "civil-lines" },
+  { name: "Mayur Vihar", city: "Delhi", slug: "mayur-vihar" },
+  { name: "Preet Vihar", city: "Delhi", slug: "preet-vihar" },
+  { name: "Laxmi Nagar", city: "Delhi", slug: "laxmi-nagar" },
+
+  // Ghaziabad
   { name: "Indirapuram", city: "Ghaziabad", slug: "indirapuram" },
   { name: "Vaishali", city: "Ghaziabad", slug: "vaishali" },
-  { name: "Vasundhara", city: "Ghaziabad", slug: "vasundhara" }
+  { name: "Vasundhara", city: "Ghaziabad", slug: "vasundhara" },
+  { name: "Kaushambi", city: "Ghaziabad", slug: "kaushambi" },
+  { name: "Raj Nagar Ext", city: "Ghaziabad", slug: "raj-nagar" },
+  { name: "Crossing Republik", city: "Ghaziabad", slug: "crossing-republik" }
 ];
 
 const OCCASIONS = [
@@ -242,6 +297,31 @@ console.log("Starting sitemap build-time generation...");
       for (const occ of OCCASIONS.slice(0, 4)) {
         xml += `  <url>\n    <loc>https://www.cakeurban.com/fresh-${item.slug}-${occ.slug}-delivery-in-${loc.slug}</loc>\n    <lastmod>2026-07-06</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
       }
+    }
+  }
+
+  // Pattern 10: Short Keywords in [Locality] (150 URLs) (NEW)
+  const shortKwTemplates = [
+    "cake-shop-in-[loc]",
+    "cake-delivery-in-[loc]",
+    "eggless-cake-in-[loc]",
+    "best-bakery-in-[loc]",
+    "birthday-cake-in-[loc]",
+    "pastry-shop-in-[loc]"
+  ];
+
+  for (const loc of LOCALITIES) {
+    for (const temp of shortKwTemplates) {
+      const slugPath = temp.replace("[loc]", loc.slug);
+      xml += `  <url>\n    <loc>https://www.cakeurban.com/${slugPath}</loc>\n    <lastmod>2026-07-06</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
+    }
+  }
+
+  // Pattern 11: Short Keywords in [City] (30 URLs) (NEW)
+  for (const city of CITIES) {
+    for (const temp of shortKwTemplates) {
+      const slugPath = temp.replace("[loc]", city.toLowerCase());
+      xml += `  <url>\n    <loc>https://www.cakeurban.com/${slugPath}</loc>\n    <lastmod>2026-07-06</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.90</priority>\n  </url>\n`;
     }
   }
 
