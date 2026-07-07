@@ -6,7 +6,7 @@
       "destination": "/api"
     },
     {
-      "source": "/((?!api)[^.]*)$",
+      "source": "/((?!api|assets|favicon|robots|llms|sitemap).*)",
       "destination": "/index.html"
     }
   ]
